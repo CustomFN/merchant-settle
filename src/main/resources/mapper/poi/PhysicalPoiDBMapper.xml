@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.z.merchantsettle.modules.poi.dao.PhysicalPoiDBMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.poi.domain.db.PhysicalPoiDB">
+        <id column="id" property="id" />
+        <result column="physicalCityId" property="physicalCityId" />
+        <result column="physicalRegionId" property="physicalRegionId" />
+        <result column="physicalPoiName" property="physicalPoiName" />
+        <result column="physicalPoiPhone" property="physicalPoiPhone" />
+        <result column="physicalPoiCategory" property="physicalPoiCategory" />
+        <result column="physicalPoiAddress" property="physicalPoiAddress" />
+        <result column="physicalPoiLongitude" property="physicalPoiLongitude" />
+        <result column="physicalPoiLatitude" property="physicalPoiLatitude" />
+        <result column="physicalPoiPrincipal" property="physicalPoiPrincipal"/>
+        <result column="status" property="status" />
+        <result column="valid" property="valid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, physicalCityId, physicalRegionId, physicalPoiName, physicalPoiPhone, physicalPoiCategory,
+        physicalPoiAddress, physicalPoiLongitude, physicalPoiLatitude, physicalPoiPrincipal, status, valid
+    </sql>
+
+
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          physical_poi
+        <where>
+            <if test="userId != null and userId != ''">
+                and userId = #{physicalPrincipal},
+            </if>
+            <if test="physicalPoiReqParam.physicalPoiId != null and physicalPoiReqParam.physicalPoiId > 0">
+                and physicalPoiId = #{physicalPoiReqParam.physicalPoiId},
+            </if>
+            <if test="physicalPoiReqParam.physicalCityId != null and physicalPoiReqParam.physicalCityId > 0">
+                and physicalCityId = #{physicalPoiReqParam.physicalCityId},
+            </if>
+            <if test="physicalPoiReqParam.physicalPoiName != null and physicalPoiReqParam.physicalPoiName != ''">
+                and physicalPoiName like concat(concat('%',#{physicalPoiReqParam.physicalPoiName}),'%'),
+            </if>
+            <if test="physicalPoiReqParam.status != null and physicalPoiReqParam.status > 0">
+                and status = #{physicalPoiReqParam.status},
+            </if>
+            and valid = 1
+        </where>
+    </select>
+
+    <update id="updateSelective" parameterType="com.z.merchantsettle.modules.poi.domain.db.PhysicalPoiDB" >
+        update physical_poi
+        <set >
+            <if test="physicalCityId != null" >
+                physicalCityId = #{physicalCityId},
+            </if>
+            <if test="physicalRegionId != null" >
+                physicalRegionId = #{physicalRegionId},
+            </if>
+            <if test="physicalPoiName != null" >
+                physicalPoiName = #{physicalPoiName},
+            </if>
+            <if test="physicalPoiPhone != null" >
+                physicalPoiPhone = #{physicalPoiPhone},
+            </if>
+            <if test="physicalPoiCategory != null" >
+                physicalPoiCategory = #{physicalPoiCategory},
+            </if>
+            <if test="physicalPoiAddress != null" >
+                physicalPoiAddress = #{physicalPoiAddress},
+            </if>
+            <if test="physicalPoiLongitude != null" >
+                physicalPoiLongitude = #{physicalPoiLongitude},
+            </if>
+            <if test="physicalPoiLatitude != null" >
+                physicalPoiLatitude = #{physicalPoiLatitude},
+            </if>
+            <if test="physicalPoiPrincipal != null" >
+                physicalPoiPrincipal = #{physicalPoiPrincipal},
+            </if>
+            <if test="status != null" >
+                status = #{status},
+            </if>
+            <if test="valid != null" >
+                valid = #{valid},
+            </if>
+            utime = unixtime()
+        </set>
+        where id = #{id}
+    </update>
+
+    <insert id="insertSelective" parameterType="com.z.merchantsettle.modules.poi.domain.db.PhysicalPoiDB" useGeneratedKeys="true" keyProperty="id">
+        insert into physical_poi
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="physicalCityId != null" >
+                physicalCityId,
+            </if>
+            <if test="physicalRegionId != null" >
+                physicalRegionId,
+            </if>
+            <if test="physicalPoiName != null" >
+                physicalPoiName,
+            </if>
+            <if test="physicalPoiPhone != null" >
+                physicalPoiPhone,
+            </if>
+            <if test="physicalPoiCategory != null" >
+                physicalPoiCategory,
+            </if>
+            <if test="physicalPoiAddress != null" >
+                physicalPoiAddress,
+            </if>
+            <if test="physicalPoiLongitude != null" >
+                physicalPoiLongitude,
+            </if>
+            <if test="physicalPoiLatitude != null" >
+                physicalPoiLatitude,
+            </if>
+            <if test="physicalPoiPrincipal != null" >
+                physicalPoiPrincipal,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            ctime,
+            utime,
+            valid
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="physicalCityId != null" >
+                #{physicalCityId},
+            </if>
+            <if test="physicalRegionId != null" >
+                #{physicalRegionId},
+            </if>
+            <if test="physicalPoiName != null" >
+                #{physicalPoiName},
+            </if>
+            <if test="physicalPoiPhone != null" >
+                #{physicalPoiPhone},
+            </if>
+            <if test="physicalPoiCategory != null" >
+                #{physicalPoiCategory},
+            </if>
+            <if test="physicalPoiAddress != null" >
+                #{physicalPoiAddress},
+            </if>
+            <if test="physicalPoiLongitude != null" >
+                #{physicalPoiLongitude},
+            </if>
+            <if test="physicalPoiLatitude != null" >
+                #{physicalPoiLatitude},
+            </if>
+            <if test="physicalPoiPrincipal != null" >
+                #{physicalPoiPrincipal},
+            </if>
+            <if test="status != null" >
+                #{status},
+            </if>
+            unixtime(),
+            unixtime(),
+            1
+        </trim>
+    </insert>
+</mapper>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.z.merchantsettle.modules.customer.dao.CustomerKpAuditedDBMapper" >
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.customer.domain.db.CustomerKpAuditedDB" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="kpType" property="kpType" jdbcType="INTEGER" />
+        <result column="kpSiginType" property="kpSiginType" jdbcType="INTEGER" />
+        <result column="kpAuthorizationPic" property="kpAuthorizationPic" jdbcType="VARCHAR" />
+        <result column="kpCertificatesPic" property="kpCertificatesPic" jdbcType="VARCHAR" />
+        <result column="kpName" property="kpName" jdbcType="VARCHAR" />
+        <result column="kpCertificatesType" property="kpCertificatesType" jdbcType="INTEGER" />
+        <result column="kpCertificatesNum" property="kpCertificatesNum" jdbcType="VARCHAR" />
+        <result column="kpPhoneNum" property="kpPhoneNum" jdbcType="VARCHAR" />
+        <result column="bankId" property="bankId" jdbcType="INTEGER" />
+        <result column="bankNum" property="bankNum" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="customerId" property="customerId" jdbcType="INTEGER"/>
+        <result column="ctime" property="ctime" jdbcType="BIGINT" />
+        <result column="utime" property="utime" jdbcType="BIGINT" />
+        <result column="valid" property="valid" jdbcType="INTEGER" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, kpType, kpSiginType,kpAuthorizationPic, kpCertificatesPic, kpName,
+        kpCertificatesType, kpCertificatesNum, kpPhoneNum, bankId, bankNum, status, customerId, ctime, utime, valid
+    </sql>
+    <select id="selectByCustomerId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+          <include refid="Base_Column_List" />
+        from
+          customer_kp_audited
+        where
+          customerId = #{customerId}
+        and
+         valid = 1
+    </select>
+    <update id="deleteById" parameterType="java.lang.Integer" >
+        update
+            customer_kp_audited
+        SET
+          utime = unixtime(), valid = 0
+        WHERE
+          id = #{id}
+    </update>
+    <insert id="insertSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerKpAuditedDB" useGeneratedKeys="true" keyProperty="id">
+        insert into customer_kp_audited
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="kpType != null" >
+                kpType,
+            </if>
+            <if test="kpSiginType != null" >
+                kpSiginType,
+            </if>
+            <if test="kpAuthorizationPic != null" >
+                kpAuthorizationPic,
+            </if>
+            <if test="kpCertificatesPic != null" >
+                kpCertificatesPic,
+            </if>
+            <if test="kpName != null" >
+                kpName,
+            </if>
+            <if test="kpCertificatesType != null" >
+                kpCertificatesType,
+            </if>
+            <if test="kpCertificatesNum != null" >
+                kpCertificatesNum,
+            </if>
+            <if test="kpPhoneNum != null" >
+                kpPhoneNum,
+            </if>
+            <if test="bankId != null" >
+                bankId,
+            </if>
+            <if test="bankNum != null" >
+                bankNum,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            customerId,
+            ctime,
+            utime,
+            valid
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="kpType != null" >
+                #{kpType},
+            </if>
+            <if test="kpSiginType != null" >
+                #{kpSiginType},
+            </if>
+            <if test="kpAuthorizationPic != null" >
+                #{kpAuthorizationPic},
+            </if>
+            <if test="kpCertificatesPic != null" >
+                #{kpCertificatesPic},
+            </if>
+            <if test="kpName != null" >
+                #{kpName},
+            </if>
+            <if test="kpCertificatesType != null" >
+                #{kpCertificatesType},
+            </if>
+            <if test="kpCertificatesNum != null" >
+                #{kpCertificatesNum},
+            </if>
+            <if test="kpPhoneNum != null" >
+                #{kpPhoneNum},
+            </if>
+            <if test="bankId != null" >
+                #{bankId},
+            </if>
+            <if test="bankNum != null" >
+                #{bankNum},
+            </if>
+            <if test="status != null" >
+                #{status},
+            </if>
+            #{customerId},
+            unixtime(),
+            unixtime(),
+            1
+        </trim>
+    </insert>
+    <update id="updateByIdSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerKpAuditedDB" >
+        update customer_kp_audited
+        <set >
+            <if test="kpType != null" >
+                kpType = #{kpType},
+            </if>
+            <if test="kpSiginType != null" >
+                kpSiginType = #{kpSiginType},
+            </if>
+            <if test="kpAuthorizationPic != null" >
+                kpAuthorizationPic = #{kpAuthorizationPic},
+            </if>
+            <if test="kpCertificatesPic != null" >
+                kpCertificatesPic = #{kpCertificatesPic},
+            </if>
+            <if test="kpName != null" >
+                kpName = #{kpName},
+            </if>
+            <if test="kpCertificatesType != null" >
+                kpCertificatesType = #{kpCertificatesType},
+            </if>
+            <if test="kpCertificatesNum != null" >
+                kpCertificatesNum = #{kpCertificatesNum},
+            </if>
+            <if test="kpPhoneNum != null" >
+                kpPhoneNum = #{kpPhoneNum},
+            </if>
+            <if test="bankId != null" >
+                bankId = #{bankId},
+            </if>
+            <if test="bankNum != null" >
+                bankNum = #{bankNum},
+            </if>
+            <if test="status != null" >
+                status = #{status},
+            </if>
+            <if test="valid != null" >
+                valid = #{valid},
+            </if>
+            utime = unixtime()
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

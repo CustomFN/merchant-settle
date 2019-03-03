@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.z.merchantsettle.modules.customer.dao.CustomerSettlePoiDBMapper" >
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.customer.domain.db.CustomerSettlePoiDB" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="settleId" property="settleId" jdbcType="INTEGER" />
+        <result column="wmPoiId" property="wmPoiId" jdbcType="INTEGER" />
+        <result column="ctime" property="ctime" jdbcType="BIGINT" />
+        <result column="utime" property="utime" jdbcType="BIGINT" />
+        <result column="valid" property="valid" jdbcType="INTEGER" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, settleId, wmPoiId, ctime, utime, valid
+    </sql>
+    <select id="getSettleIdByWmPoiId" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+        select
+          <include refid="Base_Column_List" />
+        from
+          settle_poi
+        where
+          wmPoiId = #{wmPoiId}
+        and
+         valid = 1
+    </select>
+
+    <select id="getBySettleId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+          <include refid="Base_Column_List" />
+        from
+          settle_poi
+        where
+          settleId = #{settleId}
+        and
+          valid = 1
+    </select>
+
+    <update id="deleteBySettleIdAndPoiIdList" parameterType="java.util.List" >
+        UPDATE
+          settle_poi
+        set
+          valid = 0, utime = unix_timestamp()
+        WHERE
+          settleId = #{settleId}
+        and
+          wmPoiId
+        in
+          <foreach collection="wmPoiIdList" close=")" open="(" separator="," item="item">
+              #{item}
+          </foreach>
+        and
+          valid = 1
+    </update>
+
+    <insert id="save" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO settle_poi
+          (settleId, wmPoiId, ctime, utime, valid)
+        VALUES
+            <foreach collection="list" item="item" separator=",">
+                (
+                  #{item.settleId},
+                  #{item.wmPoiId},
+                  unix_timestamp(),
+                  unix_timestamp(),
+                  1
+                )
+            </foreach>
+    </insert>
+
+    <select id="getByWmPoiIdList" resultMap="BaseResultMap" parameterType="java.util.List">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          settle_poi
+        WHERE
+          wmPoiId IN
+            <foreach collection="wmPoiIdList" close=")" open="(" separator="," item="item">
+                #{item}
+            </foreach>
+        and
+          valid = 1
+    </select>
+</mapper>

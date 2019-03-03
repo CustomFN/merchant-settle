@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.z.merchantsettle.modules.customer.dao.CustomerAuditedDBMapper" >
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.customer.domain.db.CustomerAuditedDB" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="customerType" property="customerType" jdbcType="INTEGER" />
+        <result column="customerCertificatesPic" property="customerCertificatesPic" jdbcType="VARCHAR" />
+        <result column="customerCertificatesNum" property="customerCertificatesNum" jdbcType="VARCHAR" />
+        <result column="customerName" property="customerName" jdbcType="VARCHAR" />
+        <result column="customerLegalPerson" property="customerLegalPerson" jdbcType="VARCHAR" />
+        <result column="customerCertificatesAddress" property="customerCertificatesAddress" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="customerValidTime" property="customerValidTime" jdbcType="BIGINT" />
+        <result column="customerPrincipal" property="customerPrincipal" jdbcType="VARCHAR"/>
+        <result column="ctime" property="ctime" jdbcType="BIGINT" />
+        <result column="utime" property="utime" jdbcType="BIGINT" />
+        <result column="valid" property="valid" jdbcType="INTEGER" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, customerType, customerCertificatesPic, customerCertificatesNum, customerName, customerLegalPerson,
+        customerCertificatesAddress, status, customerValidTime, customerPrincipal, ctime, utime, valid
+    </sql>
+    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+          <include refid="Base_Column_List" />
+        from
+          customer_audited
+        where
+          id = #{id}
+        and
+         valid = 1
+    </select>
+    <update id="deleteById" parameterType="java.lang.Integer" >
+        update
+          customer_audited
+        SET
+          utime = unixtime(), valid = 0
+        WHERE
+          id = #{id}
+    </update>
+    <insert id="insertSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerAuditedDB" useGeneratedKeys="true" keyProperty="id">
+        insert into customer_audited
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="customerType != null" >
+                customerType,
+            </if>
+            <if test="customerCertificatesPic != null" >
+                customerCertificatesPic,
+            </if>
+            <if test="customerCertificatesNum != null" >
+                customerCertificatesNum,
+            </if>
+            <if test="customerName != null" >
+                customerName,
+            </if>
+            <if test="customerLegalPerson != null" >
+                customerLegalPerson,
+            </if>
+            <if test="customerCertificatesAddress != null" >
+                customerCertificatesAddress,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            <if test="customerValidTime != null" >
+                customerValidTime,
+            </if>
+            <if test="customerPrincipal != null">
+                customerPrincipal,
+            </if>
+            ctime,
+            utime,
+            valid
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="customerType != null" >
+                #{customerType},
+            </if>
+            <if test="customerCertificatesPic != null" >
+                #{customerCertificatesPic},
+            </if>
+            <if test="customerCertificatesNum != null" >
+                #{customerCertificatesNum},
+            </if>
+            <if test="customerName != null" >
+                #{customerName},
+            </if>
+            <if test="customerLegalPerson != null" >
+                #{customerLegalPerson},
+            </if>
+            <if test="customerCertificatesAddress != null" >
+                #{customerCertificatesAddress},
+            </if>
+            <if test="status != null" >
+                #{status},
+            </if>
+            <if test="customerValidTime != null" >
+                #{customerValidTime},
+            </if>
+            <if test="customerPrincipal != null">
+                #{customerPrincipal},
+            </if>
+            unixtime(),
+            unixtime(),
+            1
+        </trim>
+    </insert>
+    <update id="updateByIdSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerAuditedDB" >
+        update customer_audited
+        <set >
+            <if test="customerType != null" >
+                customerType = #{customerType},
+            </if>
+            <if test="customerCertificatesPic != null" >
+                customerCertificatesPic = #{customerCertificatesPic},
+            </if>
+            <if test="customerCertificatesNum != null" >
+                customerCertificatesNum = #{customerCertificatesNum},
+            </if>
+            <if test="customerName != null" >
+                customerName = #{customerName},
+            </if>
+            <if test="customerLegalPerson != null" >
+                customerLegalPerson = #{customerLegalPerson},
+            </if>
+            <if test="customerCertificatesAddress != null" >
+                customerCertificatesAddress = #{customerCertificatesAddress},
+            </if>
+            <if test="status != null" >
+                status = #{status},
+            </if>
+            <if test="customerValidTime != null" >
+                customerValidTime = #{customerValidTime},
+            </if>
+            <if test="valid != null" >
+                valid = #{valid},
+            </if>
+            <if test="customerPrincipal != null">
+                customerPrincipal = #{customerPrincipal},
+            </if>
+            utime = unixtime()
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="getCustomerList" resultMap="BaseResultMap" parameterType="com.z.merchantsettle.modules.customer.domain.CustomerSearchParam">
+        select
+          <include refid="Base_Column_List"/>
+        from
+          customer_audited
+        <where>
+            <if test="customerSearchParam.customerId != null and customerSearchParam.customerId > 0">
+                and customerId = #{customerSearchParam.customerId}
+            </if>
+            <if test="customerSearchParam.customerName != null and customerSearchParam.customerName != ''">
+                and customerName like concat(concat('%',#{customerSearchParam.customerName}),'%'),
+            </if>
+            <if test="customerSearchParam.customerPrincipal != null and customerSearchParam.customerPrincipal != ''">
+                and customerPrincipal like concat(concat('%',#{customerSearchParam.customerPrincipal}),'%'),
+            </if>
+            and valid = 1
+        </where>
+        order BY
+          id
+        desc
+    </select>
+
+    <update id="deleteByCustomerId" parameterType="java.lang.Integer">
+        update
+          customer_audited
+        set
+          utime = unixtime(), valid = 0
+        WHERE
+          customerId = #{customerId}
+        and
+          valid = 1
+    </update>
+</mapper>

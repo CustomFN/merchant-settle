@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.z.merchantsettle.modules.upm.dao.ResourceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.upm.domain.db.ResourceDB">
+        <id column="id" property="id" />
+        <result column="resourceId" property="resourceId" />
+        <result column="resourcePath" property="resourcePath" />
+        <result column="description" property="description" />
+        <result column="resourceName" property="resourceName" />
+        <result column="resourceType" property="resourceType" />
+        <result column="parentId" property="parentId" />
+        <result column="sortOrder" property="sortOrder" />
+        <result column="icon" property="icon" />
+        <result column="level" property="level" />
+        <result column="status" property="status" />
+        <result column="ctime" property="ctime" />
+        <result column="valid" property="valid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, resourceId, resourcePath, description, resourceName, resourceType, parentId, sortOrder, icon, level, status, ctime, valid
+    </sql>
+
+    <select id="getByLevelSort" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          resource
+        WHERE
+          level = #{level}
+        and
+          valid = 1
+        order by
+          sortOrder
+    </select>
+
+    <select id="getByParentResourceIdSort" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+         resource
+        WHERE
+         resourceId = #{parentId}
+        and
+          valid = 1
+        order by
+         sortOrder
+    </select>
+
+    <insert id="insertSelective" parameterType="com.z.merchantsettle.modules.upm.domain.db.ResourceDB" useGeneratedKeys="true" keyProperty="id">
+        insert into resource (
+            <if test="resourceId != null and resourceId != '' ">resourceId,</if>
+            <if test="resourcePath != null and resourcePath != '' ">resourcePath,</if>
+            <if test="description != null and description != '' ">description,</if>
+            <if test="resourceName != null and resourceName != '' ">resourceName,</if>
+            <if test="resourceType != null and resourceType != '' ">resourceType,</if>
+            <if test="parentId != null and parentId != '' ">parentId,</if>
+            <if test="sortOrder != null and sortOrder != '' ">sortOrder,</if>
+            <if test="icon != null and icon != '' ">icon,</if>
+            <if test="level != null and level != '' ">level,</if>
+            <if test="status != null and status != '' ">status,</if>
+            ctime,
+            valid
+        )values(
+            <if test="resourceId != null and resourceId != ''">#{resourceId},</if>
+            <if test="resourcePath != null and resourcePath != ''">#{resourcePath},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="resourceName != null and resourceName != ''">#{resourceName},</if>
+            <if test="resourceType != null and resourceType != '' ">resourceType,</if>
+            <if test="parentId != null and parentId != ''">#{parentId},</if>
+            <if test="sortOrder != null and sortOrder != ''">#{sortOrder},</if>
+            <if test="icon != null and icon != ''">#{icon},</if>
+            <if test="level != null and level != ''">#{level},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            unix_timestamp(),
+            1
+        )
+    </insert>
+
+    <update id="updateByResourceIdSelective" parameterType="com.z.merchantsettle.modules.upm.domain.db.ResourceDB">
+        update resource set
+            <if test="resourcePath != null and resourcePath != ''">resourcePath = #{resourcePath},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="resourceName != null and resourceName != ''">resourceName = #{resourceName},</if>
+            <if test="resourceType != null and resourceType != '' ">resourceType = #{resourceType},</if>
+            <if test="parentId != null and parentId != ''">parentId = #{parentId},</if>
+            <if test="sortOrder != null and sortOrder != ''">sortOrder = #{sortOrder},</if>
+            <if test="icon != null and icon != ''">icon = #{icon},</if>
+            <if test="level != null and level != ''">level = #{level},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            utime = unix_timestamp()
+        where
+          roleId = #{roleId}
+        and
+          valid = 1
+    </update>
+
+    <update id="deleteByResourceId" parameterType="java.lang.String">
+        update resource set utime = unix_timestamp(), valid = 0 where resourceId = #{resourceId}
+    </update>
+
+    <select id="selectByResourceId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          resource
+        WHERE
+          resourceId = #{resourceId}
+        and
+          valid = 1;
+    </select>
+</mapper>

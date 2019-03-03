@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.z.merchantsettle.modules.audit.dao.AuditMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.audit.domain.db.AuditTaskDB">
+        <id column="id" property="id" />
+        <result column="customerId" property="customerId"/>
+        <result column="poiId" property="poiId"/>
+        <result column="auditType" property="auditType" />
+        <result column="auditApplicationType" property="auditApplicationType" />
+        <result column="auditData" property="auditData" />
+        <result column="auditStatus" property="auditStatus" />
+        <result column="submitterId" property="submitterId" />
+        <result column="transactor" property="transactor"/>
+        <result column="auditResult" property="auditResult"/>
+        <result column="ctime" property="ctime" />
+        <result column="utime" property="utime" />
+        <result column="valid" property="valid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customerId, poiId, aditType, auditApplicationType, auditData, auditStatus, submitterId, transactor, auditResult, ctime, utime, valid
+    </sql>
+
+    <insert id="saveAuditTask" parameterType="com.z.merchantsettle.modules.audit.domain.db.AuditTaskDB" useGeneratedKeys="true" keyProperty="id">
+        insert into audit (
+            <if test="customerId != null and customerId != '' ">customerId,</if>
+            <if test="poiId != null and poiId != '' ">poiId,</if>
+            <if test="auditType != null and auditType != '' ">auditType,</if>
+            <if test="auditApplicationType != null and auditApplicationType != '' ">auditApplicationType,</if>
+            <if test="auditData != null and auditData != '' ">auditData,</if>
+            <if test="auditStatus != null and auditStatus != '' ">auditStatus,</if>
+            <if test="submitterId != null and submitterId != ''">submitterId,</if>
+            <if test="auditResult != null and auditResult != ''">auditResult,</if>
+            ctime,
+            utime,
+            valid
+        )values(
+            <if test="customerId != null and customerId != '' ">customerId,</if>
+            <if test="poiId != null and poiId != '' ">poiId,</if>
+            <if test="auditType != null and auditType != ''">#{auditType},</if>
+            <if test="auditApplicationType != null and auditApplicationType != ''">#{auditApplicationType},</if>
+            <if test="auditData != null and auditData != ''">#{auditData},</if>
+            <if test="auditStatus != null and auditStatus != ''">#{auditStatus},</if>
+            <if test="submitterId != null and submitterId != ''">#{submitterId},</if>
+            <if test="auditResult != null and auditResult != ''">#{auditResult},</if>
+            unix_timestamp(),
+            unix_timestamp(),
+            1
+        )
+    </insert>
+
+    <select id="selectList" parameterType="com.z.merchantsettle.modules.audit.domain.AuditSearchParam" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          audit
+        <where>
+            <if test="auditSearchParam.customerId != null and auditSearchParam.customerId > 0">
+                and customerId = #{auditSearchParam.customerId}
+            </if>
+            <if test="auditSearchParam.poiId != null and auditSearchParam.poiId > 0">
+                and poiId = #{auditSearchParam.poiId}
+            </if>
+            <if test="auditSearchParam.auditType != null and auditSearchParam.auditType > 0">
+                and auditType = #{auditSearchParam.auditType}
+            </if>
+            <if test="auditSearchParam.auditApplicationType != null and auditSearchParam.auditApplicationType > 0">
+                and auditApplicationType = #{auditSearchParam.auditApplicationType}
+            </if>
+            <if test="auditSearchParam.auditStatus != null and auditSearchParam.auditStatus.size > 0">
+                and auditStatus in
+                <foreach collection="auditSearchParam.auditStatus" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="auditSearchParam.submitterId != null and auditSearchParam.submitterId != ''">
+                and submitterId = #{auditSearchParam.submitterId}
+            </if>
+            <if test="auditSearchParam.transactor != null">
+                and transactor = #{auditSearchParam.transactor}
+            </if>
+            and valid = 1
+        </where>
+    </select>
+
+    <select id="getAuditTaskDetailById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          audit
+        WHERE
+          id = #{auditTaskId}
+        and
+          valid = 1;
+    </select>
+
+    <update id="updateByTaskIdSelective" parameterType="com.z.merchantsettle.modules.audit.domain.db.AuditTaskDB" >
+        update audit set
+          <if test="auditStatus != null and auditStatus > 0 ">auditStatus = #{auditStatus},</if>
+          <if test="transactor != null and transactor != '' ">transactor = #{transactor},</if>
+          <if test="auditResult != null and auditResult != '' ">auditResult = #{auditResult},</if>
+          utime = unix_timestamp()
+        where
+          id = #{id}
+        and
+          valid = 1
+    </update>
+</mapper>

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.z.merchantsettle.modules.customer.dao.CustomerSettleDBMapper" >
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.customer.domain.db.CustomerSettleDB" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="settleAccType" property="settleAccType" jdbcType="INTEGER" />
+        <result column="settleAccName" property="settleAccName" jdbcType="VARCHAR" />
+        <result column="settleAccNo" property="settleAccNo" jdbcType="VARCHAR" />
+        <result column="province" property="province" jdbcType="INTEGER" />
+        <result column="city" property="city" jdbcType="INTEGER" />
+        <result column="bankId" property="bankId" jdbcType="INTEGER" />
+        <result column="branchId" property="branchId" jdbcType="INTEGER" />
+        <result column="branchName" property="branchName" jdbcType="VARCHAR" />
+        <result column="reservePhoneNum" property="reservePhoneNum" jdbcType="VARCHAR" />
+        <result column="financialOfficer" property="financialOfficer" jdbcType="VARCHAR" />
+        <result column="financialOfficerPhone" property="financialOfficerPhone" jdbcType="VARCHAR" />
+        <result column="financialOfficerCertificatesType" property="financialOfficerCertificatesType" jdbcType="INTEGER" />
+        <result column="financialOfficerCertificatesNum" property="financialOfficerCertificatesNum" jdbcType="VARCHAR" />
+        <result column="settleType" property="settleType" jdbcType="INTEGER" />
+        <result column="settleCycle" property="settleCycle" jdbcType="INTEGER" />
+        <result column="settleMinAmount" property="settleMinAmount" jdbcType="DOUBLE" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="ctime" property="ctime" jdbcType="BIGINT" />
+        <result column="utime" property="utime" jdbcType="BIGINT" />
+        <result column="valid" property="valid" jdbcType="INTEGER" />
+        <result column="customerId" property="customerId" jdbcType="INTEGER"/>
+        <result column="auditResult" property="auditResult" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, settleAccType, settleAccName, settleAccNo, province, city, bankId, branchId, branchName,
+        reservePhoneNum, financialOfficer, financialOfficerPhone,financialOfficerCertificatesType,
+        financialOfficerCertificatesNum, settleType, settleCycle, settleMinAmount, status, ctime, utime, valid,
+        customerId, auditResult
+    </sql>
+    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+          <include refid="Base_Column_List" />
+        from
+          customer_settle
+        where
+          id = #{id}
+        and
+         valid = 1
+    </select>
+    <update id="deleteById" parameterType="java.lang.Integer" >
+        update
+          customer_settle
+        SET
+          utime = unixtime(), valid = 0
+        WHERE
+          id = #{id}
+    </update>
+    <insert id="insertSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerSettleDB" useGeneratedKeys="true" keyProperty="id">
+        insert into customer_settle
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="settleAccType != null" >
+                settleAccType,
+            </if>
+            <if test="settleAccName != null" >
+                settleAccName,
+            </if>
+            <if test="settleAccNo != null" >
+                settleAccNo,
+            </if>
+            <if test="province != null" >
+                province,
+            </if>
+            <if test="city != null" >
+                city,
+            </if>
+            <if test="bankId != null" >
+                bankId,
+            </if>
+            <if test="branchId != null" >
+                branchId,
+            </if>
+            <if test="branchName != null" >
+                branchName,
+            </if>
+            <if test="reservePhoneNum != null" >
+                reservePhoneNum,
+            </if>
+            <if test="financialOfficer != null" >
+                financialOfficer,
+            </if>
+            <if test="financialOfficerPhone != null" >
+                financialOfficerPhone,
+            </if>
+            <if test="financialOfficerCertificatesType != null" >
+                financialOfficerCertificatesType,
+            </if>
+            <if test="financialOfficerCertificatesNum != null" >
+                financialOfficerCertificatesNum,
+            </if>
+            <if test="settleType != null" >
+                settleType,
+            </if>
+            <if test="settleCycle != null" >
+                settleCycle,
+            </if>
+            <if test="settleMinAmount != null" >
+                settleMinAmount,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            <if test="auditResult != null">
+                auditResult,
+            </if>
+            ctime,
+            utime,
+            valid,
+            customerId
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="settleAccType != null" >
+                #{settleAccType},
+            </if>
+            <if test="settleAccName != null" >
+                #{settleAccName},
+            </if>
+            <if test="settleAccNo != null" >
+                #{settleAccNo},
+            </if>
+            <if test="province != null" >
+                #{province},
+            </if>
+            <if test="city != null" >
+                #{city},
+            </if>
+            <if test="bankId != null" >
+                #{bankId},
+            </if>
+            <if test="branchId != null" >
+                #{branchId},
+            </if>
+            <if test="branchName != null" >
+                #{branchName},
+            </if>
+            <if test="reservePhoneNum != null" >
+                #{reservePhoneNum},
+            </if>
+            <if test="financialOfficer != null" >
+                #{financialOfficer},
+            </if>
+            <if test="financialOfficerPhone != null" >
+                #{financialOfficerPhone},
+            </if>
+            <if test="financialOfficerCertificatesType != null" >
+                #{financialOfficerCertificatesType},
+            </if>
+            <if test="financialOfficerCertificatesNum != null" >
+                #{financialOfficerCertificatesNum},
+            </if>
+            <if test="settleType != null" >
+                #{settleType},
+            </if>
+            <if test="settleCycle != null" >
+                #{settleCycle},
+            </if>
+            <if test="settleMinAmount != null" >
+                #{settleMinAmount},
+            </if>
+            <if test="status != null" >
+                #{status},
+            </if>
+            <if test="auditResult != null" >
+                #{auditResult},
+            </if>
+            unixtime(),
+            unixtime(),
+            1,
+            #{customerId}
+        </trim>
+    </insert>
+    <update id="updateByIdSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerSettleDB" >
+        update customer_settle
+        <set >
+            <if test="settleAccType != null" >
+                settleAccType = #{settleAccType},
+            </if>
+            <if test="settleAccName != null" >
+                settleAccName = #{settleAccName},
+            </if>
+            <if test="settleAccNo != null" >
+                settleAccNo = #{settleAccNo},
+            </if>
+            <if test="province != null" >
+                province = #{province},
+            </if>
+            <if test="city != null" >
+                city = #{city},
+            </if>
+            <if test="bankId != null" >
+                bankId = #{bankId},
+            </if>
+            <if test="branchId != null" >
+                branchId = #{branchId},
+            </if>
+            <if test="branchName != null" >
+                branchName = #{branchName},
+            </if>
+            <if test="reservePhoneNum != null" >
+                reservePhoneNum = #{reservePhoneNum},
+            </if>
+            <if test="financialOfficer != null" >
+                financialOfficer = #{financialOfficer},
+            </if>
+            <if test="financialOfficerPhone != null" >
+                financialOfficerPhone = #{financialOfficerPhone},
+            </if>
+            <if test="financialOfficerCertificatesType != null" >
+                financialOfficerCertificatesType = #{financialOfficerCertificatesType},
+            </if>
+            <if test="financialOfficerCertificatesNum != null" >
+                financialOfficerCertificatesNum = #{financialOfficerCertificatesNum},
+            </if>
+            <if test="settleType != null" >
+                settleType = #{settleType},
+            </if>
+            <if test="settleCycle != null" >
+                settleCycle = #{settleCycle},
+            </if>
+            <if test="settleMinAmount != null" >
+                settleMinAmount = #{settleMinAmount},
+            </if>
+            <if test="status != null" >
+                status = #{status},
+            </if>
+            <if test="valid != null" >
+                valid = #{valid},
+            </if>
+            <if test="auditResult != null" >
+                auditResult = #{auditResult},
+            </if>
+            utime = unixtime()
+        </set>
+        where id = #{id}
+    </update>
+    <select id="getSettleList" resultMap="BaseResultMap" parameterType="java.util.List">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          customer_settle
+        <where>
+            <if test="list != null and list.size > 0">
+                id IN
+                <foreach collection="list" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            and valid = 1
+        </where>
+    </select>
+</mapper>

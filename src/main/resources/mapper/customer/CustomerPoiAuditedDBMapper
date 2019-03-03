@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.z.merchantsettle.modules.customer.dao.CustomerPoiAuditedDBMapper" >
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.customer.domain.db.CustomerPoiDB" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="customerId" property="customerId" jdbcType="INTEGER" />
+        <result column="wmPoiId" property="wmPoiId" jdbcType="INTEGER" />
+        <result column="ctime" property="ctime" jdbcType="BIGINT" />
+        <result column="utime" property="utime" jdbcType="BIGINT" />
+        <result column="valid" property="valid" jdbcType="INTEGER" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, customerId, wmPoiId, ctime, utime, valid
+    </sql>
+    <select id="selectByCustomerId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+          <include refid="Base_Column_List" />
+        from
+          customer_poi_audited
+        where
+          customerId = #{customerId}
+        and
+         valid = 1
+    </select>
+
+    <update id="unbindCustomerPoi" parameterType="java.lang.Integer" >
+        update
+            customer_poi_audited
+        SET
+          utime = unixtime(), valid = 0
+        where
+          customerId = #{customerId}
+        and
+          wmPoiId = #{wmPoiId}
+    </update>
+    <update id="unbindCustomerPoiAll" parameterType="java.lang.Integer" >
+        update
+          customer_poi
+        SET
+          utime = unixtime(), valid = 0
+        where
+          customerId = #{customerId}
+    </update>
+    <insert id="insert" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerPoiDB" useGeneratedKeys="true" keyProperty="id">
+        insert into customer_poi_audited
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="customerId != null" >
+                customerId,
+            </if>
+            <if test="wmPoiId != null" >
+                wmPoiId,
+            </if>
+            ctime,
+            utime,
+            valid
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="customerId != null" >
+                #{customerId},
+            </if>
+            <if test="wmPoiId != null" >
+                #{wmPoiId},
+            </if>
+            unixtime(),
+            unixtime(),
+            1
+        </trim>
+    </insert>
+
+    <select id="selectCountByCustomerId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select
+          count(1)
+        FROM
+            customer_poi_audited
+        WHERE
+          customerId = #{customerId}
+        and
+          valid = 1
+    </select>
+</mapper>

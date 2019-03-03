@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.z.merchantsettle.modules.customer.dao.CustomerContractAuditedDBMapper" >
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.customer.domain.db.CustomerContractAuditedDB" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="customerContractType" property="customerContractType" jdbcType="INTEGER" />
+        <result column="customerContractNum" property="customerContractNum" jdbcType="VARCHAR" />
+        <result column="contractEndTime" property="contractEndTime" jdbcType="BIGINT" />
+        <result column="contractScan" property="contractScan" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="ctime" property="ctime" jdbcType="BIGINT" />
+        <result column="utime" property="utime" jdbcType="BIGINT" />
+        <result column="valid" property="valid" jdbcType="INTEGER" />
+        <result column="customerId" property="customerId" jdbcType="INTEGER" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, customerContractType, customerContractNum, contractEndTime, contractScan,
+        status, ctime, utime, valid, customerId
+    </sql>
+    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+          <include refid="Base_Column_List" />
+        from
+          customer_contract_audited
+        where
+          id = #{id}
+        and
+         valid = 1
+    </select>
+    <update id="deleteById" parameterType="java.lang.Integer" >
+        update
+          customer_contract_audited
+        SET
+          utime = unixtime(), valid = 0
+        WHERE
+          id = #{id}
+    </update>
+    <insert id="insertSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerContractAuditedDB" useGeneratedKeys="true" keyProperty="id">
+        insert into customer_contract_audited
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="customerContractType != null" >
+                customerContractType,
+            </if>
+            <if test="customerContractNum != null" >
+                customerContractNum,
+            </if>
+            <if test="contractEndTime != null" >
+                contractEndTime,
+            </if>
+            <if test="contractScan != null" >
+                contractScan,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            <if test="customerValidtime != null" >
+                customerValidtime,
+            </if>
+            customerId,
+            ctime,
+            utime,
+            valid
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="customerContractType != null" >
+                #{customerContractType},
+            </if>
+            <if test="customerContractNum != null" >
+                #{customerContractNum},
+            </if>
+            <if test="contractEndTime != null" >
+                #{contractEndTime},
+            </if>
+            <if test="contractScan != null" >
+                #{contractScan},
+            </if>
+            <if test="status != null" >
+                #{status},
+            </if>
+            <if test="customerValidtime != null" >
+                #{customerValidtime},
+            </if>
+            #{customerId},
+            unixtime(),
+            unixtime(),
+            1
+        </trim>
+    </insert>
+    <update id="updateByIdSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerContractAuditedDB" >
+        update customer_contract_audited
+        <set >
+            <if test="customerContractType != null" >
+                customerContractType = #{customerContractType},
+            </if>
+            <if test="customerContractNum != null" >
+                customerContractNum = #{customerContractNum},
+            </if>
+            <if test="contractEndTime != null" >
+                contractEndTime = #{contractEndTime},
+            </if>
+            <if test="contractScan != null" >
+                contractScan = #{contractScan},
+            </if>
+            <if test="status != null" >
+                status = #{status},
+            </if>
+            <if test="customerValidtime != null" >
+                customerValidtime = #{customerValidtime},
+            </if>
+            <if test="customerId != null" >
+                customerId = #{customerId},
+            </if>
+            <if test="valid != null" >
+                valid = #{valid},
+            </if>
+            utime = unixtime()
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="getByCustomerId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+          <include refid="Base_Column_List" />
+        from
+          customer_contract_audited
+        where
+          customerId = #{customerId}
+        and
+          valid = 1
+    </select>
+
+    <select id="getContractList" parameterType="com.z.merchantsettle.modules.customer.domain.ContractRequestParam" resultMap="BaseResultMap">
+        select
+          <include refid="Base_Column_List" />
+        from
+          customer_contract_audited
+        <where>
+            <if test="contractId != null and contractId >= 0">
+                id = #{contractRequestParam.contractId},
+            </if>
+            <if test="customerId != null and customerId >= 0">
+                customerId = #{contractRequestParam.customerId},
+            </if>
+            <if test="contractNum != null and contractNum != ''">
+                contractNum = #{contractRequestParam.contractNum},
+            </if>
+            <if test="contractStatus != null and contractStatus >= 0">
+                contractStatus = #{contractRequestParam.contractStatus},
+            </if>
+            <if test="partyAName != null and partyAName != ''">
+                partyAName like concat(concat('%',#{contractRequestParam.partyAName}),'%'),
+            </if>
+            and
+              valid = 1
+        </where>
+    </select>
+</mapper>

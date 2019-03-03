@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.z.merchantsettle.modules.upm.dao.RoleResourceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.upm.domain.db.RoleResourceDB">
+        <id column="id" property="id" />
+        <result column="roleId" property="roleId" />
+        <result column="resourceId" property="resourceId" />
+        <result column="ctime" property="ctime" />
+        <result column="valid" property="valid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, roleId, resourceId, ctime, valid
+    </sql>
+
+    <update id="unbindRoleResource" parameterType="java.lang.String">
+        update role_resource set utime = unix_timestamp(), valid = 0 where roleId = #{roleId} and valid = 1
+    </update>
+
+    <insert id="assignRoleResource" parameterType="java.util.List">
+        INSERT INTO
+          role_resource
+          <include refid="Base_Column_List"/>
+        VALUES
+            <foreach collection="list" separator="," item="item">
+                (
+                #{roleId},
+                #{resourceId},
+                unix_timestamp(),
+                1
+                )
+            </foreach>
+    </insert>
+
+    <select id="getResourceIdByRoleIdList" parameterType="java.util.List" resultType="java.lang.String">
+        select resourceId FROM role_resource WHERE
+            roleId IN
+        <foreach collection="idList" close=")" open="(" separator="," item="item">
+            item
+        </foreach>
+        and
+         valid = 1
+    </select>
+</mapper>

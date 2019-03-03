@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.z.merchantsettle.modules.customer.dao.CustomerSignerAuditedDBMapper" >
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.customer.domain.db.CustomerSignerAuditedDB" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="contractId" property="contractId" jdbcType="INTEGER" />
+        <result column="party" property="party" jdbcType="VARCHAR" />
+        <result column="partyContactPerson" property="partyContactPerson" jdbcType="VARCHAR" />
+        <result column="partyContactPersonPhone" property="partyContactPersonPhone" jdbcType="VARCHAR" />
+        <result column="signTime" property="signTime" jdbcType="BIGINT" />
+        <result column="ctime" property="ctime" jdbcType="BIGINT" />
+        <result column="utime" property="utime" jdbcType="BIGINT" />
+        <result column="valid" property="valid" jdbcType="INTEGER" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, contractId, party, partyContactPerson, partyContactPersonPhone, signTime,
+        ctime, utime, valid
+    </sql>
+    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+          <include refid="Base_Column_List" />
+        from
+          customer_signer_audited
+        where
+          id = #{id}
+        and
+         valid = 1
+    </select>
+    <update id="deleteById" parameterType="java.lang.Integer" >
+        update
+          customer_signer_audited
+        SET
+          utime = unixtime(), valid = 0
+        WHERE
+          id = #{id}
+    </update>
+    <insert id="insertSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerSignerAuditedDB" useGeneratedKeys="true" keyProperty="id">
+        insert into customer_signer_audited
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="contractId != null" >
+                contractId,
+            </if>
+            <if test="party != null" >
+                party,
+            </if>
+            <if test="partyContactPerson != null" >
+                partyContactPerson,
+            </if>
+            <if test="partyContactPersonPhone != null" >
+                partyContactPersonPhone,
+            </if>
+            <if test="signTime != null" >
+                signTime,
+            </if>
+            ctime,
+            utime,
+            valid
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="contractId != null" >
+                #{contractId},
+            </if>
+            <if test="party != null" >
+                #{party},
+            </if>
+            <if test="partyContactPerson != null" >
+                #{partyContactPerson},
+            </if>
+            <if test="partyContactPersonPhone != null" >
+                #{partyContactPersonPhone},
+            </if>
+            <if test="signTime != null" >
+                #{signTime},
+            </if>
+            unixtime(),
+            unixtime(),
+            1
+        </trim>
+    </insert>
+    <update id="updateByIdSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerSignerAuditedDB" >
+        update customer_signer_audited
+        <set >
+            <if test="contractId != null" >
+                contractId = #{contractId},
+            </if>
+            <if test="party != null" >
+                party = #{party},
+            </if>
+            <if test="partyContactPerson != null" >
+                partyContactPerson = #{partyContactPerson},
+            </if>
+            <if test="partyContactPersonPhone != null" >
+                partyContactPersonPhone = #{partyContactPersonPhone},
+            </if>
+            <if test="signTime != null" >
+                signTime = #{signTime},
+            </if>
+            <if test="valid != null" >
+                valid = #{valid},
+            </if>
+            utime = unixtime()
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="getCustomerSignerByContractId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          customer_signer_audited
+        WHERE
+          contractId = #{contractId}
+        and
+          valid = 1
+    </select>
+
+    <select id="getCustomerSignerByContractIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          customer_signer_audited
+        WHERE
+          contractId IN
+          <foreach collection="contractIdList" close=")" open="(" separator="," item="item">
+              #{item}
+          </foreach>
+        and
+          valid = 1
+    </select>
+</mapper>

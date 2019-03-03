@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.z.merchantsettle.modules.poi.dao.WmPoiBaseInfoDBMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.poi.domain.db.WmPoiBaseInfoDB">
+        <id column="id" property="id" />
+        <result column="customerId" property="customerId" />
+
+        <result column="wmPoiName" property="wmPoiName" />
+        <result column="wmPoiLinkMan" property="wmPoiLinkMan" />
+        <result column="wmPoiPhone" property="wmPoiPhone" />
+        <result column="wmPoiCategory" property="wmPoiCategory" />
+        <result column="wmPoiCityId" property="wmPoiCityId" />
+        <result column="wmPoiRegionId" property="wmPoiRegionId" />
+        <result column="wmPoiAddress" property="wmPoiAddress" />
+        <result column="wmPoiLongitude" property="wmPoiLongitude"/>
+        <result column="wmPoiLatitude" property="wmPoiLatitude"/>
+        <result column="wmPoiLogo" property="wmPoiLogo"/>
+        <result column="wmPoiEnvironmentPic" property="wmPoiEnvironmentPic"/>
+        <result column="wmPoiPrincipal" property="wmPoiPrincipal"/>
+
+        <result column="status" property="status" />
+        <result column="ctime" property="ctime" />
+        <result column="utime" property="utime" />
+        <result column="valid" property="valid" />
+        <result column="auditResult" property="auditResult"/>
+
+        <result column="orderMealDate" property="orderMealDate"/>
+        <result column="orderMealTime" property="orderMealTime"/>
+        <result column="orderMealTel" property="orderMealTel"/>
+        <result column="businessInfoStatus" property="businessInfoStatus" />
+        <result column="businessInfoAuditResult" property="businessInfoAuditResult"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customerId, wmPoiName, wmPoiLinkMan, wmPoiPhone, wmPoiCategory, wmPoiCityId, wmPoiRegionId,
+        wmPoiAddress, wmPoiLongitude, wmPoiLatitude, wmPoiLogo,wmPoiEnvironmentPic, wmPoiPrincipal,
+        status,ctime,utime valid, auditResult,
+        orderMealDate, orderMealTime, orderMealTel, businessInfoStatus, businessInfoAuditResult
+    </sql>
+
+    <update id="updateSelective" parameterType="com.z.merchantsettle.modules.poi.domain.db.WmPoiBaseInfoDB" >
+        update wm_poi_base_info
+        <set >
+            <if test="wmPoiName != null" >
+                wmPoiName = #{wmPoiName},
+            </if>
+            <if test="wmPoiLinkMan != null" >
+                wmPoiLinkMan = #{wmPoiLinkMan},
+            </if>
+            <if test="physicalPoiName != null" >
+                physicalPoiName = #{physicalPoiName},
+            </if>
+            <if test="wmPoiPhone != null" >
+                wmPoiPhone = #{wmPoiPhone},
+            </if>
+            <if test="wmPoiCategory != null" >
+                wmPoiCategory = #{wmPoiCategory},
+            </if>
+            <if test="wmPoiCityId != null" >
+                wmPoiCityId = #{wmPoiCityId},
+            </if>
+            <if test="wmPoiRegionId != null" >
+                wmPoiRegionId = #{wmPoiRegionId},
+            </if>
+            <if test="wmPoiAddress != null" >
+                wmPoiAddress = #{wmPoiAddress},
+            </if>
+            <if test="wmPoiLongitude != null" >
+                wmPoiLongitude = #{wmPoiLongitude},
+            </if>
+            <if test="wmPoiLatitude != null" >
+                wmPoiLatitude = #{wmPoiLatitude},
+            </if>
+            <if test="wmPoiLogo != null" >
+                wmPoiLogo = #{wmPoiLogo},
+            </if>
+            <if test="wmPoiEnvironmentPic != null" >
+                wmPoiEnvironmentPic = #{wmPoiEnvironmentPic},
+            </if>
+            <if test="wmPoiPrincipal != null" >
+                wmPoiPrincipal = #{wmPoiPrincipal},
+            </if>
+            <if test="status != null" >
+                status = #{status},
+            </if>
+            <if test="auditResult != null" >
+                auditResult = #{auditResult},
+            </if>
+            <if test="orderMealDate != null" >
+                orderMealDate = #{orderMealDate},
+            </if>
+            <if test="orderMealTime != null" >
+                orderMealTime = #{orderMealTime},
+            </if>
+            <if test="orderMealTel != null" >
+                orderMealTel = #{orderMealTel},
+            </if>
+            <if test="businessInfoStatus != null" >
+                businessInfoStatus = #{businessInfoStatus},
+            </if>
+            <if test="businessInfoAuditResult != null" >
+                businessInfoAuditResult = #{businessInfoAuditResult},
+            </if>
+            utime = unixtime()
+        </set>
+        where id = #{id}
+    </update>
+
+    <insert id="insertSelective" parameterType="com.z.merchantsettle.modules.poi.domain.db.WmPoiBaseInfoDB" useGeneratedKeys="true" keyProperty="id">
+        insert into wm_poi_base_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            customerId,
+            <if test="wmPoiName != null" >
+                wmPoiName,
+            </if>
+            <if test="wmPoiLinkMan != null" >
+                wmPoiLinkMan,
+            </if>
+            <if test="physicalPoiName != null" >
+                physicalPoiName,
+            </if>
+            <if test="wmPoiPhone != null" >
+                wmPoiPhone,
+            </if>
+            <if test="wmPoiCategory != null" >
+                wmPoiCategory,
+            </if>
+            <if test="wmPoiCityId != null" >
+                wmPoiCityId,
+            </if>
+            <if test="wmPoiRegionId != null" >
+                wmPoiRegionId,
+            </if>
+            <if test="wmPoiAddress != null" >
+                wmPoiAddress,
+            </if>
+            <if test="wmPoiLongitude != null" >
+                wmPoiLongitude,
+            </if>
+            <if test="wmPoiLatitude != null" >
+                wmPoiLatitude,
+            </if>
+            <if test="wmPoiLogo != null" >
+                wmPoiLogo,
+            </if>
+            <if test="wmPoiEnvironmentPic != null" >
+                wmPoiEnvironmentPic,
+            </if>
+            <if test="wmPoiPrincipal != null" >
+                wmPoiPrincipal,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            <if test="orderMealDate != null" >
+                orderMealDate,
+            </if>
+            <if test="orderMealTime != null" >
+                orderMealTime,
+            </if>
+            <if test="orderMealTel != null" >
+                orderMealTel,
+            </if>
+            <if test="businessInfoStatus != null" >
+                businessInfoStatus,
+            </if>
+            <if test="businessInfoAuditResult != null" >
+                businessInfoAuditResult,
+            </if>
+            ctime,
+            utime,
+            valid
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            #{customerId},
+            <if test="wmPoiName != null" >
+                #{wmPoiName},
+            </if>
+            <if test="wmPoiLinkMan != null" >
+                #{wmPoiLinkMan},
+            </if>
+            <if test="physicalPoiName != null" >
+                #{physicalPoiName},
+            </if>
+            <if test="wmPoiPhone != null" >
+                #{wmPoiPhone},
+            </if>
+            <if test="wmPoiCategory != null" >
+                #{wmPoiCategory},
+            </if>
+            <if test="wmPoiCityId != null" >
+                #{wmPoiCityId},
+            </if>
+            <if test="wmPoiRegionId != null" >
+                #{wmPoiRegionId},
+            </if>
+            <if test="wmPoiAddress != null" >
+                #{wmPoiAddress},
+            </if>
+            <if test="wmPoiLongitude != null" >
+                #{wmPoiLongitude},
+            </if>
+            <if test="wmPoiLatitude != null" >
+                #{wmPoiLatitude},
+            </if>
+            <if test="wmPoiLogo != null" >
+                #{wmPoiLogo},
+            </if>
+            <if test="wmPoiEnvironmentPic != null" >
+                #{wmPoiEnvironmentPic},
+            </if>
+            <if test="wmPoiPrincipal != null" >
+                #{wmPoiPrincipal},
+            </if>
+            <if test="status != null" >
+                #{status},
+            </if>
+            <if test="orderMealDate != null" >
+                #{orderMealDate},
+            </if>
+            <if test="orderMealTime != null" >
+                #{orderMealTime},
+            </if>
+            <if test="orderMealTel != null" >
+                #{orderMealTel},
+            </if>
+            <if test="businessInfoStatus != null" >
+                #{businessInfoStatus},
+            </if>
+            <if test="businessInfoAuditResult != null" >
+                #{businessInfoAuditResult},
+            </if>
+            unixtime(),
+            unixtime(),
+            1
+        </trim>
+    </insert>
+
+    <select id="getById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          wm_poi_base_info
+        WHERE
+          id = #{wmPoiId}
+        and
+          valid = 1
+    </select>
+
+    <select id="getByIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          wm_poi_base_info
+        WHERE
+          id IN
+            <foreach collection="wmPoiIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        and
+        valid = 1
+    </select>
+</mapper>

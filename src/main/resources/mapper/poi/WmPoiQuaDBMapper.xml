@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.z.merchantsettle.modules.poi.dao.WmPoiQuaDBMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.poi.domain.db.WmPoiQuaDB">
+        <id column="id" property="id" />
+        <result column="wmPoiId" property="wmPoiId" />
+        <result column="wmPoiLinkManIDCardPic" property="wmPoiLinkManIDCardPic" />
+        <result column="wmPoiLinkManIDCardType" property="wmPoiLinkManIDCardType" />
+        <result column="wmPoiLinkManName" property="wmPoiLinkManName" />
+        <result column="wmPoiLinkManIDCardNo" property="wmPoiLinkManIDCardNo" />
+
+        <result column="wmPoiBusinessLicencePic" property="wmPoiBusinessLicencePic" />
+        <result column="wmPoiBusinessLicenceNo" property="wmPoiBusinessLicenceNo" />
+        <result column="wmPoiOperatorName" property="wmPoiOperatorName" />
+        <result column="wmPoiBusinessLicenceName" property="wmPoiBusinessLicenceName"/>
+        <result column="wmPoiBusinessLicenceAddress" property="wmPoiBusinessLicenceAddress"/>
+        <result column="wmPoiRegistrationDate" property="wmPoiRegistrationDate"/>
+        <result column="wmPoiRegisterDepartment" property="wmPoiRegisterDepartment"/>
+        <result column="wmPoiBusinessLicenceValidTime" property="wmPoiBusinessLicenceValidTime"/>
+
+        <result column="status" property="status" />
+        <result column="ctime" property="ctime" />
+        <result column="utime" property="utime" />
+        <result column="valid" property="valid" />
+
+        <result column="auditResult" property="auditResult"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, wmPoiId, wmPoiLinkManIDCardPic, wmPoiLinkManIDCardType, wmPoiLinkManName, wmPoiLinkManIDCardNo,
+        wmPoiBusinessLicencePic, wmPoiBusinessLicenceNo, wmPoiOperatorName, wmPoiBusinessLicenceName,
+        wmPoiBusinessLicenceAddress, wmPoiRegistrationDate, wmPoiRegisterDepartment, wmPoiBusinessLicenceValidTime,
+        status,ctime,utime valid, auditResult
+    </sql>
+
+    <update id="updateSelective" parameterType="com.z.merchantsettle.modules.poi.domain.db.WmPoiQuaDB" >
+        update wm_poi_qua
+        <set >
+            <if test="wmPoiLinkManIDCardPic != null" >
+                wmPoiLinkManIDCardPic = #{wmPoiLinkManIDCardPic},
+            </if>
+            <if test="wmPoiLinkManIDCardType != null" >
+                wmPoiLinkManIDCardType = #{wmPoiLinkManIDCardType},
+            </if>
+            <if test="wmPoiLinkManName != null" >
+                wmPoiLinkManName = #{wmPoiLinkManName},
+            </if>
+            <if test="wmPoiLinkManIDCardNo != null" >
+                wmPoiLinkManIDCardNo = #{wmPoiLinkManIDCardNo},
+            </if>
+            <if test="wmPoiBusinessLicencePic != null" >
+                wmPoiBusinessLicencePic = #{wmPoiBusinessLicencePic},
+            </if>
+            <if test="wmPoiBusinessLicenceNo != null" >
+                wmPoiBusinessLicenceNo = #{wmPoiBusinessLicenceNo},
+            </if>
+            <if test="wmPoiOperatorName != null" >
+                wmPoiOperatorName = #{wmPoiOperatorName},
+            </if>
+            <if test="wmPoiBusinessLicenceName != null" >
+                wmPoiBusinessLicenceName = #{wmPoiBusinessLicenceName},
+            </if>
+            <if test="wmPoiBusinessLicenceAddress != null" >
+                wmPoiBusinessLicenceAddress = #{wmPoiBusinessLicenceAddress},
+            </if>
+            <if test="wmPoiRegistrationDate != null" >
+                wmPoiRegistrationDate = #{wmPoiRegistrationDate},
+            </if>
+            <if test="wmPoiRegisterDepartment != null" >
+                wmPoiRegisterDepartment = #{wmPoiRegisterDepartment},
+            </if>
+            <if test="wmPoiBusinessLicenceValidTime != null" >
+                wmPoiBusinessLicenceValidTime = #{wmPoiBusinessLicenceValidTime},
+            </if>
+            <if test="auditResult != null" >
+                auditResult = #{auditResult},
+            </if>
+            <if test="status != null" >
+                status = #{status},
+            </if>
+            utime = unixtime()
+        </set>
+        where id = #{id}
+    </update>
+
+    <insert id="insertSelective" parameterType="com.z.merchantsettle.modules.poi.domain.db.WmPoiQuaDB" useGeneratedKeys="true" keyProperty="id">
+        insert into wm_poi_qua
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            wmPoiId,
+            <if test="wmPoiLinkManIDCardPic != null" >
+                wmPoiLinkManIDCardPic,
+            </if>
+            <if test="wmPoiLinkManIDCardType != null" >
+                wmPoiLinkManIDCardType,
+            </if>
+            <if test="wmPoiLinkManName != null" >
+                wmPoiLinkManName,
+            </if>
+            <if test="wmPoiLinkManIDCardNo != null" >
+                wmPoiLinkManIDCardNo,
+            </if>
+            <if test="wmPoiBusinessLicencePic != null" >
+                wmPoiBusinessLicencePic,
+            </if>
+            <if test="wmPoiBusinessLicenceNo != null" >
+                wmPoiBusinessLicenceNo,
+            </if>
+            <if test="wmPoiOperatorName != null" >
+                wmPoiOperatorName,
+            </if>
+            <if test="wmPoiBusinessLicenceName != null" >
+                wmPoiBusinessLicenceName,
+            </if>
+            <if test="wmPoiBusinessLicenceAddress != null" >
+                wmPoiBusinessLicenceAddress,
+            </if>
+            <if test="wmPoiRegistrationDate != null" >
+                wmPoiRegistrationDate,
+            </if>
+            <if test="wmPoiRegisterDepartment != null" >
+                wmPoiRegisterDepartment,
+            </if>
+            <if test="wmPoiBusinessLicenceValidTime != null" >
+                wmPoiBusinessLicenceValidTime,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            ctime,
+            utime,
+            valid
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            #{wmPoiId},
+            <if test="wmPoiLinkManIDCardPic != null" >
+                #{wmPoiLinkManIDCardPic},
+            </if>
+            <if test="wmPoiLinkManIDCardType != null" >
+                #{wmPoiLinkManIDCardType},
+            </if>
+            <if test="wmPoiLinkManName != null" >
+                #{wmPoiLinkManName},
+            </if>
+            <if test="wmPoiLinkManIDCardNo != null" >
+                #{wmPoiLinkManIDCardNo},
+            </if>
+            <if test="wmPoiBusinessLicencePic != null" >
+                #{wmPoiBusinessLicencePic},
+            </if>
+            <if test="wmPoiBusinessLicenceNo != null" >
+                #{wmPoiBusinessLicenceNo},
+            </if>
+            <if test="wmPoiOperatorName != null" >
+                #{wmPoiOperatorName},
+            </if>
+            <if test="wmPoiBusinessLicenceName != null" >
+                #{wmPoiBusinessLicenceName},
+            </if>
+            <if test="wmPoiBusinessLicenceAddress != null" >
+                #{wmPoiBusinessLicenceAddress},
+            </if>
+            <if test="wmPoiRegistrationDate != null" >
+                #{wmPoiRegistrationDate},
+            </if>
+            <if test="wmPoiRegisterDepartment != null" >
+                #{wmPoiRegisterDepartment},
+            </if>
+            <if test="wmPoiBusinessLicenceValidTime != null" >
+                #{wmPoiBusinessLicenceValidTime},
+            </if>
+            <if test="status != null" >
+                #{status},
+            </if>
+            unixtime(),
+            unixtime(),
+            1
+        </trim>
+    </insert>
+
+    <select id="getByWmPoiId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          wm_poi_qua
+        WHERE
+          wmPoiId = #{wmPoiId}
+        and
+          valid = 1
+    </select>
+
+    <select id="getByWmPoiIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          wm_poi_qua
+        WHERE
+          wmPoiId IN
+            <foreach collection="wmPoiIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        and
+        valid = 1
+    </select>
+</mapper>
