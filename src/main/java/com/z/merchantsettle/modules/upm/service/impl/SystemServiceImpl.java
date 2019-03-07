@@ -38,6 +38,6 @@ public class SystemServiceImpl implements SystemService {
     }
 
     public static void main(String[] args) {
-        System.out.println(DigestUtil.md5Hex("1"));
+        System.out.println(DigestUtil.md5Hex("admin"));
     }
 }
