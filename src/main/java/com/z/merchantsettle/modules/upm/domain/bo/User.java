@@ -1,5 +1,6 @@
 package com.z.merchantsettle.modules.upm.domain.bo;
 
+import cn.hutool.crypto.digest.DigestUtil;
 import com.z.merchantsettle.modules.upm.constants.SystemConstant;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -13,20 +14,22 @@ public class User {
 
     private Integer id;
 
-    @NotBlank(message = "用户id不能为空")
+
     private String userId;
+
+    @NotBlank(message = "用户姓名拼写不能为空")
+    @Length(max = 20, message = "用户姓名拼写不能超过20个字符")
+    private String userNameSpell;
 
     @NotBlank(message = "用户姓名不能为空")
     @Length(max = 20, message = "用户名不能超过20个字符")
     private String userName;
 
-    @NotBlank(message = "密码不能为空")
-    @Length(min = 6, message = "密码不能少于6位")
     private String userPassword;
 
-    private String avatar;
-
     private String salt;
+
+    private Integer status;
 
     private Long ctime;
 
@@ -40,8 +43,17 @@ public class User {
         this.salt = userId;
     }
 
+    public void setUserPassword(String userPassword) {
+        if (StringUtils.isBlank(userPassword)) {
+            this.userPassword = "e10adc3949ba59abbe56e057f20f883e";
+        } else {
+            this.userPassword = DigestUtil.md5Hex(userPassword);
+        }
+
+    }
+
     public boolean isAdmin() {
-        return StringUtils.isNotBlank(userId) && SystemConstant.ADMIN_ID.equals(userId.trim());
+        return StringUtils.isNotBlank(userId) && SystemConstant.ADMIN.equals(userId.trim());
     }
 
 

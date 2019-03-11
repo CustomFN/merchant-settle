@@ -105,7 +105,7 @@ public class CustomerController {
 
         ValidationResult validateResult = ValidationUtil.validate(customer);
         if (validateResult.isHasError()) {
-            return ReturnResult.fail(validateResult.getErrorMsg());
+            return ReturnResult.fail(validateResult.getErrorMsgStr());
         }
 
         try {

@@ -29,9 +29,7 @@ public class UserController {
     private UserRoleService userRoleService;
 
     @PostMapping("/save")
-    public Object saveOrUpdate(String userStr) {
-        LOGGER.info("saveOrUpdate userStr = {}", userStr);
-        User user = JSON.parseObject(userStr, User.class);
+    public Object saveOrUpdate(User user) {
         LOGGER.info("saveOrUpdate user = {}", JSON.toJSONString(user));
 
         if (user == null) {
@@ -39,16 +37,23 @@ public class UserController {
         }
         ValidationResult validateResult = ValidationUtil.validate(user);
         if (validateResult.isHasError()) {
-            return ReturnResult.fail(validateResult.getErrorMsg());
+            return ReturnResult.fail(validateResult.getErrorMsgStr());
         }
-        userService.saveOrUpdate(user);
-        return ReturnResult.success(user);
+
+        try {
+            userService.saveOrUpdate(user);
+            return ReturnResult.success(user);
+        } catch (Exception e) {
+            LOGGER.error("保存更新用户失败", e);
+            return ReturnResult.fail(e.getMessage());
+        }
     }
 
-    @RequestMapping("/list")
+    @PostMapping("/list")
     public Object list(UserSearchParam searchParam,
                        @RequestParam(name = "pageNum", defaultValue = "1")Integer pageNum,
                        @RequestParam(name = "pageSize", defaultValue = "30")Integer pageSize) {
+        LOGGER.info("list searchParam = {}, pageNum = {}, pageSize = {}", JSON.toJSONString(searchParam), pageNum, pageSize);
 
         PageData<User> pageData = userService.getUserList(searchParam, pageNum, pageSize);
         return ReturnResult.success(pageData);

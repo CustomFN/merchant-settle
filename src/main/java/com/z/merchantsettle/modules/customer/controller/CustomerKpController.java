@@ -34,7 +34,7 @@ public class CustomerKpController {
 
         ValidationResult validateResult = ValidationUtil.validate(customerKp);
         if (validateResult.isHasError()) {
-            return ReturnResult.fail(validateResult.getErrorMsg());
+            return ReturnResult.fail(validateResult.getErrorMsgStr());
         }
 
         try {

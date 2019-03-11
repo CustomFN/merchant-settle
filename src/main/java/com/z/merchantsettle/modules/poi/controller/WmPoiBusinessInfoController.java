@@ -37,7 +37,7 @@ public class WmPoiBusinessInfoController {
 
         ValidationResult validateResult = ValidationUtil.validate(wmPoiBaseInfo);
         if (validateResult.isHasError()) {
-            return ReturnResult.fail(validateResult.getErrorMsg());
+            return ReturnResult.fail(validateResult.getErrorMsgStr());
         }
 
         try {

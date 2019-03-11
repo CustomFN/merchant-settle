@@ -78,7 +78,7 @@ public class PhysicalPoiController {
 
         ValidationResult validateResult = ValidationUtil.validate(physicalPoi);
         if (validateResult.isHasError()) {
-            return ReturnResult.fail(validateResult.getErrorMsg());
+            return ReturnResult.fail(validateResult.getErrorMsgStr());
         }
 
 

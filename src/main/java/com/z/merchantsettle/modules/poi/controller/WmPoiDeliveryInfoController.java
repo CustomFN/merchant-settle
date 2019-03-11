@@ -38,7 +38,7 @@ public class WmPoiDeliveryInfoController {
 
         ValidationResult validateResult = ValidationUtil.validate(wmPoiDeliveryInfo);
         if (validateResult.isHasError()) {
-            return ReturnResult.fail(validateResult.getErrorMsg());
+            return ReturnResult.fail(validateResult.getErrorMsgStr());
         }
 
         try {

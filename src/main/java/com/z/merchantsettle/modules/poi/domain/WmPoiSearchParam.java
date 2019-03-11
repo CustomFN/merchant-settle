@@ -8,13 +8,9 @@ import java.util.List;
 public class WmPoiSearchParam {
 
     private Integer wmPoiId;
-
     private Integer wmCityId;
-
     private String wmPoiName;
-
     private List<Integer> status;
-
     private String wmPoiPrincipal;
 
 }

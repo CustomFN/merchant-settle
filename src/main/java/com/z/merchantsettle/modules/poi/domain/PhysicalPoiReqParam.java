@@ -6,11 +6,8 @@ import lombok.Data;
 public class PhysicalPoiReqParam {
 
     private Integer physicalPoiId;
-
     private Integer physicalCityId;
-
     private String physicalPoiName;
-
     private Integer status;
 
 }

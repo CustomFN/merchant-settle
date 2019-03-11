@@ -19,5 +19,7 @@ public interface UserMapper {
 
     UserDB selectByUserId(String userId);
 
+    UserDB selectLastByUserNameSpell(String userNameSpell);
+
     List<UserDB> selectList(@Param("userSearchParam") UserSearchParam param);
 }

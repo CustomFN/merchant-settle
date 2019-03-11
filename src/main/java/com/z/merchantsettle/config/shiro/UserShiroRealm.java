@@ -2,6 +2,7 @@ package com.z.merchantsettle.config.shiro;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.z.merchantsettle.exception.UpmException;
 import com.z.merchantsettle.modules.upm.domain.bo.User;
 import com.z.merchantsettle.modules.upm.service.RoleResourceService;
 import com.z.merchantsettle.modules.upm.service.SystemService;
@@ -68,7 +69,7 @@ public class UserShiroRealm extends AuthorizingRealm {
         User user = null;
         try {
             user = systemService.login(userId, password);
-        } catch (Exception e) {
+        } catch (UpmException e) {
             LOGGER.warn("登录失败", e);
             throw new AuthenticationException(e);
         }

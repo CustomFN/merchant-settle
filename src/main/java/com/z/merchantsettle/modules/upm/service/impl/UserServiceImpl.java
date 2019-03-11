@@ -42,14 +42,14 @@ public class UserServiceImpl implements UserService {
     public PageData<User> getUserList(UserSearchParam param, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<UserDB> userDBList = userMapper.selectList(param);
+        PageInfo<UserDB> pageInfo = new PageInfo<>(userDBList);
 
         List<User> userList = UserTransferUtil.transUserList2BoList(userDBList);
-        PageInfo<User> pageInfo = new PageInfo<>(userList);
         return new PageData.Builder<User>()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
                 .totalSize((int) pageInfo.getTotal())
-                .totalPage(pageInfo.getPageSize())
+                .totalPage(pageInfo.getPages())
                 .data(userList)
                 .build();
     }
@@ -57,15 +57,40 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveOrUpdate(User user) {
-        UserDB userDB = UserTransferUtil.transUserBo2DB(user);
-        UserDB userDBInDB = userMapper.selectByUserId(user.getUserId());
-        userDB.setUserPassword(DigestUtil.md5Hex(user.getUserPassword()));
-        if (userDBInDB == null) {
-            userMapper.insertSelective(userDB);
+        if (StringUtils.isBlank(user.getUserId())) {
+            createUserByUserName(user);
         } else {
-            userMapper.updateByUserIdSelective(userDB);
+            UserDB userDBInDB = userMapper.selectByUserId(user.getUserId());
+            if (userDBInDB == null) {
+                createUserByUserName(user);
+            } else {
+                UserDB userDB = UserTransferUtil.transUserBo2DB(user);
+                userMapper.updateByUserIdSelective(userDB);
+            }
         }
     }
+
+    private void createUserByUserName(User user) {
+        String userNameSpell = user.getUserNameSpell();
+        UserDB lastUserDB = userMapper.selectLastByUserNameSpell(userNameSpell);
+        if (lastUserDB == null) {
+            user.setUserId(userNameSpell);
+        } else {
+            String userId = lastUserDB.getUserId();
+            String userNum = userId.substring(userNameSpell.length());
+            if (StringUtils.isBlank(userNum)) {
+                userId = userNameSpell + "02";
+            } else {
+                int newUserNum = Integer.parseInt(userNum) + 1;
+                userId = userNameSpell + String.format("%02d", newUserNum);
+            }
+            user.setUserId(userId);
+        }
+        UserDB userDB = UserTransferUtil.transUserBo2DB(user);
+        LOGGER.info("saveOrUpdate userDB = {}", JSON.toJSONString(userDB));
+        userMapper.insertSelective(userDB);
+    }
+
 
     @Override
     public void deleteByUserId(String userId) {

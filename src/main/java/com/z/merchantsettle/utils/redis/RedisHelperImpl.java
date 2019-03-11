@@ -1,6 +1,7 @@
 package com.z.merchantsettle.utils.redis;
 
 import com.google.common.collect.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 
@@ -9,21 +10,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@Service
+
 public class RedisHelperImpl<HK, T> implements RedisHelper<HK, T>{
 
 
-    @Resource
+    @Autowired
     private RedisTemplate<String, T> redisTemplate;
-    @Resource
+    @Autowired
     private HashOperations<String, HK, T> hashOperations;
-    @Resource
+    @Autowired
     private ListOperations<String, T> listOperations;
-    @Resource
+    @Autowired
     private ZSetOperations<String, T> zSetOperations;
-    @Resource
+    @Autowired
     private SetOperations<String, T> setOperations;
-    @Resource
+    @Autowired
     private ValueOperations<String, T> valueOperations;
 
 

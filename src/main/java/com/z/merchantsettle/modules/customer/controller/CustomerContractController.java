@@ -40,7 +40,7 @@ public class CustomerContractController {
 
         ValidationResult validateResult = ValidationUtil.validate(customerContract);
         if (validateResult.isHasError()) {
-            return ReturnResult.fail(validateResult.getErrorMsg());
+            return ReturnResult.fail(validateResult.getErrorMsgStr());
         }
 
         try {

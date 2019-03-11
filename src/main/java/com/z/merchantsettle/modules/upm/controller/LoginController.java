@@ -7,10 +7,7 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class LoginController {
@@ -37,6 +34,14 @@ public class LoginController {
     @GetMapping("/unauth")
     public Object unauth() {
         return ReturnResult.fail(SystemConstant.UNAUTH_CODE);
+    }
+
+    @PostMapping("/logout")
+    public Object logout() {
+        LOGGER.info("用户登出");
+        Subject subjetct = SecurityUtils.getSubject();
+        subjetct.logout();
+        return ReturnResult.success();
     }
 
 }

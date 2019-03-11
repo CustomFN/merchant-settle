@@ -77,7 +77,7 @@ public class RoleController {
         }
         ValidationResult validateResult = ValidationUtil.validate(role);
         if (validateResult.isHasError()) {
-            return ReturnResult.fail(validateResult.getErrorMsg());
+            return ReturnResult.fail(validateResult.getErrorMsgStr());
         }
         roleService.saveOrUpdate(role);
         return ReturnResult.success(role);

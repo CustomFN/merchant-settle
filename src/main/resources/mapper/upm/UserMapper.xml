@@ -6,9 +6,10 @@
     <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.upm.domain.db.UserDB">
         <id column="id" property="id" />
         <result column="userId" property="userId" />
+        <result column="userNameSpell" property="userNameSpell" />
         <result column="userName" property="userName" />
         <result column="userPassword" property="userPassword" />
-        <result column="avatar" property="avatar" />
+        <result column="status" property="status" />
         <result column="salt" property="salt" />
         <result column="ctime" property="ctime" />
         <result column="utime" property="utime" />
@@ -17,24 +18,26 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, userId, userName, userPassword, avatar, salt, ctime, utime, valid
+        id, userId, userNameSpell, userName, userPassword, status, salt, ctime, utime, valid
     </sql>
 
     <insert id="insertSelective" parameterType="com.z.merchantsettle.modules.upm.domain.db.UserDB" useGeneratedKeys="true" keyProperty="id">
         insert into user (
           <if test="userId != null and userId != '' ">userId,</if>
+          <if test="userNameSpell != null and userNameSpell != '' ">userNameSpell,</if>
           <if test="userName != null and userName != '' ">userName,</if>
           <if test="userPassword != null and userPassword != '' ">userPassword,</if>
-          <if test="avatar != null and avatar != '' ">avatar,</if>
+          <if test="status != null and status > 0 ">status,</if>
           <if test="salt != null and salt != ''">salt,</if>
           ctime,
           utime,
           valid
         )values(
           <if test="userId != null and userId != ''">#{userId},</if>
+          <if test="userNameSpell != null and userNameSpell != ''">#{userNameSpell},</if>
           <if test="userName != null and userName != ''">#{userName},</if>
           <if test="userPassword != null and userPassword != ''">#{userPassword},</if>
-          <if test="avatar != null and avatar != ''">#{avatar},</if>
+          <if test="status != null and status > 0">#{status},</if>
           <if test="salt != null and salt != ''">#{salt},</if>
           unix_timestamp(),
           unix_timestamp(),
@@ -44,9 +47,8 @@
 
     <update id="updateByUserIdSelective" parameterType="com.z.merchantsettle.modules.upm.domain.db.UserDB">
         update user set
-          <if test="userPassword != null and userPassword != '' ">#{userPassword} = userPassword,</if>
-          <if test="avatar != null and avatar != '' ">#{avatar} = avatar,</if>
-          <if test="salt != null and salt != ''">#{salt} = salt,</if>
+          <if test="userPassword != null and userPassword != '' ">userPassword = #{userPassword},</if>
+          <if test="status != null and status > 0 ">status = #{status},</if>
           utime = unix_timestamp()
         where
           userId = #{userId}
@@ -69,6 +71,19 @@
           valid = 1
     </select>
 
+    <select id="selectLastByUserNameSpell" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          user
+        WHERE
+          userNameSpell = #{userNameSpell}
+        order by
+          id
+        desc
+        limit 1
+    </select>
+
     <select id="selectList" parameterType="com.z.merchantsettle.modules.upm.domain.UserSearchParam" resultMap="BaseResultMap">
         SELECT
           <include refid="Base_Column_List"/>
@@ -76,13 +91,13 @@
           user
         <where>
             <if test="userSearchParam.userId != null and userSearchParam.userId != ''">
-                and userId like concat(concat('%',#{userSearchParam.userId}),'%'),
+                and userId like concat(concat('%',#{userSearchParam.userId}),'%')
             </if>
             <if test="userSearchParam.userName != null and userSearchParam.userName != ''">
-                and userName like concat(concat('%',#{userSearchParam.userName}),'%'),
+                and userName like concat(concat('%',#{userSearchParam.userName}),'%')
             </if>
             <if test="userSearchParam.status != null and userSearchParam.status > 0">
-                and status = #{userSearchParam.status},
+                and status = #{userSearchParam.status}
             </if>
             and valid = 1
         </where>

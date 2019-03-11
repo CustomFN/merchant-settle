@@ -49,7 +49,7 @@ public class ResourceController {
         }
         ValidationResult validateResult = ValidationUtil.validate(resource);
         if (validateResult.isHasError()) {
-            return ReturnResult.fail(validateResult.getErrorMsg());
+            return ReturnResult.fail(validateResult.getErrorMsgStr());
         }
         resourceService.saveOrUpdate(resource);
         return ReturnResult.success(resource);

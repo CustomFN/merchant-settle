@@ -34,7 +34,7 @@ public class CustomerSettleController {
 
         ValidationResult validateResult = ValidationUtil.validate(customerSettle);
         if (validateResult.isHasError()) {
-            return ReturnResult.fail(validateResult.getErrorMsg());
+            return ReturnResult.fail(validateResult.getErrorMsgStr());
         }
 
         try {

@@ -4,7 +4,7 @@ public class SystemConstant {
 
     public static final Integer TOP_LEVEL = 0;
 
-    public static final String ADMIN_ID = "0";
+    public static final String ADMIN = "admin";
 
     public static final Integer UNAUTH_CODE = 101;
 

@@ -53,10 +53,6 @@ public class ReturnResult {
         return JSON.toJSON(new ReturnResult(FAIL_CODE, msg, null));
     }
 
-    public static Object fail(Object data) {
-        return JSON.toJSON(new ReturnResult(FAIL_CODE, FAIL_MSG, data));
-    }
-
     public static Object fail(Integer code, String msg) {
         return JSON.toJSON(new ReturnResult(code, msg, null));
     }

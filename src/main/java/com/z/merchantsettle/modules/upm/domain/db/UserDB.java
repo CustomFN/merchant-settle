@@ -9,11 +9,13 @@ public class UserDB {
 
     private String userId;
 
+    private String userNameSpell;
+
     private String userName;
 
     private String userPassword;
 
-    private String avatar;
+    private Integer status;
 
     private String salt;
 
