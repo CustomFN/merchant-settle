@@ -16,19 +16,26 @@
         id, roleId, resourceId, ctime, valid
     </sql>
 
+    <sql id="Base_Column_List_With_Utime">
+        roleId, resourceId, ctime, utime, valid
+    </sql>
+
     <update id="unbindRoleResource" parameterType="java.lang.String">
         update role_resource set utime = unix_timestamp(), valid = 0 where roleId = #{roleId} and valid = 1
     </update>
 
-    <insert id="assignRoleResource" parameterType="java.util.List">
+    <insert id="assignRoleResource" >
         INSERT INTO
           role_resource
-          <include refid="Base_Column_List"/>
+        (
+          <include refid="Base_Column_List_With_Utime"/>
+        )
         VALUES
-            <foreach collection="list" separator="," item="item">
+            <foreach collection="resourceIdList" separator="," item="item">
                 (
                 #{roleId},
-                #{resourceId},
+                #{item},
+                unix_timestamp(),
                 unix_timestamp(),
                 1
                 )
@@ -39,9 +46,21 @@
         select resourceId FROM role_resource WHERE
             roleId IN
         <foreach collection="idList" close=")" open="(" separator="," item="item">
-            item
+            #{item}
         </foreach>
         and
          valid = 1
+    </select>
+
+    <select id="getByRoleIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+        select
+          <include refid="Base_Column_List"/>
+        FROM role_resource WHERE
+        roleId IN
+        <foreach collection="idList" close=")" open="(" separator="," item="item">
+            #{item}
+        </foreach>
+        and
+        valid = 1
     </select>
 </mapper>

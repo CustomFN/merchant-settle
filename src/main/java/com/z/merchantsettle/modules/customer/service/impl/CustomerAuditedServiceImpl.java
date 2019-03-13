@@ -1,5 +1,6 @@
 package com.z.merchantsettle.modules.customer.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
@@ -17,6 +18,8 @@ import com.z.merchantsettle.modules.customer.service.CustomerAuditedService;
 import com.z.merchantsettle.modules.customer.service.CustomerOpLogService;
 import com.z.merchantsettle.utils.transfer.customer.CustomerTransferUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,8 @@ import java.util.List;
 
 @Service
 public class CustomerAuditedServiceImpl implements CustomerAuditedService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomerAuditedServiceImpl.class);
 
     @Autowired
     private CustomerDBMapper customerDBMapper;
@@ -42,6 +47,7 @@ public class CustomerAuditedServiceImpl implements CustomerAuditedService {
     public PageData<CustomerBaseInfo> getCustomerList(CustomerSearchParam customerSearchParam, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<CustomerAuditedDB> customerAuditedDBList = customerAuditedDBMapper.getCustomerList(customerSearchParam);
+        LOGGER.info("customerAuditedDBList = {}", JSON.toJSONString(customerAuditedDBList));
         PageInfo<CustomerAuditedDB> pageInfo = new PageInfo<>(customerAuditedDBList);
 
         List<CustomerBaseInfo> customerBaseInfoList = Lists.newArrayList();

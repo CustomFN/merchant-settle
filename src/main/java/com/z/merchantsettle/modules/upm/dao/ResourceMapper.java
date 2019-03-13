@@ -1,6 +1,7 @@
 package com.z.merchantsettle.modules.upm.dao;
 
 import com.z.merchantsettle.modules.upm.domain.db.ResourceDB;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,6 +20,8 @@ public interface ResourceMapper {
     void updateByResourceIdSelective(ResourceDB resourceDB);
 
     void deleteByResourceId(String resourceId);
+
+    void deleteByResourceIdList(@Param("resourceIdList") List<String> resourceIdList);
 
     ResourceDB selectByResourceId(String resourceId);
 }

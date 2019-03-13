@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -36,6 +37,10 @@ public class User {
     private Long utime;
 
     private Integer valid;
+
+    private List<String> roleIdList = new ArrayList<>();
+
+    private List<String> roleNameList = new ArrayList<>();
 
 
     public void setUserId(String userId) {

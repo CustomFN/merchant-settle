@@ -12,7 +12,6 @@ public class ResourceDB {
     private String resourceName;
     private String parentId;
     private Double sortOrder;
-    private String icon;
     private Integer level;
     private Integer resourceType;
     private Integer status;

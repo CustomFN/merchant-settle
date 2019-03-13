@@ -12,25 +12,21 @@ public class Resource {
 
     private Integer id;
 
-    @NotBlank(message = "资源id不能为空")
     private String resourceId;
 
-    @NotBlank(message = "资源路径不能为空")
     private String resourcePath;
 
     private String description;
 
-    @NotBlank(message = "资源名称不能为空")
     private String resourceName;
 
-    @NotBlank(message = "父级资源id不能为空")
     private String parentId;
 
     @NotNull(message = "资源排序值不能为空")
     @Min(1)
     private Double sortOrder;
 
-    private String icon;
+    private Integer resourceType;
 
     @NotNull(message = "层级不能为空")
     @Min(0)

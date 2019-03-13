@@ -30,12 +30,14 @@
             <if test="description != null and description != '' ">description,</if>
             <if test="status != null and status != '' ">status,</if>
             ctime,
+            utime,
             valid
         )values(
             <if test="roleId != null and roleId != ''">#{roleId},</if>
             <if test="roleName != null and roleName != ''">#{roleName},</if>
             <if test="description != null and description != ''">#{description},</if>
             <if test="status != null and status != ''">#{status},</if>
+            unix_timestamp(),
             unix_timestamp(),
             1
         )
@@ -60,10 +62,10 @@
           role
         <where>
           <if test="roleSearchParam.roleName != null and roleSearchParam.roleName != ''">
-            and roleName like concat(concat('%',#{roleSearchParam.roleName}),'%'),
+            and roleName like concat(concat('%',#{roleSearchParam.roleName}),'%')
           </if>
           <if test="roleSearchParam.status != null and roleSearchParam.status > 0">
-            and status = #{roleSearchParam.status},
+            and status = #{roleSearchParam.status}
           </if>
             and valid = 1
         </where>
@@ -89,7 +91,7 @@
           roleId
         IN
             <foreach collection="idList" item="item" separator="," open="(" close=")">
-                item
+                #{item}
             </foreach>
         and
           valid = 1

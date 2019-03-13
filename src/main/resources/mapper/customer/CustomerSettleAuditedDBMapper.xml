@@ -2,28 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.z.merchantsettle.modules.customer.dao.CustomerSettleAuditedDBMapper" >
     <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.customer.domain.db.CustomerSettleAuditedDB" >
-        <id column="id" property="id" jdbcType="INTEGER" />
-        <result column="settleAccType" property="settleAccType" jdbcType="INTEGER" />
-        <result column="settleAccName" property="settleAccName" jdbcType="VARCHAR" />
-        <result column="settleAccNo" property="settleAccNo" jdbcType="VARCHAR" />
-        <result column="province" property="province" jdbcType="INTEGER" />
-        <result column="city" property="city" jdbcType="INTEGER" />
-        <result column="bankId" property="bankId" jdbcType="INTEGER" />
-        <result column="branchId" property="branchId" jdbcType="INTEGER" />
-        <result column="branchName" property="branchName" jdbcType="VARCHAR" />
-        <result column="reservePhoneNum" property="reservePhoneNum" jdbcType="VARCHAR" />
-        <result column="financialOfficer" property="financialOfficer" jdbcType="VARCHAR" />
-        <result column="financialOfficerPhone" property="financialOfficerPhone" jdbcType="VARCHAR" />
-        <result column="financialOfficerCertificatesType" property="financialOfficerCertificatesType" jdbcType="INTEGER" />
-        <result column="financialOfficerCertificatesNum" property="financialOfficerCertificatesNum" jdbcType="VARCHAR" />
-        <result column="settleType" property="settleType" jdbcType="INTEGER" />
-        <result column="settleCycle" property="settleCycle" jdbcType="INTEGER" />
-        <result column="settleMinAmount" property="settleMinAmount" jdbcType="DOUBLE" />
-        <result column="status" property="status" jdbcType="INTEGER" />
-        <result column="ctime" property="ctime" jdbcType="BIGINT" />
-        <result column="utime" property="utime" jdbcType="BIGINT" />
-        <result column="valid" property="valid" jdbcType="INTEGER" />
-        <result column="customerId" jdbcType="customerId" javaType="INTEGER"/>
+        <id column="id" property="id"  />
+        <result column="settleAccType" property="settleAccType"  />
+        <result column="settleAccName" property="settleAccName"  />
+        <result column="settleAccNo" property="settleAccNo"  />
+        <result column="province" property="province"  />
+        <result column="city" property="city"  />
+        <result column="bankId" property="bankId"  />
+        <result column="branchId" property="branchId"  />
+        <result column="branchName" property="branchName"  />
+        <result column="reservePhoneNum" property="reservePhoneNum"  />
+        <result column="financialOfficer" property="financialOfficer"  />
+        <result column="financialOfficerPhone" property="financialOfficerPhone"  />
+        <result column="financialOfficerCertificatesType" property="financialOfficerCertificatesType"  />
+        <result column="financialOfficerCertificatesNum" property="financialOfficerCertificatesNum"  />
+        <result column="settleType" property="settleType"  />
+        <result column="settleCycle" property="settleCycle"  />
+        <result column="settleMinAmount" property="settleMinAmount"  />
+        <result column="status" property="status"  />
+        <result column="ctime" property="ctime"  />
+        <result column="utime" property="utime"  />
+        <result column="valid" property="valid"  />
+        <result column="customerId" property="customerId"/>
     </resultMap>
     <sql id="Base_Column_List" >
         id, settleAccType, settleAccName, settleAccNo, province, city, bankId, branchId, branchName,

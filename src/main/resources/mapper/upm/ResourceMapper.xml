@@ -12,7 +12,6 @@
         <result column="resourceType" property="resourceType" />
         <result column="parentId" property="parentId" />
         <result column="sortOrder" property="sortOrder" />
-        <result column="icon" property="icon" />
         <result column="level" property="level" />
         <result column="status" property="status" />
         <result column="ctime" property="ctime" />
@@ -21,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, resourceId, resourcePath, description, resourceName, resourceType, parentId, sortOrder, icon, level, status, ctime, valid
+        id, resourceId, resourcePath, description, resourceName, resourceType, parentId, sortOrder, level, status, ctime, valid
     </sql>
 
     <select id="getByLevelSort" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -43,7 +42,7 @@
         FROM
          resource
         WHERE
-         resourceId = #{parentId}
+          parentId = #{parentId}
         and
           valid = 1
         order by
@@ -56,25 +55,25 @@
             <if test="resourcePath != null and resourcePath != '' ">resourcePath,</if>
             <if test="description != null and description != '' ">description,</if>
             <if test="resourceName != null and resourceName != '' ">resourceName,</if>
-            <if test="resourceType != null and resourceType != '' ">resourceType,</if>
+            <if test="resourceType != null and resourceType > 0 ">resourceType,</if>
             <if test="parentId != null and parentId != '' ">parentId,</if>
-            <if test="sortOrder != null and sortOrder != '' ">sortOrder,</if>
-            <if test="icon != null and icon != '' ">icon,</if>
-            <if test="level != null and level != '' ">level,</if>
-            <if test="status != null and status != '' ">status,</if>
+            <if test="sortOrder != null and sortOrder > 0 ">sortOrder,</if>
+            <if test="level != null and level >= 0 ">level,</if>
+            <if test="status != null and status > 0 ">status,</if>
             ctime,
+            utime,
             valid
         )values(
             <if test="resourceId != null and resourceId != ''">#{resourceId},</if>
             <if test="resourcePath != null and resourcePath != ''">#{resourcePath},</if>
             <if test="description != null and description != ''">#{description},</if>
             <if test="resourceName != null and resourceName != ''">#{resourceName},</if>
-            <if test="resourceType != null and resourceType != '' ">resourceType,</if>
+            <if test="resourceType != null and resourceType > 0 ">#{resourceType},</if>
             <if test="parentId != null and parentId != ''">#{parentId},</if>
-            <if test="sortOrder != null and sortOrder != ''">#{sortOrder},</if>
-            <if test="icon != null and icon != ''">#{icon},</if>
-            <if test="level != null and level != ''">#{level},</if>
-            <if test="status != null and status != ''">#{status},</if>
+            <if test="sortOrder != null and sortOrder > 0">#{sortOrder},</if>
+            <if test="level != null and level >= 0">#{level},</if>
+            <if test="status != null and status > 0">#{status},</if>
+            unix_timestamp(),
             unix_timestamp(),
             1
         )
@@ -85,21 +84,36 @@
             <if test="resourcePath != null and resourcePath != ''">resourcePath = #{resourcePath},</if>
             <if test="description != null and description != ''">description = #{description},</if>
             <if test="resourceName != null and resourceName != ''">resourceName = #{resourceName},</if>
-            <if test="resourceType != null and resourceType != '' ">resourceType = #{resourceType},</if>
+            <if test="resourceType != null and resourceType > 0 ">resourceType = #{resourceType},</if>
             <if test="parentId != null and parentId != ''">parentId = #{parentId},</if>
-            <if test="sortOrder != null and sortOrder != ''">sortOrder = #{sortOrder},</if>
-            <if test="icon != null and icon != ''">icon = #{icon},</if>
-            <if test="level != null and level != ''">level = #{level},</if>
-            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="sortOrder != null and sortOrder > 0">sortOrder = #{sortOrder},</if>
+            <if test="level != null and level >= 0">level = #{level},</if>
+            <if test="status != null and status > 0">status = #{status},</if>
             utime = unix_timestamp()
         where
-          roleId = #{roleId}
+          resourceId = #{resourceId}
         and
           valid = 1
     </update>
 
     <update id="deleteByResourceId" parameterType="java.lang.String">
         update resource set utime = unix_timestamp(), valid = 0 where resourceId = #{resourceId}
+    </update>
+
+    <update id="deleteByResourceIdList" parameterType="java.util.List">
+        update
+            resource
+        set
+            utime = unix_timestamp(), valid = 0
+        where
+            resourceId
+        IN
+            <foreach collection="resourceIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        and
+          valid = 1
+
     </update>
 
     <select id="selectByResourceId" parameterType="java.lang.String" resultMap="BaseResultMap">

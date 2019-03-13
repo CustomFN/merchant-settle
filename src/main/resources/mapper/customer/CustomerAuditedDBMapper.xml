@@ -2,19 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.z.merchantsettle.modules.customer.dao.CustomerAuditedDBMapper" >
     <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.customer.domain.db.CustomerAuditedDB" >
-        <id column="id" property="id" jdbcType="INTEGER" />
-        <result column="customerType" property="customerType" jdbcType="INTEGER" />
-        <result column="customerCertificatesPic" property="customerCertificatesPic" jdbcType="VARCHAR" />
-        <result column="customerCertificatesNum" property="customerCertificatesNum" jdbcType="VARCHAR" />
-        <result column="customerName" property="customerName" jdbcType="VARCHAR" />
-        <result column="customerLegalPerson" property="customerLegalPerson" jdbcType="VARCHAR" />
-        <result column="customerCertificatesAddress" property="customerCertificatesAddress" jdbcType="VARCHAR" />
-        <result column="status" property="status" jdbcType="INTEGER" />
-        <result column="customerValidTime" property="customerValidTime" jdbcType="BIGINT" />
-        <result column="customerPrincipal" property="customerPrincipal" jdbcType="VARCHAR"/>
-        <result column="ctime" property="ctime" jdbcType="BIGINT" />
-        <result column="utime" property="utime" jdbcType="BIGINT" />
-        <result column="valid" property="valid" jdbcType="INTEGER" />
+        <id column="id" property="id" />
+        <result column="customerType" property="customerType"/>
+        <result column="customerCertificatesPic" property="customerCertificatesPic"  />
+        <result column="customerCertificatesNum" property="customerCertificatesNum"  />
+        <result column="customerName" property="customerName"  />
+        <result column="customerLegalPerson" property="customerLegalPerson"  />
+        <result column="customerCertificatesAddress" property="customerCertificatesAddress"  />
+        <result column="status" property="status"/>
+        <result column="customerValidTime" property="customerValidTime"/>
+        <result column="customerPrincipal" property="customerPrincipal"/>
+        <result column="ctime" property="ctime"/>
+        <result column="utime" property="utime"/>
+        <result column="valid" property="valid" />
     </resultMap>
     <sql id="Base_Column_List" >
         id, customerType, customerCertificatesPic, customerCertificatesNum, customerName, customerLegalPerson,
@@ -28,7 +28,7 @@
         where
           id = #{id}
         and
-         valid = 1
+          valid = 1
     </select>
     <update id="deleteById" parameterType="java.lang.Integer" >
         update
@@ -143,7 +143,7 @@
         where id = #{id}
     </update>
 
-    <select id="getCustomerList" resultMap="BaseResultMap" parameterType="com.z.merchantsettle.modules.customer.domain.CustomerSearchParam">
+    <select id="getCustomerList" parameterType="com.z.merchantsettle.modules.customer.domain.CustomerSearchParam" resultMap="BaseResultMap">
         select
           <include refid="Base_Column_List"/>
         from
@@ -153,10 +153,10 @@
                 and customerId = #{customerSearchParam.customerId}
             </if>
             <if test="customerSearchParam.customerName != null and customerSearchParam.customerName != ''">
-                and customerName like concat(concat('%',#{customerSearchParam.customerName}),'%'),
+                and customerName like concat(concat('%',#{customerSearchParam.customerName}),'%')
             </if>
             <if test="customerSearchParam.customerPrincipal != null and customerSearchParam.customerPrincipal != ''">
-                and customerPrincipal like concat(concat('%',#{customerSearchParam.customerPrincipal}),'%'),
+                and customerPrincipal like concat(concat('%',#{customerSearchParam.customerPrincipal}),'%')
             </if>
             and valid = 1
         </where>

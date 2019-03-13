@@ -27,10 +27,6 @@ public class ReturnResult {
         return JSON.toJSON(new ReturnResult(OK_CODE, OK_MSG, null));
     }
 
-    public static Object success(String msg) {
-        return JSON.toJSON(new ReturnResult(OK_CODE, msg, null));
-    }
-
     public static Object success(Object data) {
         return JSON.toJSON(new ReturnResult(OK_CODE, OK_MSG, data));
     }

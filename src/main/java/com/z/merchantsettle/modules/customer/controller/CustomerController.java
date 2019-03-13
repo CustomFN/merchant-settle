@@ -40,6 +40,8 @@ public class CustomerController {
     public Object list(CustomerSearchParam customerSearchParam,
                        @RequestParam(defaultValue = "1", name = "pageNum") Integer pageNum,
                        @RequestParam(defaultValue = "30", name = "pageSize") Integer pageSize) {
+        LOGGER.info("CustomerController##list customerSearchParam = {}, pageNum = {}, pageSize = {}", JSON.toJSONString(customerSearchParam), pageNum, pageSize);
+
         if (pageNum == null || pageNum < 1 || pageSize == null || pageSize < 1) {
             return ReturnResult.fail("参数错误");
         }

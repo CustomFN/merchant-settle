@@ -35,10 +35,8 @@ public class ResourceController {
     }
 
     @PostMapping("/save")
-    public Object saveOrUpdate(String resourceStr) {
-        LOGGER.info("saveOrUpdate resourceStr = {}", resourceStr);
-        Resource resource = JSON.parseObject(resourceStr, Resource.class);
-        LOGGER.info("saveOrUpdate resourceStr = {}", JSON.toJSONString(resource));
+    public Object saveOrUpdate(Resource resource) {
+        LOGGER.info("saveOrUpdate resource = {}", JSON.toJSONString(resource));
 
         if (resource == null) {
             return ReturnResult.fail("保存参数错误");

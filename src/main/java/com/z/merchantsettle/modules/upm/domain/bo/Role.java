@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -27,5 +28,7 @@ public class Role {
     private Long ctime;
 
     private Integer valid;
+
+    private List<String> resourceIdList = new ArrayList<>();
 
 }

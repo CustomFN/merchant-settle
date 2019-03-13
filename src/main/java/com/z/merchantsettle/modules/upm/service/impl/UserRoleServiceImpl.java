@@ -1,22 +1,31 @@
 package com.z.merchantsettle.modules.upm.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 
+import com.google.common.collect.Maps;
 import com.z.merchantsettle.modules.upm.domain.db.UserRoleDB;
 import com.z.merchantsettle.modules.upm.service.UserRoleService;
 import com.z.merchantsettle.modules.upm.dao.UserRoleMapper;
 import com.z.merchantsettle.modules.upm.domain.bo.UserRole;
+import com.z.merchantsettle.utils.TransferUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Service
 public class UserRoleServiceImpl implements UserRoleService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserRoleServiceImpl.class);
 
     @Autowired
     private UserRoleMapper userRoleMapper;
@@ -24,16 +33,8 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Override
     @Transactional
     public void assignUserRoles(UserRole userRole) {
-        List<String> roleIdList = userRole.getRoleIdList();
-        List<UserRoleDB> userRoleDBList = Lists.newArrayList();
-        for (String roleId : roleIdList) {
-            UserRoleDB userRoleDB = new UserRoleDB();
-            userRoleDB.setUserId(userRole.getUserId());
-            userRoleDB.setRoleId(roleId);
-            userRoleDBList.add(userRoleDB);
-        }
         userRoleMapper.unbindUserRole(userRole.getUserId());
-        userRoleMapper.assginUserRole(userRoleDBList);
+        userRoleMapper.assginUserRole(userRole.getUserId(), userRole.getRoleIdList());
     }
 
     @Override
@@ -61,4 +62,23 @@ public class UserRoleServiceImpl implements UserRoleService {
         return userRole;
     }
 
+    @Override
+    public Map<String, List<String>> getByUserIdList(List<String> userIdList) {
+        if (CollectionUtils.isEmpty(userIdList)) {
+            return Maps.newHashMap();
+        }
+        List<UserRoleDB> userRoleDBList = userRoleMapper.getByUserIdList(userIdList);
+
+        Map<String, List<String>> map = Maps.newHashMap();
+        for (UserRoleDB userRoleDB : userRoleDBList) {
+            List<String> list = map.get(userRoleDB.getUserId());
+            if (CollectionUtils.isEmpty(list)) {
+                list = Lists.newArrayList(userRoleDB.getRoleId());
+                map.put(userRoleDB.getUserId(), list);
+            } else {
+                list.add(userRoleDB.getRoleId());
+            }
+        }
+        return map;
+    }
 }

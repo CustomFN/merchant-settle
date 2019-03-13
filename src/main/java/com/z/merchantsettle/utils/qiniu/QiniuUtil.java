@@ -76,7 +76,7 @@ public class QiniuUtil {
      * @return
      * @throws IOException
      */
-    public static boolean uploadMultipartFile(MultipartFile file, String key, boolean override) {
+    public static String uploadMultipartFile(MultipartFile file, String key, boolean override) throws IOException {
         //构造一个带指定Zone对象的配置类
         Configuration cfg = new Configuration(QiNiuConfig.getInstance().getZone());
         //...其他参数参考类注释
@@ -86,38 +86,30 @@ public class QiniuUtil {
         InputStream is = null;
         ByteArrayOutputStream bos = null;
 
-        try {
-            is = file.getInputStream();
-            bos = new ByteArrayOutputStream();
-            byte[] b = new byte[1024];
-            int len = -1;
-            while ((len = is.read(b)) != -1){
-                bos.write(b, 0, len);
-            }
-            byte[] uploadBytes= bos.toByteArray();
-
-            Auth auth = getAuth();
-            String upToken;
-            if(override){
-                upToken = auth.uploadToken(QiNiuConfig.getInstance().getBucket(), key);//覆盖上传凭证
-            }else{
-                upToken = auth.uploadToken(QiNiuConfig.getInstance().getBucket());
-            }
-            //默认上传接口回复对象
-            DefaultPutRet putRet;
-            //进行上传操作，传入文件的字节数组，文件名，上传空间，得到回复对象
-            Response response = uploadManager.put(uploadBytes, key, upToken);
-            putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
-            System.out.println(putRet.key);//key 文件名
-            System.out.println(putRet.hash);//hash 七牛返回的文件存储的地址，可以使用这个地址加七牛给你提供的前缀访问到这个视频。
-            return true;
-        }catch (QiniuException e){
-            e.printStackTrace();
-            return false;
-        }catch (IOException e) {
-            e.printStackTrace();
-            return false;
+        is = file.getInputStream();
+        bos = new ByteArrayOutputStream();
+        byte[] b = new byte[1024];
+        int len = -1;
+        while ((len = is.read(b)) != -1){
+            bos.write(b, 0, len);
         }
+        byte[] uploadBytes= bos.toByteArray();
+
+        Auth auth = getAuth();
+        String upToken;
+        if(override){
+            upToken = auth.uploadToken(QiNiuConfig.getInstance().getBucket(), key);//覆盖上传凭证
+        }else{
+            upToken = auth.uploadToken(QiNiuConfig.getInstance().getBucket());
+        }
+        //默认上传接口回复对象
+        DefaultPutRet putRet;
+        //进行上传操作，传入文件的字节数组，文件名，上传空间，得到回复对象
+        Response response = uploadManager.put(uploadBytes, key, upToken);
+        putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+        System.out.println(putRet.key);//key 文件名
+        System.out.println(putRet.hash);//hash 七牛返回的文件存储的地址，可以使用这个地址加七牛给你提供的前缀访问到这个视频。
+        return QiNiuConfig.getInstance().getDomainOfBucket() + "/" + putRet.key;
     }
 
     public static Auth getAuth(){

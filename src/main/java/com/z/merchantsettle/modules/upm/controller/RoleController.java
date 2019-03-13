@@ -44,6 +44,7 @@ public class RoleController {
 
     @PostMapping("/delete")
     public Object delete(@RequestParam(name = "roleId") String roleId) {
+        LOGGER.info("删除角色 roleId = {}", roleId);
         if (StringUtils.isBlank(roleId)) {
             return ReturnResult.fail("参数错误");
         }
@@ -62,9 +63,7 @@ public class RoleController {
     }
 
     @PostMapping("/save")
-    public Object saveOrUpdate(String roleStr) {
-        LOGGER.info("saveOrUpdate roleStr = {}", roleStr);
-        Role role = JSON.parseObject(roleStr, Role.class);
+    public Object saveOrUpdate(Role role) {
         LOGGER.info("saveOrUpdate role = {}", JSON.toJSONString(role));
 
         if (role == null) {
@@ -72,7 +71,7 @@ public class RoleController {
         }
         if (StringUtils.isBlank(role.getRoleId())) {
             String roleId = IdUtil.objectId();
-            LOGGER.info("生成 roleId = {}", role);
+            LOGGER.info("生成 roleId = {}", roleId);
             role.setRoleId(roleId);
         }
         ValidationResult validateResult = ValidationUtil.validate(role);
@@ -85,6 +84,7 @@ public class RoleController {
 
     @PostMapping("/assignResources")
     public Object assignRoleResources(RoleResource roleResource) {
+        LOGGER.info("assignRoleResources roleResource = {}", JSON.toJSONString(roleResource));
         if (roleResource ==null || StringUtils.isBlank(roleResource.getRoleId())) {
             return ReturnResult.fail("参数错误");
         }

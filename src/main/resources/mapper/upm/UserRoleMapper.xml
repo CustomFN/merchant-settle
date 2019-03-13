@@ -16,19 +16,26 @@
         id, userId, roleId, ctime, valid
     </sql>
 
+    <sql id="Base_Column_List_With_Utime">
+        userId, roleId, ctime, utime, valid
+    </sql>
+
     <update id="unbindUserRole" parameterType="java.lang.String">
         update user_role set utime = unix_timestamp(), valid = 0 where userId = #{userId} and valid = 1
     </update>
 
-    <insert id="assginUserRole" parameterType="java.util.List">
+    <insert id="assginUserRole" >
         INSERT INTO
           user_role
-          <include refid="Base_Column_List"/>
+        (
+          <include refid="Base_Column_List_With_Utime"/>
+        )
         VALUES
-            <foreach collection="list" separator="," item="item">
+            <foreach collection="roleIdList" separator="," item="item">
                 (
                     #{userId},
-                    #{roleId},
+                    #{item},
+                    unix_timestamp(),
                     unix_timestamp(),
                     1
                 )
@@ -48,6 +55,21 @@
           userId = #{userId}
         and
           roleId = #{roleId}
+        and
+          valid = 1
+    </select>
+
+    <select id="getByUserIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+        select
+          <include refid="Base_Column_List"/>
+        from
+          user_role
+        where
+          userId
+        IN
+          <foreach collection="userIdList" close=")" open="(" separator="," item="item">
+              #{item}
+          </foreach>
         and
           valid = 1
     </select>

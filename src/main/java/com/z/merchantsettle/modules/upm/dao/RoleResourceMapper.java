@@ -13,7 +13,9 @@ public interface RoleResourceMapper{
 
     void unbindRoleResource(String roleId);
 
-    void assignRoleResource(List<RoleResourceDB> roleResourceDBList);
+    void assignRoleResource(@Param("roleId") String roleId, @Param("resourceIdList") List<String> resourceIdList);
 
     List<String> getResourceIdByRoleIdList(@Param("idList") List<String> roleIdList);
+
+    List<RoleResourceDB> getByRoleIdList(@Param("idList") List<String> roleIdList);
 }

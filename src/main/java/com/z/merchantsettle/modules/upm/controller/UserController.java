@@ -80,6 +80,7 @@ public class UserController {
 
     @PostMapping("/assignRoles")
     public Object assignRoles(UserRole userRole) {
+        LOGGER.info("assignRoles userRole = {}", JSON.toJSONString(userRole));
         if (userRole ==null || StringUtils.isBlank(userRole.getUserId())) {
             return ReturnResult.fail("参数错误");
         }
