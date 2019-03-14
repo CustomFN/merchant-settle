@@ -17,5 +17,7 @@ public interface CustomerSettleDBMapper {
 
     void updateByIdSelective(CustomerSettleDB customerSettleDB);
 
+    List<CustomerSettleDB> getSettleListByCustomerId(@Param("customerId") Integer customerId, @Param("settleIdList") List<Integer> settleIdList);
+
     List<CustomerSettleDB> getSettleList(@Param("settleIdList") List<Integer> settleIdList);
 }

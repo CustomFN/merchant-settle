@@ -18,7 +18,4 @@ public interface CustomerContractAuditedDBMapper {
 
     void updateByIdSelective(CustomerContractAuditedDB customerContractAuditedDB);
 
-    List<CustomerContractAuditedDB> getByCustomerId(@Param("customerId") Integer customerId);
-
-    List<CustomerContractAuditedDB> getContractList(@Param("contractRequestParam") ContractRequestParam contractRequestParam);
 }

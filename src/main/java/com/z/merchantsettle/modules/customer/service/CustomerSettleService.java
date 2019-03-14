@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface CustomerSettleService {
 
-    void saveOrUpdate(CustomerSettle customerSettle, String opUserId);
+    CustomerSettle saveOrUpdate(CustomerSettle customerSettle, String opUserId);
 
     CustomerSettle getCustomerSettleBySettleId(Integer settleId, Integer effective);
 
-    PageData<CustomerSettleBaseInfo> getCustomerSettleList(String settleOrPoiId, Integer effective, Integer pageNum, Integer pageSize);
+    PageData<CustomerSettleBaseInfo> getCustomerSettleList(Integer customerId, String settleOrPoiId, Integer effective, Integer pageNum, Integer pageSize);
 
     void deleteBySettleId(Integer settleId);
 

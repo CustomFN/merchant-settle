@@ -19,5 +19,4 @@ public interface CustomerSignerAuditedDBMapper {
 
     List<CustomerSignerAuditedDB> getCustomerSignerByContractId(@Param("contractId") Integer contractId);
 
-    List<CustomerSignerAuditedDB> getCustomerSignerByContractIdList(@Param("contractIdList") List<Integer> contractIdList);
 }

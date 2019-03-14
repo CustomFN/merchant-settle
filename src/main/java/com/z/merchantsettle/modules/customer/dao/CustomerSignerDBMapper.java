@@ -18,4 +18,7 @@ public interface CustomerSignerDBMapper {
     void updateByIdSelective(CustomerSignerDB customerSignerDB);
 
     List<CustomerSignerDB> getCustomerSignerByContractId(@Param("contractId") Integer contractId);
+
+    List<CustomerSignerDB> getCustomerSignerByContractIdList(@Param("contractIdList") List<Integer> contractIdList);
+
 }

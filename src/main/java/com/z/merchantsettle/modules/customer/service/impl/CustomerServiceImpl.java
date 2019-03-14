@@ -2,6 +2,10 @@ package com.z.merchantsettle.modules.customer.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
+import com.z.merchantsettle.common.PageData;
 import com.z.merchantsettle.exception.CustomerException;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
@@ -9,13 +13,21 @@ import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomer;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
 import com.z.merchantsettle.modules.customer.constants.CustomerConstant;
 import com.z.merchantsettle.modules.customer.dao.CustomerDBMapper;
+import com.z.merchantsettle.modules.customer.dao.CustomerPoiDBMapper;
+import com.z.merchantsettle.modules.customer.domain.CustomerSearchParam;
 import com.z.merchantsettle.modules.customer.domain.bo.Customer;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerAudited;
+import com.z.merchantsettle.modules.customer.domain.bo.CustomerBaseInfo;
+import com.z.merchantsettle.modules.customer.domain.db.CustomerAuditedDB;
 import com.z.merchantsettle.modules.customer.domain.db.CustomerDB;
 import com.z.merchantsettle.modules.customer.service.CustomerAuditedService;
 import com.z.merchantsettle.modules.customer.service.CustomerOpLogService;
 import com.z.merchantsettle.modules.customer.service.CustomerService;
+import com.z.merchantsettle.modules.upm.domain.bo.User;
+import com.z.merchantsettle.modules.upm.service.UserService;
 import com.z.merchantsettle.utils.TransferUtil;
+import com.z.merchantsettle.utils.shiro.ShiroUtils;
+import com.z.merchantsettle.utils.shiro.UserUtil;
 import com.z.merchantsettle.utils.transfer.customer.CustomerTransferUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -33,6 +47,9 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerDBMapper customerDBMapper;
 
     @Autowired
+    private CustomerPoiDBMapper customerPoiDBMapper;
+
+    @Autowired
     private CustomerAuditedService customerAuditedService;
 
     @Autowired
@@ -40,6 +57,41 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private CustomerOpLogService customerOpLogService;
+
+    @Autowired
+    private UserUtil userUtil;
+
+    @Override
+    public PageData<CustomerBaseInfo> getCustomerList(CustomerSearchParam customerSearchParam, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<CustomerDB> customerDBList = customerDBMapper.getCustomerList(customerSearchParam);
+        PageInfo<CustomerDB> pageInfo = new PageInfo<>(customerDBList);
+
+        List<CustomerBaseInfo> customerBaseInfoList = Lists.newArrayList();
+        for (CustomerDB customerDB : customerDBList) {
+            CustomerBaseInfo customerBaseInfo = new CustomerBaseInfo();
+            customerBaseInfo.setCustomerId(customerDB.getId());
+            customerBaseInfo.setCustomerName(customerDB.getCustomerName());
+            customerBaseInfo.setCustomerType(CustomerConstant.CustomerTypeEnum.getByCode(customerDB.getCustomerType()));
+            customerBaseInfo.setCustomerStatus(CustomerConstant.CustomerStatus.getByCode(customerDB.getStatus()));
+
+            User user = userUtil.getUser(customerDB.getCustomerPrincipal());
+            if (user != null) {
+                customerBaseInfo.setCustomerPrincipal(user.getUserName());
+            }
+
+            int count = customerPoiDBMapper.selectCountByCustomerId(customerDB.getId());
+            customerBaseInfo.setCustomerPoiRelNum(count);
+            customerBaseInfoList.add(customerBaseInfo);
+        }
+        return new PageData.Builder<CustomerBaseInfo>()
+                .pageNum(pageNum)
+                .pageSize(pageSize)
+                .totalSize((int) pageInfo.getTotal())
+                .totalPage(pageInfo.getPages())
+                .data(customerBaseInfoList)
+                .build();
+    }
 
     @Override
     public void deleteByCustomerId(Integer customerId, String opUserId) throws CustomerException {
@@ -84,21 +136,27 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void saveOrUpdate(Customer customer, String opUserId) throws CustomerException {
+    public Customer saveOrUpdate(Customer customer, String opUserId) throws CustomerException {
+        LOGGER.info("saveOrUpdate customer = {}, opUserId = {}", JSON.toJSONString(customer), opUserId);
         if (customer == null || StringUtils.isBlank(opUserId)) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
 
         CustomerDB customerDB = CustomerTransferUtil.transCustomer2DB(customer);
-        boolean isNew = !(customerDB.getId() != null && customer.getId() > 0);
+        boolean isNew = (null == customer.getId() || customerDB.getId() <= 0);
         if (isNew) {
+            customerDB.setStatus(CustomerConstant.CustomerStatus.AUDITING.getCode());
+            customerDB.setCustomerPrincipal(opUserId);
             customerDBMapper.insertSelective(customerDB);
+
+            customer = CustomerTransferUtil.transCustomerDB2Bo(customerDB);
         } else {
             customerDBMapper.updateByIdSelective(customerDB);
         }
-        commitAudit(customerDB, opUserId, isNew);
 
+        commitAudit(customerDB, opUserId, isNew);
         customerOpLogService.addLog(customerDB.getId(), "KP", "保存客户，提交审核", opUserId);
+        return customer;
     }
 
     private void commitAudit(CustomerDB customerDB, String opUserId, boolean isNew) {

@@ -30,7 +30,7 @@
         update
           customer_signer_audited
         SET
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         WHERE
           id = #{id}
     </update>
@@ -72,8 +72,8 @@
             <if test="signTime != null" >
                 #{signTime},
             </if>
-            unixtime(),
-            unixtime(),
+            unix_timestamp(),
+            unix_timestamp(),
             1
         </trim>
     </insert>
@@ -98,7 +98,7 @@
             <if test="valid != null" >
                 valid = #{valid},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where id = #{id}
     </update>
@@ -114,17 +114,5 @@
           valid = 1
     </select>
 
-    <select id="getCustomerSignerByContractIdList" parameterType="java.util.List" resultMap="BaseResultMap">
-        SELECT
-          <include refid="Base_Column_List"/>
-        FROM
-          customer_signer_audited
-        WHERE
-          contractId IN
-          <foreach collection="contractIdList" close=")" open="(" separator="," item="item">
-              #{item}
-          </foreach>
-        and
-          valid = 1
-    </select>
+
 </mapper>

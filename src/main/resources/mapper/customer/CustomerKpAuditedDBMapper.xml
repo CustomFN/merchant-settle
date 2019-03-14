@@ -37,7 +37,7 @@
         update
             customer_kp_audited
         SET
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         WHERE
           id = #{id}
     </update>
@@ -117,8 +117,8 @@
                 #{status},
             </if>
             #{customerId},
-            unixtime(),
-            unixtime(),
+            unix_timestamp(),
+            unix_timestamp(),
             1
         </trim>
     </insert>
@@ -161,7 +161,7 @@
             <if test="valid != null" >
                 valid = #{valid},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where id = #{id}
     </update>

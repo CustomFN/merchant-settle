@@ -55,26 +55,4 @@ public class CustomerSignerAuditedServiceImpl implements CustomerSignerAuditedSe
 
     }
 
-    @Override
-    public Map<Integer, List<CustomerSignerAudited>> getCustomerSignerByContractIdList(List<Integer> contractIdList) {
-        if (CollectionUtils.isEmpty(contractIdList)) {
-            return Maps.newHashMap();
-        }
-
-        List<CustomerSignerAuditedDB> customerSignerAuditedDBList = customerSignerAuditedDBMapper.getCustomerSignerByContractIdList(contractIdList);
-        List<CustomerSignerAudited> customerSignerAuditedList = CustomerTransferUtil.transCustomerSignerAuditedDBList2BoList(customerSignerAuditedDBList);
-        Map<Integer, List<CustomerSignerAudited>> signerAuditedMap = Maps.newHashMap();
-        for (CustomerSignerAudited customerSignerAudited : customerSignerAuditedList) {
-            Integer contractId = customerSignerAudited.getContractId();
-            List<CustomerSignerAudited> signerAuditedList = signerAuditedMap.get(contractId);
-            if (signerAuditedList == null) {
-                signerAuditedList = Lists.newArrayList();
-                signerAuditedList.add(customerSignerAudited);
-                signerAuditedMap.put(contractId, signerAuditedList);
-            } else {
-                signerAuditedList.add(customerSignerAudited);
-            }
-        }
-        return signerAuditedMap;
-    }
 }

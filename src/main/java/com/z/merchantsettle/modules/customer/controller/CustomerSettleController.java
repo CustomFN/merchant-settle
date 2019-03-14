@@ -25,8 +25,8 @@ public class CustomerSettleController {
     @Autowired
     private CustomerSettleService customerSettleService;
 
-    @RequestMapping("/save")
-    public Object saveOrUpdate(@RequestBody CustomerSettle customerSettle) {
+    @PostMapping("/save")
+    public Object saveOrUpdate(CustomerSettle customerSettle) {
         LOGGER.info("CustomerSettleController saveOrUpdate customerSettle = {}", JSON.toJSONString(customerSettle));
         if (customerSettle == null) {
             return ReturnResult.fail(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
@@ -39,15 +39,15 @@ public class CustomerSettleController {
 
         try {
             User user = ShiroUtils.getSysUser();
-            customerSettleService.saveOrUpdate(customerSettle, user.getUserId());
-            return ReturnResult.success();
+            customerSettle = customerSettleService.saveOrUpdate(customerSettle, user.getUserId());
+            return ReturnResult.success(customerSettle);
         } catch (UpmException | CustomerException e) {
             LOGGER.error("保存客户结算异常", e);
             return ReturnResult.fail(CustomerConstant.CUSTOMER_OP_ERROR, "保存客户结算异常");
         }
     }
 
-    @RequestMapping("/show/{settleId}")
+    @PostMapping("/show/{settleId}")
     public Object getCustomerSettleBySettleId(@PathVariable(name = "settleId") Integer settleId,
                                               @RequestParam(name = "effective") Integer effective) {
 
@@ -60,8 +60,9 @@ public class CustomerSettleController {
         }
     }
 
-    @RequestMapping("/list")
-    public Object getCustomerSettleList(String settleOrPoiId,
+    @PostMapping("/list")
+    public Object getCustomerSettleList(@RequestParam("customerId") Integer customerId,
+                                        @RequestParam("settleOrPoiId") String settleOrPoiId,
                                         @RequestParam(name = "effective") Integer effective,
                                         @RequestParam(defaultValue = "1", name = "pageNum") Integer pageNum,
                                         @RequestParam(defaultValue = "10", name = "pageSize") Integer pageSize) {
@@ -69,14 +70,14 @@ public class CustomerSettleController {
             return ReturnResult.fail("参数错误");
         }
         try {
-            return ReturnResult.success(customerSettleService.getCustomerSettleList(settleOrPoiId, effective, pageNum, pageSize));
+            return ReturnResult.success(customerSettleService.getCustomerSettleList(customerId, settleOrPoiId, effective, pageNum, pageSize));
         } catch (Exception e) {
             LOGGER.error("结算信息列表获取异常", e);
             return ReturnResult.fail(CustomerConstant.CUSTOMER_OP_ERROR,"结算信息列表获取异常");
         }
     }
 
-    @RequestMapping("/delete/{settleId}")
+    @PostMapping("/delete/{settleId}")
     public Object deleteBySettleId(@PathVariable(name = "settleId") Integer settleId) {
         if (settleId == null || settleId <= 0) {
             return ReturnResult.fail( "参数错误");

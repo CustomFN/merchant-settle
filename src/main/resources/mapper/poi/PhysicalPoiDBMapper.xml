@@ -87,7 +87,7 @@
             <if test="valid != null" >
                 valid = #{valid},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where id = #{id}
     </update>
@@ -160,8 +160,8 @@
             <if test="status != null" >
                 #{status},
             </if>
-            unixtime(),
-            unixtime(),
+            unix_timestamp(),
+            unix_timestamp(),
             1
         </trim>
     </insert>

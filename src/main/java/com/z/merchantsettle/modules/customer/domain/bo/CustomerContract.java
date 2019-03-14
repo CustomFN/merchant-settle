@@ -2,6 +2,8 @@ package com.z.merchantsettle.modules.customer.domain.bo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class CustomerContract {
 
@@ -10,7 +12,9 @@ public class CustomerContract {
     private String customerContractNum;
     private Long contractEndTime;
     private String contractScan;
+    private List<String> contractScanList;
     private Integer status;
+    private String statusStr;
     private Long ctime;
     private Long utime;
     private Integer valid;

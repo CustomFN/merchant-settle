@@ -7,6 +7,7 @@ public class CustomerSignerDB {
 
     private Integer id;
     private Integer contractId;
+    private String signerLabel;
     private String party;
     private String partyContactPerson;
     private String partyContactPersonPhone;

@@ -44,34 +44,6 @@ public class CustomerAuditedServiceImpl implements CustomerAuditedService {
     private CustomerOpLogService customerOpLogService;
 
     @Override
-    public PageData<CustomerBaseInfo> getCustomerList(CustomerSearchParam customerSearchParam, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<CustomerAuditedDB> customerAuditedDBList = customerAuditedDBMapper.getCustomerList(customerSearchParam);
-        LOGGER.info("customerAuditedDBList = {}", JSON.toJSONString(customerAuditedDBList));
-        PageInfo<CustomerAuditedDB> pageInfo = new PageInfo<>(customerAuditedDBList);
-
-        List<CustomerBaseInfo> customerBaseInfoList = Lists.newArrayList();
-        for (CustomerAuditedDB customerAuditedDB : customerAuditedDBList) {
-            CustomerBaseInfo customerBaseInfo = new CustomerBaseInfo();
-            customerBaseInfo.setCustomerId(customerAuditedDB.getId());
-            customerBaseInfo.setCustomerName(customerAuditedDB.getCustomerName());
-            customerBaseInfo.setCustomerType(CustomerConstant.CustomerTypeEnum.getByCode(customerAuditedDB.getCustomerType()));
-            customerBaseInfo.setCustomerStatus(CustomerConstant.CustomerStatus.getByCode(customerAuditedDB.getStatus()));
-
-            int count = customerPoiDBMapper.selectCountByCustomerId(customerAuditedDB.getId());
-            customerBaseInfo.setCustomerPoiRelNum(count);
-            customerBaseInfoList.add(customerBaseInfo);
-        }
-        return new PageData.Builder<CustomerBaseInfo>()
-                .pageNum(pageNum)
-                .pageSize(pageSize)
-                .totalSize((int) pageInfo.getTotal())
-                .totalPage(pageInfo.getPages())
-                .data(customerBaseInfoList)
-                .build();
-    }
-
-    @Override
     @Transactional
     public void deleteByCustomerId(Integer customerId, String opUser) throws CustomerException {
         if (customerId == null || customerId <= 0 || StringUtils.isBlank(opUser)) {

@@ -1,7 +1,12 @@
 package com.z.merchantsettle.modules.customer.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.z.merchantsettle.common.PageData;
 import com.z.merchantsettle.exception.CustomerException;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
@@ -9,10 +14,9 @@ import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomerContract;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
 import com.z.merchantsettle.modules.customer.constants.CustomerConstant;
 import com.z.merchantsettle.modules.customer.dao.CustomerContractDBMapper;
-import com.z.merchantsettle.modules.customer.domain.bo.CustomerContract;
-import com.z.merchantsettle.modules.customer.domain.bo.CustomerContractAudited;
-import com.z.merchantsettle.modules.customer.domain.bo.CustomerSigner;
-import com.z.merchantsettle.modules.customer.domain.bo.CustomerSignerAudited;
+import com.z.merchantsettle.modules.customer.domain.ContractRequestParam;
+import com.z.merchantsettle.modules.customer.domain.bo.*;
+import com.z.merchantsettle.modules.customer.domain.db.CustomerContractAuditedDB;
 import com.z.merchantsettle.modules.customer.domain.db.CustomerContractDB;
 import com.z.merchantsettle.modules.customer.service.*;
 import com.z.merchantsettle.utils.TransferUtil;
@@ -24,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CustomerContractServiceImpl implements CustomerContractService {
@@ -49,7 +54,17 @@ public class CustomerContractServiceImpl implements CustomerContractService {
     private CustomerOpLogService customerOpLogService;
 
     @Override
-    public void saveOrUpdate(CustomerContract customerContract, String opUser) throws CustomerException {
+    public PageData<ContractBaseInfo> getCustomerContractList(Integer customerId) throws CustomerException {
+        if (customerId == null || customerId <= 0) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
+        }
+        ContractRequestParam param = new ContractRequestParam();
+        param.setCustomerId(customerId);
+        return getContractBaseInfoList(param, 1, 10);
+    }
+
+    @Override
+    public CustomerContract saveOrUpdate(CustomerContract customerContract, String opUser) throws CustomerException {
         if (customerContract == null || customerContract.getPartyA() == null ||
                 customerContract.getPartyB() == null || StringUtils.isBlank(opUser)) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
@@ -59,16 +74,25 @@ public class CustomerContractServiceImpl implements CustomerContractService {
         CustomerSigner partyA = customerContract.getPartyA();
         CustomerSigner partyB = customerContract.getPartyB();
         CustomerContractDB customerContractDB = CustomerTransferUtil.transCustomerContract2DB(customerContract);
-        boolean isNew = !(customerContract.getId() != null && customerContract.getId() >= 0);
+        boolean isNew = (customerContract.getId() == null || customerContract.getId() <= 0);
         if (isNew) {
+            customerContractDB.setStatus(CustomerConstant.CustomerStatus.AUDITING.getCode());
+            customerContractDBMapper.insertSelective(customerContractDB);
+
+            partyA.setContractId(customerContractDB.getId());
+            partyB.setContractId(customerContractDB.getId());
+            customerSignerService.insertSelective(Lists.newArrayList(partyA, partyB));
+
+            customerContract = CustomerTransferUtil.transCustomerContractDB2Bo(customerContractDB);
+            customerContract.setPartyA(partyA);
+            customerContract.setPartyB(partyB);
+        } else {
             customerContractDBMapper.updateByIdSelective(customerContractDB);
             customerSignerService.updateByIdSelective(Lists.newArrayList(partyA, partyB));
-        } else {
-            customerContractDBMapper.insertSelective(customerContractDB);
-            customerSignerService.insertSelective(Lists.newArrayList(partyA, partyB));
         }
         commitAudit(customerContract, opUser, isNew);
-        customerOpLogService.addLog(customerContract.getCustomerId(), "合同", "保存合同，提交审核", opUser);
+//        customerOpLogService.addLog(customerContract.getCustomerId(), "合同", "保存合同，提交审核", opUser);
+        return customerContract;
     }
 
     private void commitAudit(CustomerContract customerContract, String opUser, boolean isNew) {
@@ -199,5 +223,51 @@ public class CustomerContractServiceImpl implements CustomerContractService {
         CustomerSignerAudited customerSignerAudited = new CustomerSignerAudited();
         TransferUtil.transferAll(customerSigner, customerSignerAudited);
         return customerSignerAudited;
+    }
+
+    @Override
+    public PageData<ContractBaseInfo> getContractBaseInfoList(ContractRequestParam contractRequestParam, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<CustomerContractDB> contractList = customerContractDBMapper.getContractList(contractRequestParam);
+        PageInfo<CustomerContractDB> pageInfo = new PageInfo<>(contractList);
+
+        List<Integer> contractIdList = Lists.transform(contractList, new Function<CustomerContractDB, Integer>() {
+            @Override
+            public Integer apply(CustomerContractDB input) {
+                return input.getId();
+            }
+        });
+        Map<Integer, List<CustomerSigner>> customerSignerMap = customerSignerService.getCustomerSignerByContractIdList(contractIdList);
+
+        List<ContractBaseInfo> contractBaseInfoList = Lists.newArrayList();
+        for (CustomerContractDB customerContractDB : contractList) {
+            ContractBaseInfo contractBaseInfo = new ContractBaseInfo();
+            contractBaseInfo.setContractId(customerContractDB.getId());
+            contractBaseInfo.setContractNum(customerContractDB.getCustomerContractNum());
+            contractBaseInfo.setAuditStatus(CustomerConstant.CustomerStatus.getByCode(customerContractDB.getStatus()));
+            contractBaseInfo.setContractType("纸质合同");
+            contractBaseInfo.setContractValidTime(customerContractDB.getContractEndTime());
+
+            List<CustomerSigner> customerSignerList = customerSignerMap.get(customerContractDB.getId());
+            for (CustomerSigner customerSigner : customerSignerList) {
+                if (CustomerConstant.SIGNER_LABEL_A.equals(customerSigner.getSignerLabel())) {
+                    contractBaseInfo.setPartyAName(customerSigner.getParty());
+                    contractBaseInfo.setPartyASignerName(customerSigner.getPartyContactPerson());
+                } else {
+                    contractBaseInfo.setPartyBSignerName(customerSigner.getPartyContactPerson());
+                    contractBaseInfo.setPrincipal(customerSigner.getPartyContactPerson());
+                    contractBaseInfo.setSignerTime(customerSigner.getSignTime());
+                }
+            }
+
+            contractBaseInfoList.add(contractBaseInfo);
+        }
+        return new PageData.Builder<ContractBaseInfo>()
+                .pageNum(pageNum)
+                .pageSize(pageSize)
+                .totalSize((int) pageInfo.getTotal())
+                .totalPage(pageInfo.getPages())
+                .data(contractBaseInfoList)
+                .build();
     }
 }

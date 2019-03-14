@@ -27,7 +27,7 @@
         update
           customer_poi
         SET
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         where
           customerId = #{customerId}
         and
@@ -37,7 +37,7 @@
         update
           customer_poi
         SET
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         where
           customerId = #{customerId}
     </update>
@@ -61,8 +61,8 @@
             <if test="wmPoiId != null" >
                 #{wmPoiId},
             </if>
-            unixtime(),
-            unixtime(),
+            unix_timestamp(),
+            unix_timestamp(),
             1
         </trim>
     </insert>

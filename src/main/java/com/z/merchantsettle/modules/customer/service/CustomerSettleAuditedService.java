@@ -8,7 +8,7 @@ public interface CustomerSettleAuditedService {
 
     CustomerSettleAudited getCustomerSettleBySettleId(Integer settleId);
 
-    PageData<CustomerSettleBaseInfo> getCustomerSettleList(String settleOrPoiId, Integer pageNum, Integer pageSize);
+    PageData<CustomerSettleBaseInfo> getCustomerSettleList(Integer customerId, String settleOrPoiId, Integer pageNum, Integer pageSize);
 
     void saveOrUpdate(CustomerSettleAudited customerSettleAudited);
 }

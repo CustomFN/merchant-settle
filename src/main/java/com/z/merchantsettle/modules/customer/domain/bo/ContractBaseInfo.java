@@ -9,10 +9,10 @@ public class ContractBaseInfo {
     private String contractNum;
     private String partyAName;
     private String partyASignerName;
-    private String partyBName;
+    private String partyBSignerName;
     private String principal;
     private String auditStatus;
-    private String signerTime;
-    private String contractValidTime;
+    private Long signerTime;
+    private Long contractValidTime;
     private String contractType;
 }

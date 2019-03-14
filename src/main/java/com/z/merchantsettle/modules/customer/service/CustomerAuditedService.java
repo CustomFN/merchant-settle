@@ -8,8 +8,6 @@ import com.z.merchantsettle.modules.customer.domain.bo.CustomerBaseInfo;
 
 public interface CustomerAuditedService {
 
-    PageData<CustomerBaseInfo> getCustomerList(CustomerSearchParam customerSearchParam, Integer pageNum, Integer pageSize);
-
     void deleteByCustomerId(Integer customerId, String opUser) throws CustomerException;
 
 

@@ -25,8 +25,8 @@ public class CustomerKpController {
     @Autowired
     private CustomerKpService customerKpService;
 
-    @RequestMapping("/save")
-    public Object saveOrUpdate(@RequestBody CustomerKp customerKp) {
+    @PostMapping("/save")
+    public Object saveOrUpdate(CustomerKp customerKp) {
         LOGGER.info("saveOrUpdate customerKp = {}" , JSON.toJSONString(customerKp));
         if (customerKp == null) {
             return ReturnResult.fail(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
@@ -39,15 +39,15 @@ public class CustomerKpController {
 
         try {
             User user = ShiroUtils.getSysUser();
-            customerKpService.saveOrUpdate(customerKp, user.getUserId());
-            return ReturnResult.success();
+            customerKp = customerKpService.saveOrUpdate(customerKp, user.getUserId());
+            return ReturnResult.success(customerKp);
         } catch (UpmException | CustomerException e) {
             LOGGER.error("保存客户KP失败", e);
             return ReturnResult.fail(CustomerConstant.CUSTOMER_OP_ERROR, "保存失败");
         }
     }
 
-    @RequestMapping("/show/{customerId}")
+    @PostMapping("/show/{customerId}")
     public Object getCustomerKpByCustomerId(@PathVariable(name = "customerId") Integer customerId,
                                             @RequestParam(name = "effective") Integer effective) {
         if (customerId == null || customerId <= 0 || effective < 0) {

@@ -45,8 +45,8 @@ public class CustomerContractController {
 
         try {
             User user = ShiroUtils.getSysUser();
-            customerContractService.saveOrUpdate(customerContract, user.getUserId());
-            return ReturnResult.success();
+            customerContract = customerContractService.saveOrUpdate(customerContract, user.getUserId());
+            return ReturnResult.success(customerContract);
         } catch (UpmException | CustomerException e) {
             LOGGER.error("保存客户合同失败", e);
             return ReturnResult.fail(CustomerConstant.CUSTOMER_OP_ERROR, "保存失败");
@@ -76,7 +76,7 @@ public class CustomerContractController {
         }
 
         try {
-            return ReturnResult.success(customerContractAuditedService.getCustomerContractList(customerId));
+            return ReturnResult.success(customerContractService.getCustomerContractList(customerId));
         } catch (CustomerException e) {
             LOGGER.error("获取客户合同列表失败 customerId = {}", customerId, e);
             return ReturnResult.fail(CustomerConstant.CUSTOMER_OP_ERROR, "查询合同列表异常");

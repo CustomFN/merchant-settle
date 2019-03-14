@@ -1,14 +1,18 @@
 package com.z.merchantsettle.utils.transfer.customer;
 
 import com.google.common.collect.Lists;
+import com.z.merchantsettle.modules.customer.constants.CustomerConstant;
 import com.z.merchantsettle.modules.customer.domain.bo.*;
 import com.z.merchantsettle.modules.customer.domain.db.*;
 import com.z.merchantsettle.utils.TransferUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 public class CustomerTransferUtil {
+
+    private static final String separator = ",";
 
     public static Customer transCustomerDB2Bo(CustomerDB customerDB) {
         if (customerDB == null ) {
@@ -17,6 +21,12 @@ public class CustomerTransferUtil {
 
         Customer customer = new Customer();
         TransferUtil.transferAll(customerDB, customer);
+
+        if (StringUtils.isNotBlank(customerDB.getCustomerCertificatesPic())) {
+            String[] pics = StringUtils.split(customerDB.getCustomerCertificatesPic(), separator);
+            customer.setCustomerCertificatesPicList(Lists.newArrayList(pics));
+        }
+        customer.setStatusStr(CustomerConstant.CustomerStatus.getByCode(customerDB.getStatus()));
         return customer;
     }
 
@@ -39,6 +49,11 @@ public class CustomerTransferUtil {
 
         CustomerDB customerDB = new CustomerDB();
         TransferUtil.transferAll(customer, customerDB);
+
+        if (CollectionUtils.isNotEmpty(customer.getCustomerCertificatesPicList())) {
+            String pic = StringUtils.join(customer.getCustomerCertificatesPicList(), separator);
+            customerDB.setCustomerCertificatesPic(pic);
+        }
         return customerDB;
     }
 
@@ -94,6 +109,14 @@ public class CustomerTransferUtil {
 
         CustomerKpDB customerKpDB = new CustomerKpDB();
         TransferUtil.transferAll(customerKp, customerKpDB);
+        if (CollectionUtils.isNotEmpty(customerKp.getKpAuthorizationPicList())) {
+            String pic = StringUtils.join(customerKp.getKpAuthorizationPicList(), separator);
+            customerKpDB.setKpAuthorizationPic(pic);
+        }
+        if (CollectionUtils.isNotEmpty(customerKp.getKpCertificatesPicList())) {
+            String pic = StringUtils.join(customerKp.getKpCertificatesPicList(), separator);
+            customerKpDB.setKpCertificatesPic(pic);
+        }
         return customerKpDB;
     }
 
@@ -116,6 +139,15 @@ public class CustomerTransferUtil {
 
         CustomerKp customerKp = new CustomerKp();
         TransferUtil.transferAll(customerKpDB, customerKp);
+        if (StringUtils.isNotBlank(customerKpDB.getKpAuthorizationPic())) {
+            String[] pics = StringUtils.split(customerKpDB.getKpAuthorizationPic(), separator);
+            customerKp.setKpAuthorizationPicList(Lists.newArrayList(pics));
+        }
+        if (StringUtils.isNotBlank(customerKpDB.getKpCertificatesPic())) {
+            String[] pics = StringUtils.split(customerKpDB.getKpCertificatesPic(), separator);
+            customerKp.setKpCertificatesPicList(Lists.newArrayList(pics));
+        }
+        customerKp.setStatusStr(CustomerConstant.CustomerStatus.getByCode(customerKpDB.getStatus()));
         return customerKp;
     }
 
@@ -158,7 +190,24 @@ public class CustomerTransferUtil {
 
         CustomerContract customerContract = new CustomerContract();
         TransferUtil.transferAll(customerContractDB, customerContract);
+        if (StringUtils.isNotBlank(customerContractDB.getContractScan())) {
+            String[] pics = StringUtils.split(customerContractDB.getContractScan(), ",");
+            customerContract.setContractScanList(Lists.newArrayList(pics));
+        }
+        customerContract.setStatusStr(CustomerConstant.CustomerStatus.getByCode(customerContractDB.getStatus()));
         return customerContract;
+    }
+
+    public static List<CustomerContract> transCustomerContractDBList2BoList(List<CustomerContractDB> customerContractDBList) {
+        if (CollectionUtils.isEmpty(customerContractDBList)) {
+            return Lists.newArrayList();
+        }
+
+        List<CustomerContract> customerContractList = Lists.newArrayList();
+        for (CustomerContractDB customerContractDB : customerContractDBList) {
+            customerContractList.add(transCustomerContractDB2Bo(customerContractDB));
+        }
+        return customerContractList;
     }
 
     public static CustomerContractAudited transCustomerContractAuditedDB2Bo(CustomerContractAuditedDB customerContractAuditedDB) {
@@ -190,6 +239,10 @@ public class CustomerTransferUtil {
 
         CustomerContractDB customerContractDB = new CustomerContractDB();
         TransferUtil.transferAll(customerContract, customerContractDB);
+        if (CollectionUtils.isNotEmpty(customerContract.getContractScanList())) {
+            String pics = StringUtils.join(customerContract.getContractScanList(), ",");
+            customerContractDB.setContractScan(pics);
+        }
         return customerContractDB;
     }
 
@@ -377,5 +430,17 @@ public class CustomerTransferUtil {
         CustomerSettleAuditedDB customerSettleAuditedDB = new CustomerSettleAuditedDB();
         TransferUtil.transferAll(customerSettleAudited, customerSettleAuditedDB);
         return customerSettleAuditedDB;
+    }
+
+    public static List<CustomerSigner> transCustomerSignerDBList2BoList(List<CustomerSignerDB> customerSignerDBList) {
+        if (CollectionUtils.isEmpty(customerSignerDBList)) {
+            return Lists.newArrayList();
+        }
+
+        List<CustomerSigner> customerSignerList = Lists.newArrayList();
+        for (CustomerSignerDB customerSignerDB : customerSignerDBList) {
+            customerSignerList.add(transCustomerSignerDB2Bo(customerSignerDB));
+        }
+        return customerSignerList;
     }
 }

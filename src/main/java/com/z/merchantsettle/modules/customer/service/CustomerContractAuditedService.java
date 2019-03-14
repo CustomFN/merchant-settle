@@ -10,11 +10,8 @@ import java.util.List;
 
 public interface CustomerContractAuditedService {
 
-    List<CustomerContractAudited> getCustomerContractList(Integer customerId) throws CustomerException;
-
     CustomerContractAudited getCustomerContractById(Integer contractId) throws CustomerException;
 
     void saveOrUpdate(CustomerContractAudited customerContractAudited) throws CustomerException;
 
-    PageData<ContractBaseInfo> getContractBaseInfoList(ContractRequestParam contractRequestParam, Integer pageNum, Integer pageSize);
 }

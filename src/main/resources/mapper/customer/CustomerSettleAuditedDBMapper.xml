@@ -44,7 +44,7 @@
         update
           customer_settle_audited
         SET
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         WHERE
           id = #{id}
     </update>
@@ -159,8 +159,8 @@
             <if test="status != null" >
                 #{status},
             </if>
-            unixtime(),
-            unixtime(),
+            unix_timestamp(),
+            unix_timestamp(),
             1,
             #{customerId}
         </trim>
@@ -222,19 +222,20 @@
             <if test="valid != null" >
                 valid = #{valid},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where id = #{id}
     </update>
-    <select id="getSettleList" resultMap="BaseResultMap" parameterType="java.util.List">
+    <select id="getSettleList" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM
         customer_settle_audited
         <where>
-            <if test="list != null and list.size > 0">
-                id IN
-                <foreach collection="list" item="item" separator="," open="(" close=")">
+            customerId = #{customerId}
+            <if test="settleIdList != null and settleIdList.size > 0">
+                and id IN
+                <foreach collection="settleIdList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
             </if>

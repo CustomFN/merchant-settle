@@ -1,6 +1,7 @@
 package com.z.merchantsettle.modules.customer.dao;
 
 import com.z.merchantsettle.modules.customer.domain.db.CustomerSettleAuditedDB;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,5 +17,5 @@ public interface CustomerSettleAuditedDBMapper {
 
     void updateByIdSelective(CustomerSettleAuditedDB customerSettleAuditedDB);
 
-    List<CustomerSettleAuditedDB> getSettleList(List<Integer> settleIdList);
+    List<CustomerSettleAuditedDB> getSettleList(@Param("customerId") Integer customerId, @Param("settleIdList") List<Integer> settleIdList);
 }

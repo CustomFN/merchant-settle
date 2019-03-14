@@ -45,7 +45,7 @@ public class CustomerController {
         if (pageNum == null || pageNum < 1 || pageSize == null || pageSize < 1) {
             return ReturnResult.fail("参数错误");
         }
-        return ReturnResult.success(customerAuditedService.getCustomerList(customerSearchParam, pageNum, pageSize));
+        return ReturnResult.success(customerService.getCustomerList(customerSearchParam, pageNum, pageSize));
     }
 
     @RequestMapping("/delete/{customerId}")
@@ -99,7 +99,7 @@ public class CustomerController {
     }
 
     @RequestMapping("/save")
-    public Object saveOrUpdate(@RequestBody Customer customer) {
+    public Object saveOrUpdate(Customer customer) {
         LOGGER.info("saveOrUpdate customer = {}", JSON.toJSONString(customer));
         if (customer == null) {
             return ReturnResult.fail(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
@@ -112,8 +112,8 @@ public class CustomerController {
 
         try {
             User user = ShiroUtils.getSysUser();
-            customerService.saveOrUpdate(customer, user.getUserId());
-            return ReturnResult.success();
+            customer = customerService.saveOrUpdate(customer, user.getUserId());
+            return ReturnResult.success(customer);
         } catch (UpmException | CustomerException e) {
             LOGGER.error("保存客户失败", e);
             return ReturnResult.fail(CustomerConstant.CUSTOMER_OP_ERROR ,"保存失败");

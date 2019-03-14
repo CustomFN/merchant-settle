@@ -35,7 +35,7 @@
         update
           customer
         SET
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         WHERE
           id = #{id}
     </update>
@@ -107,8 +107,8 @@
             <if test="auditResult != null">
                 #{auditResult},
             </if>
-            unixtime(),
-            unixtime(),
+            unix_timestamp(),
+            unix_timestamp(),
             1
         </trim>
     </insert>
@@ -148,7 +148,7 @@
             <if test="auditResult != null">
                 auditResult = #{auditResult},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where id = #{id}
     </update>
@@ -157,11 +157,32 @@
         update
           customer
         set
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         WHERE
           customerId = #{customerId}
         and
           valid = 1
     </update>
 
+    <select id="getCustomerList" parameterType="com.z.merchantsettle.modules.customer.domain.CustomerSearchParam" resultMap="BaseResultMap">
+        select
+          <include refid="Base_Column_List"/>
+        from
+          customer
+        <where>
+            <if test="customerSearchParam.customerId != null and customerSearchParam.customerId > 0">
+                and customerId = #{customerSearchParam.customerId}
+            </if>
+            <if test="customerSearchParam.customerName != null and customerSearchParam.customerName != ''">
+                and customerName like concat(concat('%',#{customerSearchParam.customerName}),'%')
+            </if>
+            <if test="customerSearchParam.customerPrincipal != null and customerSearchParam.customerPrincipal != ''">
+                and customerPrincipal like concat(concat('%',#{customerSearchParam.customerPrincipal}),'%')
+            </if>
+            and valid = 1
+        </where>
+        order BY
+          id
+        desc
+    </select>
 </mapper>

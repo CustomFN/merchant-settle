@@ -13,5 +13,4 @@ public interface CustomerSignerAuditedService {
 
     void saveOrUpdate(List<CustomerSignerAudited> customerSignerAuditedList) throws CustomerException;
 
-    Map<Integer, List<CustomerSignerAudited>> getCustomerSignerByContractIdList(List<Integer> contractIdList);
 }

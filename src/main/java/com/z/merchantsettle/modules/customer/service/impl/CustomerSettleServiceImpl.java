@@ -60,22 +60,26 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
 
 
     @Override
-    public void saveOrUpdate(CustomerSettle customerSettle, String opUserId) {
+    public CustomerSettle saveOrUpdate(CustomerSettle customerSettle, String opUserId) {
+        LOGGER.info("saveOrUpdate customerSettle = {}, opUserId = {}", JSON.toJSONString(customerSettle), opUserId);
         if (customerSettle == null || StringUtils.isBlank(opUserId) || CollectionUtils.isEmpty(customerSettle.getWmPoiIdList())) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
 
         CustomerSettleDB customerSettleDB = CustomerTransferUtil.transCustomerSettle2DB(customerSettle);
-        boolean isNew = !(customerSettleDB.getId() != null && customerSettleDB.getId() > 0);
+        boolean isNew = (customerSettle.getId() == null || customerSettle.getId() <= 0);
         if (isNew) {
+            customerSettleDB.setStatus(CustomerConstant.CustomerStatus.AUDITING.getCode());
             customerSettleDBMapper.insertSelective(customerSettleDB);
+
+            customerSettle = CustomerTransferUtil.transCustomerSettleDB2Bo(customerSettleDB);
         } else {
             customerSettleDBMapper.updateByIdSelective(customerSettleDB);
         }
-        customerSettlePoiService.saveOrUpdateSettlePoi(customerSettleDB.getId(), customerSettle.getWmPoiIdList());
+//        customerSettlePoiService.saveOrUpdateSettlePoi(customerSettleDB.getId(), customerSettle.getWmPoiIdList());
         commitAudit(customerSettle, opUserId, isNew);
-
-        customerOpLogService.addLog(customerSettle.getCustomerId(), "结算", "保存客户结算，提交审核", opUserId);
+//        customerOpLogService.addLog(customerSettle.getCustomerId(), "结算", "保存客户结算，提交审核", opUserId);
+        return customerSettle;
     }
 
     private void commitAudit(CustomerSettle customerSettle, String opUserId, boolean isNew) {
@@ -131,29 +135,28 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
     }
 
     @Override
-    public PageData<CustomerSettleBaseInfo> getCustomerSettleList(String settleOrPoiId, Integer effective, Integer pageNum, Integer pageSize) {
-        if (effective < 0) {
+    public PageData<CustomerSettleBaseInfo> getCustomerSettleList(Integer customerId, String settleOrPoiId, Integer effective, Integer pageNum, Integer pageSize) {
+        if (customerId == null || customerId <= 0 || effective < 0) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
 
         PageData<CustomerSettleBaseInfo> pageData;
         if (CustomerConstant.EFFECTIVE == effective) {
-            pageData = customerSettleAuditedService.getCustomerSettleList(settleOrPoiId, pageNum, pageSize);
+            pageData = customerSettleAuditedService.getCustomerSettleList(customerId, settleOrPoiId, pageNum, pageSize);
         } else {
-            pageData = getCustomerSettleList(settleOrPoiId, pageNum, pageSize);
+            pageData = getCustomerSettleList(customerId, settleOrPoiId, pageNum, pageSize);
         }
         return pageData;
     }
 
-    private PageData<CustomerSettleBaseInfo> getCustomerSettleList(String settleOrPoiId, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-
+    private PageData<CustomerSettleBaseInfo> getCustomerSettleList(Integer customerId, String settleOrPoiId, Integer pageNum, Integer pageSize) {
         List<Integer> settleIdList = Lists.newArrayList();
         if (StringUtils.isNotBlank(settleOrPoiId)) {
             List<Integer> settleIds = customerSettlePoiService.getSettleIdByWmPoiId(Integer.valueOf(settleOrPoiId));
             settleIdList.addAll(settleIds);
         }
-        List<CustomerSettleDB> settleDBList = customerSettleDBMapper.getSettleList(settleIdList);
+        PageHelper.startPage(pageNum, pageSize);
+        List<CustomerSettleDB> settleDBList = customerSettleDBMapper.getSettleListByCustomerId(customerId, settleIdList);
 
         PageInfo<CustomerSettleDB> pageInfo = new PageInfo<>(settleDBList);
 

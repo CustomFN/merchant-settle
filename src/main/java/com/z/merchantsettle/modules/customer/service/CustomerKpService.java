@@ -6,7 +6,7 @@ import com.z.merchantsettle.modules.customer.domain.bo.CustomerKp;
 
 public interface CustomerKpService {
 
-    void saveOrUpdate(CustomerKp customerKp, String opUser) throws CustomerException;
+    CustomerKp saveOrUpdate(CustomerKp customerKp, String opUser) throws CustomerException;
 
     CustomerKp getCustomerKpByCustomerId(Integer customerId, Integer effective) throws CustomerException;
 

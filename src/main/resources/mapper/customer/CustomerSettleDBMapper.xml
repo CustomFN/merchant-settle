@@ -46,7 +46,7 @@
         update
           customer_settle
         SET
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         WHERE
           id = #{id}
     </update>
@@ -107,10 +107,12 @@
             <if test="auditResult != null">
                 auditResult,
             </if>
+            <if test="customerId != null">
+                customerId,
+            </if>
             ctime,
             utime,
-            valid,
-            customerId
+            valid
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="settleAccType != null" >
@@ -167,10 +169,12 @@
             <if test="auditResult != null" >
                 #{auditResult},
             </if>
-            unixtime(),
-            unixtime(),
-            1,
-            #{customerId}
+            <if test="customerId != null" >
+                #{customerId},
+            </if>
+            unix_timestamp(),
+            unix_timestamp(),
+            1
         </trim>
     </insert>
     <update id="updateByIdSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerSettleDB" >
@@ -233,7 +237,7 @@
             <if test="auditResult != null" >
                 auditResult = #{auditResult},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where id = #{id}
     </update>
@@ -246,6 +250,22 @@
             <if test="list != null and list.size > 0">
                 id IN
                 <foreach collection="list" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            and valid = 1
+        </where>
+    </select>
+    <select id="getSettleListByCustomerId" resultMap="BaseResultMap" parameterType="java.util.List">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          customer_settle
+        <where>
+            customerId = #{customerId}
+            <if test="settleIdList != null and settleIdList.size > 0">
+                and id IN
+                <foreach collection="settleIdList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
             </if>

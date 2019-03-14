@@ -40,15 +40,15 @@ public class CustomerSettleAuditedServiceImpl implements CustomerSettleAuditedSe
     }
 
     @Override
-    public PageData<CustomerSettleBaseInfo> getCustomerSettleList(String settleOrPoiId, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-
+    public PageData<CustomerSettleBaseInfo> getCustomerSettleList(Integer customerId, String settleOrPoiId, Integer pageNum, Integer pageSize) {
         List<Integer> settleIdList = Lists.newArrayList();
         if (StringUtils.isNotBlank(settleOrPoiId)) {
             List<Integer> settleIds = customerSettlePoiService.getSettleIdByWmPoiIdAudited(Integer.valueOf(settleOrPoiId));
             settleIdList.addAll(settleIds);
         }
-        List<CustomerSettleAuditedDB> settleDBList = customerSettleAuditedDBMapper.getSettleList(settleIdList);
+
+        PageHelper.startPage(pageNum, pageSize);
+        List<CustomerSettleAuditedDB> settleDBList = customerSettleAuditedDBMapper.getSettleList(customerId, settleIdList);
         PageInfo<CustomerSettleAuditedDB> pageInfo = new PageInfo<>(settleDBList);
 
         List<CustomerSettleBaseInfo> settleList = Lists.newArrayList();

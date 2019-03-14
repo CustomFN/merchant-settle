@@ -22,7 +22,7 @@
             #{customerOpLog.module},
             #{customerOpLog.content},
             #{customerOpLog.opUser},
-            unixtime()
+            unix_timestamp()
           )
     </insert>
 

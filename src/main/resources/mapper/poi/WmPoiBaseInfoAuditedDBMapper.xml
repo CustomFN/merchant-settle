@@ -96,7 +96,7 @@
             <if test="businessInfoStatus != null" >
                 businessInfoStatus = #{businessInfoStatus},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where id = #{id}
     </update>
@@ -219,8 +219,8 @@
             <if test="businessInfoStatus != null" >
                 #{businessInfoStatus},
             </if>
-            unixtime(),
-            unixtime(),
+            unix_timestamp(),
+            unix_timestamp(),
             1
         </trim>
     </insert>

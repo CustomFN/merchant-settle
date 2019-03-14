@@ -24,7 +24,7 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public PageData<ContractBaseInfo> getContractList(ContractRequestParam contractRequestParam, Integer pageNum, Integer pageSize) {
-        return customerContractAuditedService.getContractBaseInfoList(contractRequestParam, pageNum, pageSize);
+        return customerContractService.getContractBaseInfoList(contractRequestParam, pageNum, pageSize);
     }
 
     @Override

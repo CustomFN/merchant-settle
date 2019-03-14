@@ -31,7 +31,7 @@
         update
           customer_contract_audited
         SET
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         WHERE
           id = #{id}
     </update>
@@ -81,8 +81,8 @@
                 #{customerValidtime},
             </if>
             #{customerId},
-            unixtime(),
-            unixtime(),
+            unix_timestamp(),
+            unix_timestamp(),
             1
         </trim>
     </insert>
@@ -113,45 +113,10 @@
             <if test="valid != null" >
                 valid = #{valid},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where id = #{id}
     </update>
 
-    <select id="getByCustomerId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-        select
-          <include refid="Base_Column_List" />
-        from
-          customer_contract_audited
-        where
-          customerId = #{customerId}
-        and
-          valid = 1
-    </select>
 
-    <select id="getContractList" parameterType="com.z.merchantsettle.modules.customer.domain.ContractRequestParam" resultMap="BaseResultMap">
-        select
-          <include refid="Base_Column_List" />
-        from
-          customer_contract_audited
-        <where>
-            <if test="contractId != null and contractId >= 0">
-                id = #{contractRequestParam.contractId},
-            </if>
-            <if test="customerId != null and customerId >= 0">
-                customerId = #{contractRequestParam.customerId},
-            </if>
-            <if test="contractNum != null and contractNum != ''">
-                contractNum = #{contractRequestParam.contractNum},
-            </if>
-            <if test="contractStatus != null and contractStatus >= 0">
-                contractStatus = #{contractRequestParam.contractStatus},
-            </if>
-            <if test="partyAName != null and partyAName != ''">
-                partyAName like concat(concat('%',#{contractRequestParam.partyAName}),'%'),
-            </if>
-            and
-              valid = 1
-        </where>
-    </select>
 </mapper>

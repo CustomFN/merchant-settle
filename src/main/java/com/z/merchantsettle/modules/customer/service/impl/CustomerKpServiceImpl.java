@@ -40,21 +40,24 @@ public class CustomerKpServiceImpl implements CustomerKpService {
     private CustomerOpLogService customerOpLogService;
 
     @Override
-    public void saveOrUpdate(CustomerKp customerKp, String opUser) throws CustomerException {
+    public CustomerKp saveOrUpdate(CustomerKp customerKp, String opUser) throws CustomerException {
         if (customerKp == null || StringUtils.isBlank(opUser)) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
 
         CustomerKpDB customerKpDB = CustomerTransferUtil.transCustomerKp2DB(customerKp);
-        boolean isNew = !(customerKp.getId() != null && customerKp.getId() > 0);
+        boolean isNew = (customerKp.getId() == null || customerKp.getId() <= 0);
         if (isNew) {
-            customerKpDBMapper.updateByIdSelective(customerKpDB);
-        } else {
+            customerKpDB.setStatus(CustomerConstant.CustomerStatus.AUDITING.getCode());
             customerKpDBMapper.insertSelective(customerKpDB);
+
+            customerKp = CustomerTransferUtil.transCustomerKpDB2Bo(customerKpDB);
+        } else {
+            customerKpDBMapper.updateByIdSelective(customerKpDB);
         }
         commitAudit(customerKp, opUser, isNew);
-
         customerOpLogService.addLog(customerKp.getCustomerId(), "KP", "保存客户KP，提交审核", opUser);
+        return customerKp;
     }
 
     private void commitAudit(CustomerKp customerKp, String opUser, boolean isNew) {

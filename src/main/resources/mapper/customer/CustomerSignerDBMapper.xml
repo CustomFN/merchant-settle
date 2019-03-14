@@ -4,6 +4,7 @@
     <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.customer.domain.db.CustomerSignerDB" >
         <id column="id" property="id" jdbcType="INTEGER" />
         <result column="contractId" property="contractId" jdbcType="INTEGER" />
+        <result column="signerLabel" property="signerLabel"/>
         <result column="party" property="party" jdbcType="VARCHAR" />
         <result column="partyContactPerson" property="partyContactPerson" jdbcType="VARCHAR" />
         <result column="partyContactPersonPhone" property="partyContactPersonPhone" jdbcType="VARCHAR" />
@@ -13,7 +14,7 @@
         <result column="valid" property="valid" jdbcType="INTEGER" />
     </resultMap>
     <sql id="Base_Column_List" >
-        id, contractId, party, partyContactPerson, partyContactPersonPhone, signTime,
+        id, contractId, signerLabel, party, partyContactPerson, partyContactPersonPhone, signTime,
         ctime, utime, valid
     </sql>
     <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -30,7 +31,7 @@
         update
           customer_signer
         SET
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         WHERE
           id = #{id}
     </update>
@@ -39,6 +40,9 @@
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="contractId != null" >
                 contractId,
+            </if>
+            <if test="signerLabel != null" >
+                signerLabel,
             </if>
             <if test="party != null" >
                 party,
@@ -60,6 +64,9 @@
             <if test="contractId != null" >
                 #{contractId},
             </if>
+            <if test="signerLabel != null" >
+                #{signerLabel},
+            </if>
             <if test="party != null" >
                 #{party},
             </if>
@@ -72,8 +79,8 @@
             <if test="signTime != null" >
                 #{signTime},
             </if>
-            unixtime(),
-            unixtime(),
+            unix_timestamp(),
+            unix_timestamp(),
             1
         </trim>
     </insert>
@@ -82,6 +89,9 @@
         <set >
             <if test="contractId != null" >
                 contractId = #{contractId},
+            </if>
+            <if test="signerLabel != null" >
+                signerLabel = #{signerLabel},
             </if>
             <if test="party != null" >
                 party = #{party},
@@ -98,7 +108,7 @@
             <if test="valid != null" >
                 valid = #{valid},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where id = #{id}
     </update>
@@ -114,4 +124,17 @@
           valid = 1
     </select>
 
+    <select id="getCustomerSignerByContractIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+        SELECT
+         <include refid="Base_Column_List"/>
+        FROM
+          customer_signer
+        WHERE
+        contractId IN
+        <foreach collection="contractIdList" close=")" open="(" separator="," item="item">
+            #{item}
+        </foreach>
+        and
+          valid = 1
+    </select>
 </mapper>

@@ -39,12 +39,12 @@
         update
           customer_kp
         SET
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         WHERE
           id = #{id}
     </update>
     <insert id="insertSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerKpDB" useGeneratedKeys="true" keyProperty="id">
-        insert into customer
+        insert into customer_kp
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="kpType != null" >
                 kpType,
@@ -125,8 +125,8 @@
                 #{auditResult},
             </if>
             #{customerId},
-            unixtime(),
-            unixtime(),
+            unix_timestamp(),
+            unix_timestamp(),
             1
         </trim>
     </insert>
@@ -172,7 +172,7 @@
             <if test="valid != null" >
                 valid = #{valid},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where id = #{id}
     </update>
@@ -219,7 +219,7 @@
             <if test="auditResult != null">
                 auditResult = #{auditResult},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where customerId = #{customerId}
     </update>

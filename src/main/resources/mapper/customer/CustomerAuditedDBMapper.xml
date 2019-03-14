@@ -34,7 +34,7 @@
         update
           customer_audited
         SET
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         WHERE
           id = #{id}
     </update>
@@ -100,8 +100,8 @@
             <if test="customerPrincipal != null">
                 #{customerPrincipal},
             </if>
-            unixtime(),
-            unixtime(),
+            unix_timestamp(),
+            unix_timestamp(),
             1
         </trim>
     </insert>
@@ -138,7 +138,7 @@
             <if test="customerPrincipal != null">
                 customerPrincipal = #{customerPrincipal},
             </if>
-            utime = unixtime()
+            utime = unix_timestamp()
         </set>
         where id = #{id}
     </update>
@@ -169,7 +169,7 @@
         update
           customer_audited
         set
-          utime = unixtime(), valid = 0
+          utime = unix_timestamp(), valid = 0
         WHERE
           customerId = #{customerId}
         and

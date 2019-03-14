@@ -4,6 +4,7 @@ import com.z.merchantsettle.exception.CustomerException;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerSigner;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CustomerSignerService {
 
@@ -12,4 +13,6 @@ public interface CustomerSignerService {
     void insertSelective(List<CustomerSigner> customerSignerList) throws CustomerException;
 
     List<CustomerSigner> getCustomerSignerByContractId(Integer contractId) throws CustomerException;
+
+    Map<Integer, List<CustomerSigner>> getCustomerSignerByContractIdList(List<Integer> contractIdList);
 }
