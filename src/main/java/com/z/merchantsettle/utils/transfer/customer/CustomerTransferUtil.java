@@ -373,6 +373,8 @@ public class CustomerTransferUtil {
 
         CustomerSettle customerSettle = new CustomerSettle();
         TransferUtil.transferAll(customerSettleDB, customerSettle);
+
+        customerSettle.setStatusStr(CustomerConstant.CustomerStatus.getByCode(customerSettleDB.getStatus()));
         return customerSettle;
     }
 

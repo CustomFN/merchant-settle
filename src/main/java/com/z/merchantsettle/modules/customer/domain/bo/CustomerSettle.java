@@ -25,6 +25,7 @@ public class CustomerSettle {
     private Integer settleCycle;
     private Double settleMinAmount;
     private Integer status;
+    private String statusStr;
     private Long ctime;
     private Long utime;
     private Integer valid;

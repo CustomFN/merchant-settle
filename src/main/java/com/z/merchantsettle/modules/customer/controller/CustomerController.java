@@ -50,6 +50,7 @@ public class CustomerController {
 
     @RequestMapping("/delete/{customerId}")
     public Object deleteByCustomerId(@PathVariable(name = "customerId") Integer customerId) {
+        LOGGER.info("CustomerController deleteByCustomerId customerId = {}", customerId);
         if (customerId == null || customerId <= 0) {
             return ReturnResult.fail(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
@@ -60,7 +61,7 @@ public class CustomerController {
             if (!hasRole) {
                 return ReturnResult.fail(CustomerConstant.NO_PERMISSION, "无权限操作");
             }
-            customerAuditedService.deleteByCustomerId(customerId, user.getUserId());
+            customerService.deleteByCustomerId(customerId, user.getUserId());
         } catch (UpmException | CustomerException e) {
             return ReturnResult.fail(CustomerConstant.CUSTOMER_OP_ERROR, "客户删除失败");
         }
@@ -84,14 +85,15 @@ public class CustomerController {
     }
 
     @RequestMapping("/distributePrincipal")
-    public Object distributePrincipal(Integer customerId, String userId) {
-        if (customerId == null || customerId <= 0 || StringUtils.isBlank(userId)) {
+    public Object distributePrincipal(@RequestParam("customerId") Integer customerId,
+                                      @RequestParam("customerPrincipal") String customerPrincipal) {
+        if (customerId == null || customerId <= 0 || StringUtils.isBlank(customerPrincipal)) {
             return ReturnResult.fail(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
 
         try {
             User user = ShiroUtils.getSysUser();
-            customerService.distributePrincipal(customerId, userId, user.getUserId());
+            customerService.distributePrincipal(customerId, customerPrincipal, user.getUserId());
             return ReturnResult.success();
         } catch (UpmException | CustomerException e) {
             return ReturnResult.fail(CustomerConstant.CUSTOMER_OP_ERROR, "分配责任人失败");

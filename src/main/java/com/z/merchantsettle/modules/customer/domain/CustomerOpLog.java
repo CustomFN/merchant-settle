@@ -10,6 +10,7 @@ public class CustomerOpLog {
     private String module;
     private String content;
     private String opUser;
+    private String opUserId;
     private Long ctime;
 
 }

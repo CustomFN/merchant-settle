@@ -5,18 +5,21 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 
 @Repository
 public interface UserRoleMapper {
 
-    void unbindUserRole(String userId);
+    void unbindUserRole(@Param("userId") String userId);
+
+    void unbindUserRoleSet(@Param("userId") String userId, @Param("roleIdSet") Set<String> roleIdSet);
 
     void assginUserRole(@Param("userId") String userId, @Param("roleIdList") List<String> roleIdList);
 
-    List<String> getRoleIdByUserId(String userId);
+    List<String> getRoleIdByUserId(@Param("userId") String userId);
 
-    UserRoleDB getByUserIdAndRoleId(String userId, String roleId);
+    UserRoleDB getByUserIdAndRoleId(@Param("userId") String userId, @Param("roleId") String roleId);
 
     List<UserRoleDB> getByUserIdList(@Param("userIdList") List<String> userIdList);
 }

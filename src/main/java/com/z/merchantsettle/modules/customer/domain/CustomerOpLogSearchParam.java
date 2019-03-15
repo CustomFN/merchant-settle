@@ -8,5 +8,5 @@ public class CustomerOpLogSearchParam {
     private Integer customerId;
     private String module;
     private String content;
-    private String opUser;
+    private String opUserId;
 }

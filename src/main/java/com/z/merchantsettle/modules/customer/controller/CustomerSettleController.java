@@ -51,9 +51,10 @@ public class CustomerSettleController {
     public Object getCustomerSettleBySettleId(@PathVariable(name = "settleId") Integer settleId,
                                               @RequestParam(name = "effective") Integer effective) {
 
+        LOGGER.info("getCustomerSettleBySettleId settleId = {}, effective = {}", settleId, effective);
         try {
-            customerSettleService.getCustomerSettleBySettleId(settleId, effective);
-            return ReturnResult.success();
+            CustomerSettle customerSettle = customerSettleService.getCustomerSettleBySettleId(settleId, effective);
+            return ReturnResult.success(customerSettle);
         } catch (Exception e) {
             LOGGER.error("查询客户结算信息异常", e);
             return ReturnResult.fail(CustomerConstant.CUSTOMER_OP_ERROR, "查询客户结算信息异常");

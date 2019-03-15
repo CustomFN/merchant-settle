@@ -24,6 +24,21 @@
         update user_role set utime = unix_timestamp(), valid = 0 where userId = #{userId} and valid = 1
     </update>
 
+    <update id="unbindUserRoleSet">
+        update
+            user_role
+        set
+            utime = unix_timestamp(), valid = 0
+        where
+            userId = #{userId}
+        and
+            roleId in
+            <foreach collection="roleIdSet" close=")" open="(" separator="," item="item">
+                #{item}
+            </foreach>
+        and valid = 1
+    </update>
+
     <insert id="assginUserRole" >
         INSERT INTO
           user_role

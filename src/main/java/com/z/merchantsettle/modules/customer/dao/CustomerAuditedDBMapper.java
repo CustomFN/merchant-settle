@@ -10,9 +10,9 @@ import java.util.List;
 @Repository
 public interface CustomerAuditedDBMapper {
 
-    CustomerAuditedDB selectById(Integer id);
+    CustomerAuditedDB selectById(@Param("id") Integer id);
 
-    void deleteById(Integer id);
+    void deleteById(@Param("id") Integer id);
 
     void insertSelective(CustomerAuditedDB customerAuditedDB);
 
@@ -20,5 +20,5 @@ public interface CustomerAuditedDBMapper {
 
     List<CustomerAuditedDB> getCustomerList(@Param("customerSearchParam") CustomerSearchParam customerSearchParam);
 
-    void deleteByCustomerId(Integer customerId);
+    void deleteByCustomerId(@Param("customerId") Integer customerId);
 }

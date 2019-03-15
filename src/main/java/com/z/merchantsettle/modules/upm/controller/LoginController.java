@@ -2,6 +2,7 @@ package com.z.merchantsettle.modules.upm.controller;
 
 import com.z.merchantsettle.common.ReturnResult;
 import com.z.merchantsettle.modules.upm.constants.SystemConstant;
+import com.z.merchantsettle.utils.shiro.ShiroUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -27,7 +28,7 @@ public class LoginController {
             LOGGER.warn("登录失败", e);
             return ReturnResult.fail("账号或密码错误");
         }
-        return ReturnResult.success();
+        return ReturnResult.success(ShiroUtils.getSysUser());
     }
 
 

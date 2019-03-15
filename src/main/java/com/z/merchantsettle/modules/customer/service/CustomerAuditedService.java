@@ -8,7 +8,7 @@ import com.z.merchantsettle.modules.customer.domain.bo.CustomerBaseInfo;
 
 public interface CustomerAuditedService {
 
-    void deleteByCustomerId(Integer customerId, String opUser) throws CustomerException;
+    void deleteByCustomerId(Integer customerId, String opUserId) throws CustomerException;
 
 
     CustomerAudited selectById(Integer customerId) throws CustomerException;

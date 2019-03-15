@@ -6,12 +6,15 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 
 @Repository
 public interface RoleResourceMapper{
 
-    void unbindRoleResource(String roleId);
+    void unbindRoleResource(@Param("roleId") String roleId);
+
+    void unbindRoleResourceSet(@Param("roleId") String roleId, @Param("resourceIdSet") Set<String> resourceIdSet);
 
     void assignRoleResource(@Param("roleId") String roleId, @Param("resourceIdList") List<String> resourceIdList);
 

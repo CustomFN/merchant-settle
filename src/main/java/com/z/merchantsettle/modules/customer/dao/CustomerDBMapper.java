@@ -10,15 +10,15 @@ import java.util.List;
 @Repository
 public interface CustomerDBMapper {
 
-    CustomerDB selectById(Integer id);
+    CustomerDB selectById(@Param("id") Integer id);
 
-    void deleteById(Integer id);
+    void deleteById(@Param("id") Integer id);
 
     void insertSelective(CustomerDB customerDB);
 
     void updateByIdSelective(CustomerDB customerDB);
 
-    void deleteByCustomerId(Integer customerId);
+    void deleteByCustomerId(@Param("customerId") Integer customerId);
 
     List<CustomerDB> getCustomerList(@Param("customerSearchParam") CustomerSearchParam customerSearchParam);
 }

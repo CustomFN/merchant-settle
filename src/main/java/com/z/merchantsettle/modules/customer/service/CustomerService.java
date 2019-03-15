@@ -15,7 +15,7 @@ public interface CustomerService {
 
     Customer getByCustomerId(Integer customerId, Integer effective) throws CustomerException;
 
-    void distributePrincipal(Integer customerId, String userId, String opUserId) throws CustomerException;
+    void distributePrincipal(Integer customerId, String customerPrincipal, String opUserId) throws CustomerException;
 
     Customer saveOrUpdate(Customer customer, String opUserId) throws CustomerException;
 

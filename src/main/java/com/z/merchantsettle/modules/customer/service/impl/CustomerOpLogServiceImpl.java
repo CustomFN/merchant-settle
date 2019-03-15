@@ -9,6 +9,8 @@ import com.z.merchantsettle.modules.customer.dao.CustomerOpLogMapper;
 import com.z.merchantsettle.modules.customer.domain.CustomerOpLog;
 import com.z.merchantsettle.modules.customer.domain.CustomerOpLogSearchParam;
 import com.z.merchantsettle.modules.customer.service.CustomerOpLogService;
+import com.z.merchantsettle.modules.upm.domain.bo.User;
+import com.z.merchantsettle.utils.shiro.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class CustomerOpLogServiceImpl implements CustomerOpLogService {
 
     @Autowired
     private CustomerOpLogMapper customerOpLogMapper;
+
+    @Autowired
+    private UserUtil userUtil;
 
 
     @Override
@@ -41,6 +46,14 @@ public class CustomerOpLogServiceImpl implements CustomerOpLogService {
         PageHelper.startPage(pageNum, pageSize);
         List<CustomerOpLog> logList = customerOpLogMapper.getLogByCustomerId(opLogSearchParam);
         PageInfo<CustomerOpLog> pageInfo = new PageInfo<>(logList);
+
+        for (CustomerOpLog opLog : logList) {
+            User user = userUtil.getUser(opLog.getOpUserId());
+            if (user != null) {
+                opLog.setOpUser(user.getUserName());
+            }
+        }
+
         return new PageData.Builder<CustomerOpLog>()
                 .pageNum(pageNum)
                 .pageSize(pageSize)

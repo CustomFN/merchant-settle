@@ -6,22 +6,22 @@
         <result column="customerId" property="customerId" jdbcType="INTEGER" />
         <result column="module" property="module" jdbcType="VARCHAR" />
         <result column="content" property="content" jdbcType="VARCHAR" />
-        <result column="opUser" property="opUser" jdbcType="VARCHAR" />
+        <result column="opUserId" property="opUserId" jdbcType="VARCHAR" />
         <result column="ctime" property="ctime" jdbcType="BIGINT" />
     </resultMap>
     <sql id="Base_Column_List" >
-        id, customerId, module, content, opUser, ctime
+        id, customerId, module, content, opUserId, ctime
     </sql>
 
     <insert id="insert" parameterType="com.z.merchantsettle.modules.customer.domain.CustomerOpLog" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO customer_oplog
-          (customerId, module, content, opUser, ctime)
+          (customerId, module, content, opUserId, ctime)
         VALUES
           (
             #{customerOpLog.customerId},
             #{customerOpLog.module},
             #{customerOpLog.content},
-            #{customerOpLog.opUser},
+            #{customerOpLog.opUserId},
             unix_timestamp()
           )
     </insert>
@@ -41,8 +41,8 @@
             <if test="opLogSearchParam.content != null and opLogSearchParam.content != ''">
                 content like concat(concat('%',#{opLogSearchParam.content}),'%'),
             </if>
-            <if test="opLogSearchParam.opUser != null and opLogSearchParam.opUser != ''">
-                opUser = #{opLogSearchParam.opUser}
+            <if test="opLogSearchParam.opUserId != null and opLogSearchParam.opUserId != ''">
+                opUserId = #{opLogSearchParam.opUserId}
             </if>
         </where>
         order by

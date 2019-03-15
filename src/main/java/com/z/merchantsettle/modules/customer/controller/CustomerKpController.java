@@ -50,6 +50,7 @@ public class CustomerKpController {
     @PostMapping("/show/{customerId}")
     public Object getCustomerKpByCustomerId(@PathVariable(name = "customerId") Integer customerId,
                                             @RequestParam(name = "effective") Integer effective) {
+        LOGGER.info("getCustomerKpByCustomerId customerId = {}, effective = {}", customerId, effective);
         if (customerId == null || customerId <= 0 || effective < 0) {
             return ReturnResult.fail(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }

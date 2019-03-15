@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.z.merchantsettle.modules.upm.domain.db.UserRoleDB;
 import com.z.merchantsettle.modules.upm.service.UserRoleService;
 import com.z.merchantsettle.modules.upm.dao.UserRoleMapper;
@@ -18,8 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 @Service
@@ -33,8 +36,19 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Override
     @Transactional
     public void assignUserRoles(UserRole userRole) {
-        userRoleMapper.unbindUserRole(userRole.getUserId());
-        userRoleMapper.assginUserRole(userRole.getUserId(), userRole.getRoleIdList());
+        String userId = userRole.getUserId();
+        Set<String> roleIdSet = Sets.newHashSet(userRole.getRoleIdList());
+        Set<String> roleIdSetInDB = Sets.newHashSet(userRoleMapper.getRoleIdByUserId(userId));
+
+        Set<String> addIdList = Sets.difference(roleIdSet, roleIdSetInDB);
+        Set<String> deleteIdList = Sets.difference(roleIdSetInDB, roleIdSet);
+
+        if (CollectionUtils.isNotEmpty(deleteIdList)) {
+            userRoleMapper.unbindUserRoleSet(userId, deleteIdList);
+        }
+        if (CollectionUtils.isNotEmpty(addIdList)) {
+            userRoleMapper.assginUserRole(userId, Lists.newArrayList(addIdList));
+        }
     }
 
     @Override

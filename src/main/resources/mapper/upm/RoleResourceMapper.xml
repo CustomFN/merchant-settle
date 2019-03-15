@@ -24,6 +24,21 @@
         update role_resource set utime = unix_timestamp(), valid = 0 where roleId = #{roleId} and valid = 1
     </update>
 
+    <update id="unbindRoleResourceSet" >
+        update
+            role_resource
+        set
+            utime = unix_timestamp(), valid = 0
+        where
+            roleId = #{roleId}
+        and
+            resourceId in
+            <foreach collection="resourceIdSet" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+            and valid = 1
+    </update>
+
     <insert id="assignRoleResource" >
         INSERT INTO
           role_resource

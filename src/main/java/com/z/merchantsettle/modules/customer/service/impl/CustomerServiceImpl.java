@@ -94,12 +94,17 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public void deleteByCustomerId(Integer customerId, String opUserId) throws CustomerException {
+        LOGGER.info("CustomerServiceImpl deleteByCustomerId customerId = {}, opUser = {}", customerId, opUserId);
         if (customerId == null || customerId <= 0 ) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
 
         customerDBMapper.deleteByCustomerId(customerId);
+        customerAuditedService.deleteByCustomerId(customerId, opUserId);
+
+        customerOpLogService.addLog(customerId, "客户", "删除客户", opUserId);
     }
 
     @Override
@@ -119,19 +124,19 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void distributePrincipal(Integer customerId, String userId, String opUserId) throws CustomerException {
-        if (customerId == null || customerId <= 0 || StringUtils.isBlank(userId)) {
+    public void distributePrincipal(Integer customerId, String customerPrincipal, String opUserId) throws CustomerException {
+        if (customerId == null || customerId <= 0 || StringUtils.isBlank(customerPrincipal)) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
 
         CustomerDB customerDB = new CustomerDB();
         customerDB.setId(customerId);
-        customerDB.setCustomerPrincipal(userId);
+        customerDB.setCustomerPrincipal(customerPrincipal);
         customerDBMapper.updateByIdSelective(customerDB);
 
         CustomerAudited customerAudited = new CustomerAudited();
         customerAudited.setId(customerId);
-        customerAudited.setCustomerPrincipal(userId);
+        customerAudited.setCustomerPrincipal(customerPrincipal);
         customerAuditedService.updateByIdSelective(customerAudited);
     }
 
