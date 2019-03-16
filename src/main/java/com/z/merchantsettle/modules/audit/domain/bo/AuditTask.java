@@ -9,7 +9,9 @@ public class AuditTask {
     private Integer customerId;
     private Integer poiId;
     private Integer auditType;
+    private String auditTypeStr;
     private Integer auditApplicationType;
+    private String auditApplicationTypeStr;
     private String auditData;
     private Integer auditStatus;
     private String submitterId;

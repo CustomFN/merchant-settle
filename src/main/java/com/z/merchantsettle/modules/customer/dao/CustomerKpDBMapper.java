@@ -16,4 +16,6 @@ public interface CustomerKpDBMapper {
     void updateByIdSelective(CustomerKpDB customerKpDB);
 
     void updateByCustomerIdSelective(CustomerKpDB customerKpDB);
+
+    void deleteByCustomerId(@Param("customerId") Integer customerId);
 }

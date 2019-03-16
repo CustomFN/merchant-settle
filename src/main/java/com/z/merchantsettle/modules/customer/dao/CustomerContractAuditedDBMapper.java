@@ -18,4 +18,5 @@ public interface CustomerContractAuditedDBMapper {
 
     void updateByIdSelective(CustomerContractAuditedDB customerContractAuditedDB);
 
+    void deleteByCustomerId(@Param("customerId") Integer customerId);
 }

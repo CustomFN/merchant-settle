@@ -7,7 +7,9 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.z.merchantsettle.common.PageData;
 import com.z.merchantsettle.exception.CustomerException;
+import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
+import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomer;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
@@ -25,6 +27,8 @@ import com.z.merchantsettle.modules.customer.service.CustomerOpLogService;
 import com.z.merchantsettle.modules.customer.service.CustomerService;
 import com.z.merchantsettle.modules.upm.domain.bo.User;
 import com.z.merchantsettle.modules.upm.service.UserService;
+import com.z.merchantsettle.mq.MsgOpType;
+import com.z.merchantsettle.mq.customer.CustomerSender;
 import com.z.merchantsettle.utils.TransferUtil;
 import com.z.merchantsettle.utils.shiro.ShiroUtils;
 import com.z.merchantsettle.utils.shiro.UserUtil;
@@ -60,6 +64,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private UserUtil userUtil;
+
+    @Autowired
+    private CustomerSender customerSender;
+
+    private static final String CUSTOMER_TOPIC = "customer_topic";
 
     @Override
     public PageData<CustomerBaseInfo> getCustomerList(CustomerSearchParam customerSearchParam, Integer pageNum, Integer pageSize) {
@@ -103,8 +112,9 @@ public class CustomerServiceImpl implements CustomerService {
 
         customerDBMapper.deleteByCustomerId(customerId);
         customerAuditedService.deleteByCustomerId(customerId, opUserId);
-
         customerOpLogService.addLog(customerId, "客户", "删除客户", opUserId);
+
+        customerSender.send(CUSTOMER_TOPIC, customerId, MsgOpType.DELETE);
     }
 
     @Override
@@ -167,9 +177,9 @@ public class CustomerServiceImpl implements CustomerService {
     private void commitAudit(CustomerDB customerDB, String opUserId, boolean isNew) {
         AuditTask auditTask = new AuditTask();
         auditTask.setCustomerId(customerDB.getId());
-        auditTask.setAuditApplicationType(isNew ? AuditConstant.AuditApplicationType.AUDIT_NEW : AuditConstant.AuditApplicationType.AUDIT_UPDATE);
+        auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
-        auditTask.setAuditType(AuditConstant.AuditType.CUSTOMER);
+        auditTask.setAuditType(AuditTypeEnum.CUSTOMER.getCode());
         auditTask.setSubmitterId(opUserId);
 
         AuditCustomer auditCustomer = new AuditCustomer();

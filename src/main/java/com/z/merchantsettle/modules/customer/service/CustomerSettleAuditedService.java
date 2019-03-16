@@ -11,4 +11,6 @@ public interface CustomerSettleAuditedService {
     PageData<CustomerSettleBaseInfo> getCustomerSettleList(Integer customerId, String settleOrPoiId, Integer pageNum, Integer pageSize);
 
     void saveOrUpdate(CustomerSettleAudited customerSettleAudited);
+
+    void deleteByCustomerId(Integer customerId);
 }

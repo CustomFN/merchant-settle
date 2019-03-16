@@ -8,7 +8,7 @@ import com.z.merchantsettle.modules.customer.domain.CustomerOpLogSearchParam;
 
 public interface CustomerOpLogService {
 
-    void addLog(Integer customerId, String module, String content, String opUser);
+    void addLog(Integer customerId, String module, String content, String opUserId);
 
     PageData<CustomerOpLog> getLogByCustomerId(CustomerOpLogSearchParam opLogSearchParam, Integer pageNum, Integer pageSize) throws CustomerException;
 }

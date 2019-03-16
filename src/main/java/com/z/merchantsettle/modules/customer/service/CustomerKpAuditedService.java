@@ -7,4 +7,6 @@ public interface CustomerKpAuditedService {
     CustomerKpAudited getCustomerKpByCustomerId(Integer customerId) throws CustomerException;
 
     void saveOrUpdate(CustomerKpAudited customerKpAudited) throws CustomerException;
+
+    void deleteByCustomerId(Integer customerId) throws CustomerException;
 }

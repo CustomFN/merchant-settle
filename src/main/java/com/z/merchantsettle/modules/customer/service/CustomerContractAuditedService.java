@@ -14,4 +14,5 @@ public interface CustomerContractAuditedService {
 
     void saveOrUpdate(CustomerContractAudited customerContractAudited) throws CustomerException;
 
+    void deleteByCustomerId(Integer customerId) throws CustomerException;
 }

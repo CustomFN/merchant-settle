@@ -1,6 +1,7 @@
 package com.z.merchantsettle.modules.customer.service;
 
 import com.z.merchantsettle.common.PageData;
+import com.z.merchantsettle.exception.CustomerException;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerSettle;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerSettleBaseInfo;
 
@@ -19,4 +20,6 @@ public interface CustomerSettleService {
     void setupEffectCustomerSettle(Integer customerId, Integer settleId);
 
     List<CustomerSettle> getBySettleIdList(List<Integer> customerSettleIdList);
+
+    void deleteByCustomerId(Integer customerId, String opUserId) throws CustomerException;
 }

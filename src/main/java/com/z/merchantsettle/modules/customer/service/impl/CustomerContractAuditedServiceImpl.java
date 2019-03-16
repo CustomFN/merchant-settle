@@ -53,4 +53,12 @@ public class CustomerContractAuditedServiceImpl implements CustomerContractAudit
         }
     }
 
+    @Override
+    public void deleteByCustomerId(Integer customerId) throws CustomerException {
+        if (customerId == null || customerId <= 0) {
+            return;
+        }
+        customerContractAuditedDBMapper.deleteByCustomerId(customerId);
+    }
+
 }

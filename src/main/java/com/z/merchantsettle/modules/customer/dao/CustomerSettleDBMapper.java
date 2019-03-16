@@ -20,4 +20,6 @@ public interface CustomerSettleDBMapper {
     List<CustomerSettleDB> getSettleListByCustomerId(@Param("customerId") Integer customerId, @Param("settleIdList") List<Integer> settleIdList);
 
     List<CustomerSettleDB> getSettleList(@Param("settleIdList") List<Integer> settleIdList);
+
+    void deleteByCustomerId(@Param("customerId") Integer customerId);
 }

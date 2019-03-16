@@ -39,4 +39,12 @@ public class CustomerKpAuditedServiceImpl implements CustomerKpAuditedService {
             customerKpAuditedDBMapper.insertSelective(customerKpAuditedDB);
         }
     }
+
+    @Override
+    public void deleteByCustomerId(Integer customerId) throws CustomerException {
+        if (customerId == null || customerId <= 0) {
+            return;
+        }
+        customerKpAuditedDBMapper.deleteByCustomerId(customerId);
+    }
 }

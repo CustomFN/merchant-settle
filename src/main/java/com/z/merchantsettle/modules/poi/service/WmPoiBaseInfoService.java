@@ -10,7 +10,7 @@ public interface WmPoiBaseInfoService {
 
     WmPoiBaseInfo getWmPoiBaseInfoById(Integer wmPoiId, Integer effective);
 
-    void setupEffectWmPoiBaseInfo(Integer wmPoiId, String opUserId);
+    void setupEffectWmPoiBaseInfo(Integer wmPoiId);
 
     List<WmPoiBaseInfo> getByIdList(List<Integer> wmPoiIdList);
 

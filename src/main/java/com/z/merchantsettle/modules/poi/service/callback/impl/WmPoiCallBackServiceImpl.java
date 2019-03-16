@@ -37,7 +37,7 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
     private static final int retryTime = 3;
 
     @Override
-    public void WmPoiBaseInfoAuditCallBack(Integer wmPoiId, Integer auditStatus, String auditResult, String opUserId) {
+    public void wmPoiBaseInfoAuditCallBack(Integer wmPoiId, Integer auditStatus, String auditResult) {
         LOGGER.info("WmPoiBaseInfoAuditCallBack wmPoiId = {}, auditStatus = {}, auditResult = {}", wmPoiId, auditStatus, auditResult);
         int retry = 0;
         boolean isRetry = true;
@@ -45,7 +45,7 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
         while (isRetry && retry++ <= retryTime) {
             try {
                 if (AuditConstant.AuditStatus.AUDIT_PASS == auditStatus) {
-                    wmPoiBaseInfoService.setupEffectWmPoiBaseInfo(wmPoiId, opUserId);
+                    wmPoiBaseInfoService.setupEffectWmPoiBaseInfo(wmPoiId);
                 } else {
                     WmPoiBaseInfo wmPoiBaseInfo = new WmPoiBaseInfo();
                     wmPoiBaseInfo.setId(wmPoiId);
@@ -61,15 +61,15 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
     }
 
     @Override
-    public void WmPoiQuaAuditCallBack(Integer recordId, Integer wmPoiId, Integer auditStatus, String auditResult, String opUserId) {
-        LOGGER.info("WmPoiQuaAuditCallBack recordId = {}, wmPoiId = {}, auditStatus = {}, auditResult = {}, opUserId = {}", recordId, wmPoiId, auditStatus, auditResult, opUserId);
+    public void wmPoiQuaAuditCallBack(Integer recordId, Integer wmPoiId, Integer auditStatus, String auditResult) {
+        LOGGER.info("WmPoiQuaAuditCallBack recordId = {}, wmPoiId = {}, auditStatus = {}, auditResult = {}", recordId, wmPoiId, auditStatus, auditResult);
         int retry = 0;
         boolean isRetry = true;
 
         while (isRetry && retry++ <= retryTime) {
             try {
                 if (AuditConstant.AuditStatus.AUDIT_PASS == auditStatus) {
-                    wmPoiQuaService.setupEffectWmPoiQua(wmPoiId, opUserId);
+                    wmPoiQuaService.setupEffectWmPoiQua(wmPoiId);
                 } else {
                     WmPoiQua wmPoiQua = new WmPoiQua();
                     wmPoiQua.setId(recordId);
@@ -86,15 +86,15 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
     }
 
     @Override
-    public void WmPoiBusinessInfoAuditCallBack(Integer wmPoiId, Integer auditStatus, String auditResult, String opUserId) {
-        LOGGER.info("WmPoiBusinessInfoAuditCallBack wmPoiId = {}, auditStatus = {}, auditResult = {}, opUserId = {}", wmPoiId, auditStatus, auditResult, opUserId);
+    public void wmPoiBusinessInfoAuditCallBack(Integer wmPoiId, Integer auditStatus, String auditResult) {
+        LOGGER.info("WmPoiBusinessInfoAuditCallBack wmPoiId = {}, auditStatus = {}, auditResult = {}", wmPoiId, auditStatus, auditResult);
         int retry = 0;
         boolean isRetry = true;
 
         while (isRetry && retry++ <= retryTime) {
             try {
                 if (AuditConstant.AuditStatus.AUDIT_PASS == auditStatus) {
-                    wmPoiBusinessInfoService.setupEffectWmPoiBusinessInfo(wmPoiId, opUserId);
+                    wmPoiBusinessInfoService.setupEffectWmPoiBusinessInfo(wmPoiId);
                 } else {
                     WmPoiBaseInfo wmPoiBaseInfo = new WmPoiBaseInfo();
                     wmPoiBaseInfo.setId(wmPoiId);
@@ -110,15 +110,15 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
     }
 
     @Override
-    public void WmPoiDeliveryInfoAuditCallBack(Integer recordId, Integer wmPoiId, Integer auditStatus, String auditResult, String opUserId) {
-        LOGGER.info("WmPoiDeliveryInfoAuditCallBack recordId = {}, wmPoiId = {}, auditStatus = {}, auditResult = {}, opUserId = {}", recordId, wmPoiId, auditStatus, auditResult, opUserId);
+    public void wmPoiDeliveryInfoAuditCallBack(Integer recordId, Integer wmPoiId, Integer auditStatus, String auditResult) {
+        LOGGER.info("WmPoiDeliveryInfoAuditCallBack recordId = {}, wmPoiId = {}, auditStatus = {}, auditResult = {}", recordId, wmPoiId, auditStatus, auditResult);
         int retry = 0;
         boolean isRetry = true;
 
         while (isRetry && retry++ <= retryTime) {
             try {
                 if (AuditConstant.AuditStatus.AUDIT_PASS == auditStatus) {
-                    wmPoiDeliveryInfoService.setupEffectWmPoiDeliveryInfo(wmPoiId, opUserId);
+                    wmPoiDeliveryInfoService.setupEffectWmPoiDeliveryInfo(wmPoiId);
                 } else {
                     WmPoiDeliveryInfo wmPoiDeliveryInfo = new WmPoiDeliveryInfo();
                     wmPoiDeliveryInfo.setId(recordId);

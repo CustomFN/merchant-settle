@@ -2,7 +2,9 @@ package com.z.merchantsettle.modules.poi.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.z.merchantsettle.exception.PoiException;
+import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
+import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.poi.AuditBusinessInfo;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
@@ -66,9 +68,9 @@ public class WmPoiBusinessInfoServiceImpl implements WmPoiBusinessInfoService {
         AuditTask auditTask = new AuditTask();
         auditTask.setCustomerId(wmPoiBaseInfoDB.getCustomerId());
         auditTask.setPoiId(wmPoiBaseInfoDB.getId());
-        auditTask.setAuditApplicationType(isNew ? AuditConstant.AuditApplicationType.AUDIT_NEW : AuditConstant.AuditApplicationType.AUDIT_UPDATE);
+        auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
-        auditTask.setAuditType(AuditConstant.AuditType.CUSTOMER);
+        auditTask.setAuditType(AuditTypeEnum.POI_BUSINESS_INFO.getCode());
         auditTask.setSubmitterId(userId);
 
         AuditBusinessInfo auditBusinessInfo = new AuditBusinessInfo();
@@ -85,7 +87,7 @@ public class WmPoiBusinessInfoServiceImpl implements WmPoiBusinessInfoService {
     }
 
     @Override
-    public void setupEffectWmPoiBusinessInfo(Integer wmPoiId, String opUserId) {
+    public void setupEffectWmPoiBusinessInfo(Integer wmPoiId) {
         LOGGER.info("setupEffectWmPoiBusinessInfo wmPoiId = {}", wmPoiId);
 
         WmPoiBaseInfoDB wmPoiBaseInfoDB = wmPoiBaseInfoDBMapper.getById(wmPoiId);
@@ -98,6 +100,6 @@ public class WmPoiBusinessInfoServiceImpl implements WmPoiBusinessInfoService {
 
         wmPoiBaseInfoAuditedService.saveOrUpdate(WmPoiTransferUtil.transWmPoiBaseInfoDB2Bo(wmPoiBaseInfoDB));
 
-        wmPoiOpLogService.addLog(wmPoiId, PoiConstant.PoiModuleName.POI_BUSINESS_INFO, "门店营业信息提交审核成功", opUserId);
+        wmPoiOpLogService.addLog(wmPoiId, PoiConstant.PoiModuleName.POI_BUSINESS_INFO, "门店营业信息提交审核成功", "系统()");
     }
 }

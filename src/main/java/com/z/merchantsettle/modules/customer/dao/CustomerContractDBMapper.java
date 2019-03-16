@@ -24,4 +24,5 @@ public interface CustomerContractDBMapper {
 
     List<CustomerContractDB> getContractList(@Param("contractRequestParam") ContractRequestParam contractRequestParam);
 
+    void deleteByCustomerId(@Param("customerId") Integer customerId);
 }

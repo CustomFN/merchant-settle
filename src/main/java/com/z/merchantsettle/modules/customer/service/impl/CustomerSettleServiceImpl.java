@@ -7,7 +7,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.z.merchantsettle.common.PageData;
 import com.z.merchantsettle.exception.CustomerException;
+import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
+import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomerSettle;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
@@ -24,6 +26,8 @@ import com.z.merchantsettle.modules.customer.service.CustomerSettlePoiService;
 import com.z.merchantsettle.modules.customer.service.CustomerSettleService;
 import com.z.merchantsettle.modules.poi.domain.bo.WmPoiBaseInfo;
 import com.z.merchantsettle.modules.poi.service.WmPoiBaseInfoService;
+import com.z.merchantsettle.mq.MsgOpType;
+import com.z.merchantsettle.mq.customer.CustomerSender;
 import com.z.merchantsettle.utils.TransferUtil;
 import com.z.merchantsettle.utils.transfer.customer.CustomerTransferUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -58,6 +62,10 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
     @Autowired
     private WmPoiBaseInfoService wmPoiBaseInfoService;
 
+    @Autowired
+    private CustomerSender customerSender;
+
+    private static final String CUSTOMER_SETTLE_TOPIC = "customer_settle_topic";
 
     @Override
     public CustomerSettle saveOrUpdate(CustomerSettle customerSettle, String opUserId) {
@@ -85,9 +93,9 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
     private void commitAudit(CustomerSettle customerSettle, String opUserId, boolean isNew) {
         AuditTask auditTask = new AuditTask();
         auditTask.setCustomerId(customerSettle.getCustomerId());
-        auditTask.setAuditApplicationType(isNew ? AuditConstant.AuditApplicationType.AUDIT_NEW : AuditConstant.AuditApplicationType.AUDIT_UPDATE);
+        auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
-        auditTask.setAuditType(AuditConstant.AuditType.CUSTOMER_SETTLE);
+        auditTask.setAuditType(AuditTypeEnum.CUSTOMER_SETTLE.getCode());
         auditTask.setSubmitterId(opUserId);
 
         AuditCustomerSettle auditCustomerSettle = new AuditCustomerSettle();
@@ -231,5 +239,18 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
         CustomerSettleAudited customerSettleAudited = new CustomerSettleAudited();
         TransferUtil.transferAll(customerSettle, customerSettleAudited);
         return customerSettleAudited;
+    }
+
+    @Override
+    public void deleteByCustomerId(Integer customerId, String opUserId) throws CustomerException {
+        LOGGER.info("CustomerSettleServiceImpl deleteByCustomerId customerId = {}, opUser = {}", customerId, opUserId);
+        if (customerId == null || customerId <= 0 ) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
+        }
+
+        customerSettleDBMapper.deleteByCustomerId(customerId);
+        customerSettleAuditedService.deleteByCustomerId(customerId);
+
+        customerSender.send(CUSTOMER_SETTLE_TOPIC, customerId, MsgOpType.DELETE);
     }
 }

@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.z.merchantsettle.exception.PoiException;
+import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
+import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.poi.AuditWmPoiDeliveryInfo;
 import com.z.merchantsettle.modules.audit.domain.poi.AuditWmPoiProject;
@@ -68,9 +70,9 @@ public class WmPoiDeliveryInfoServiceImpl implements WmPoiDeliveryInfoService {
     private void commitAudit(WmPoiDeliveryInfoDB wmPoiDeliveryInfoDB, boolean isNew, String opUserId) {
         AuditTask auditTask = new AuditTask();
         auditTask.setPoiId(wmPoiDeliveryInfoDB.getWmPoiId());
-        auditTask.setAuditApplicationType(isNew ? AuditConstant.AuditApplicationType.AUDIT_NEW : AuditConstant.AuditApplicationType.AUDIT_UPDATE);
+        auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
-        auditTask.setAuditType(AuditConstant.AuditType.CUSTOMER);
+        auditTask.setAuditType(AuditTypeEnum.POI_DELIVERY_INFO.getCode());
         auditTask.setSubmitterId(opUserId);
 
         AuditWmPoiDeliveryInfo auditWmPoiDeliveryInfo = new AuditWmPoiDeliveryInfo();
@@ -110,7 +112,7 @@ public class WmPoiDeliveryInfoServiceImpl implements WmPoiDeliveryInfoService {
     }
 
     @Override
-    public void setupEffectWmPoiDeliveryInfo(Integer wmPoiId, String opUserId) {
+    public void setupEffectWmPoiDeliveryInfo(Integer wmPoiId) {
         LOGGER.info("setupEffectWmPoiDeliveryInfo wmPoiId = {}", wmPoiId);
 
         WmPoiDeliveryInfoDB wmPoiDeliveryInfoDB = wmPoiDeliveryInfoDBMapper.getByWmPoiId(wmPoiId);
@@ -124,7 +126,7 @@ public class WmPoiDeliveryInfoServiceImpl implements WmPoiDeliveryInfoService {
         WmPoiDeliveryInfoAudited wmPoiDeliveryInfoAudited = WmPoiTransferUtil.transWmPoiDeliveryInfoDB2Audited(wmPoiDeliveryInfoDB);
         wmPoiDeliveryInfoAuditedService.saveOrUpdate(wmPoiDeliveryInfoAudited);
 
-        wmPoiOpLogService.addLog(wmPoiId, PoiConstant.PoiModuleName.POI_DELIVERY_INFO, "设置门店配送信息生效", opUserId);
+        wmPoiOpLogService.addLog(wmPoiId, PoiConstant.PoiModuleName.POI_DELIVERY_INFO, "设置门店配送信息生效", "系统()");
     }
 
     @Override

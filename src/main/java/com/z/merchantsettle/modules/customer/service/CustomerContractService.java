@@ -21,4 +21,5 @@ public interface CustomerContractService {
 
     PageData<ContractBaseInfo> getContractBaseInfoList(ContractRequestParam contractRequestParam, Integer pageNum, Integer pageSize);
 
+    void deleteByCustomerId(Integer customerId, String opUserId) throws CustomerException;
 }

@@ -4,7 +4,9 @@ package com.z.merchantsettle.modules.poi.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.z.merchantsettle.exception.PoiException;
+import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
+import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.poi.AuditWmPoiBaseInfo;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
@@ -68,9 +70,9 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
         AuditTask auditTask = new AuditTask();
         auditTask.setCustomerId(wmPoiBaseInfoDB.getCustomerId());
         auditTask.setPoiId(wmPoiBaseInfoDB.getId());
-        auditTask.setAuditApplicationType(isNew ? AuditConstant.AuditApplicationType.AUDIT_NEW : AuditConstant.AuditApplicationType.AUDIT_UPDATE);
+        auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
-        auditTask.setAuditType(AuditConstant.AuditType.CUSTOMER);
+        auditTask.setAuditType(AuditTypeEnum.POI_BASE_INFO.getCode());
         auditTask.setSubmitterId(userId);
 
         AuditWmPoiBaseInfo auditWmPoiBaseInfo = new AuditWmPoiBaseInfo();
@@ -99,8 +101,8 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
     }
 
     @Override
-    public void setupEffectWmPoiBaseInfo(Integer wmPoiId, String opUserId) {
-        LOGGER.info("setupEffectWmPoiBaseInfo wmPoiId = {}, opUserId = {}", wmPoiId, opUserId);
+    public void setupEffectWmPoiBaseInfo(Integer wmPoiId) {
+        LOGGER.info("setupEffectWmPoiBaseInfo wmPoiId = {}", wmPoiId);
 
         WmPoiBaseInfoDB wmPoiBaseInfoDB = wmPoiBaseInfoDBMapper.getById(wmPoiId);
         if (wmPoiBaseInfoDB == null) {
@@ -113,7 +115,7 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
         WmPoiBaseInfo wmPoiBaseInfo = WmPoiTransferUtil.transWmPoiBaseInfoDB2Bo(wmPoiBaseInfoDB);
         wmPoiBaseInfoAuditedService.saveOrUpdate(wmPoiBaseInfo);
 
-        wmPoiOpLogService.addLog(wmPoiBaseInfoDB.getId(), PoiConstant.PoiModuleName.POI_BASE_INFO, "设置门店基本信息生效", opUserId);
+        wmPoiOpLogService.addLog(wmPoiBaseInfoDB.getId(), PoiConstant.PoiModuleName.POI_BASE_INFO, "设置门店基本信息生效", "系统()");
     }
 
     @Override

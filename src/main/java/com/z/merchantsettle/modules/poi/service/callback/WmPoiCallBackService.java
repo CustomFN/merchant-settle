@@ -2,11 +2,11 @@ package com.z.merchantsettle.modules.poi.service.callback;
 
 public interface WmPoiCallBackService {
 
-    void WmPoiBaseInfoAuditCallBack(Integer wmPoiId, Integer auditStatus, String auditResult, String opUserId);
+    void wmPoiBaseInfoAuditCallBack(Integer wmPoiId, Integer auditStatus, String auditResult);
 
-    void WmPoiQuaAuditCallBack(Integer recordId, Integer wmPoiId, Integer auditStatus, String auditResult, String opUserId);
+    void wmPoiQuaAuditCallBack(Integer recordId, Integer wmPoiId, Integer auditStatus, String auditResult);
 
-    void WmPoiBusinessInfoAuditCallBack(Integer wmPoiId, Integer auditStatus, String auditResult, String opUserId);
+    void wmPoiBusinessInfoAuditCallBack(Integer wmPoiId, Integer auditStatus, String auditResult);
 
-    void WmPoiDeliveryInfoAuditCallBack(Integer recordId, Integer wmPoiId, Integer auditStatus, String auditResult, String opUserId);
+    void wmPoiDeliveryInfoAuditCallBack(Integer recordId, Integer wmPoiId, Integer auditStatus, String auditResult);
 }

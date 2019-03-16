@@ -27,12 +27,12 @@ public class CustomerOpLogServiceImpl implements CustomerOpLogService {
 
 
     @Override
-    public void addLog(Integer customerId, String module, String content, String opUser) {
+    public void addLog(Integer customerId, String module, String content, String opUserId) {
         CustomerOpLog customerOpLog = new CustomerOpLog();
         customerOpLog.setCustomerId(customerId);
         customerOpLog.setModule(module);
         customerOpLog.setContent(content);
-        customerOpLog.setOpUser(opUser);
+        customerOpLog.setOpUserId(opUserId);
         customerOpLogMapper.insert(customerOpLog);
     }
 

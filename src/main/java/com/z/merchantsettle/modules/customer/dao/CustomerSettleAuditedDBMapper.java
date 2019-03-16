@@ -18,4 +18,6 @@ public interface CustomerSettleAuditedDBMapper {
     void updateByIdSelective(CustomerSettleAuditedDB customerSettleAuditedDB);
 
     List<CustomerSettleAuditedDB> getSettleList(@Param("customerId") Integer customerId, @Param("settleIdList") List<Integer> settleIdList);
+
+    void deleteByCustomerId(@Param("customerId") Integer customerId);
 }

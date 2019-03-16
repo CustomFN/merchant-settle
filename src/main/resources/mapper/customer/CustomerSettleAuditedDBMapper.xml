@@ -242,4 +242,15 @@
             and valid = 1
         </where>
     </select>
+
+    <update id="deleteByCustomerId" parameterType="java.lang.Integer">
+        update
+            customer_settle_audited
+        set
+          utime = unix_timestamp(), valid = 0
+        WHERE
+          customerId = #{customerId}
+        and
+          valid = 1
+    </update>
 </mapper>

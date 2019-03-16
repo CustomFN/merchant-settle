@@ -8,5 +8,5 @@ public interface WmPoiBusinessInfoService {
 
     WmPoiBaseInfo getWmPoiBaseInfoById(Integer wmPoiId, Integer effective);
 
-    void setupEffectWmPoiBusinessInfo(Integer wmPoiId, String opUserId);
+    void setupEffectWmPoiBusinessInfo(Integer wmPoiId);
 }

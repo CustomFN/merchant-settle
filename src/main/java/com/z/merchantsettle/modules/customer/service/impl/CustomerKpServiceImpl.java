@@ -2,7 +2,9 @@ package com.z.merchantsettle.modules.customer.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.z.merchantsettle.exception.CustomerException;
+import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
+import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomerKp;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
@@ -63,9 +65,9 @@ public class CustomerKpServiceImpl implements CustomerKpService {
     private void commitAudit(CustomerKp customerKp, String opUser, boolean isNew) {
         AuditTask auditTask = new AuditTask();
         auditTask.setCustomerId(customerKp.getCustomerId());
-        auditTask.setAuditApplicationType(isNew ? AuditConstant.AuditApplicationType.AUDIT_NEW : AuditConstant.AuditApplicationType.AUDIT_UPDATE);
+        auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
-        auditTask.setAuditType(AuditConstant.AuditType.CUSTOMER_KP);
+        auditTask.setAuditType(AuditTypeEnum.CUSTOMER_KP.getCode());
         auditTask.setSubmitterId(opUser);
 
         AuditCustomerKp auditCustomerKp = new AuditCustomerKp();
@@ -129,5 +131,14 @@ public class CustomerKpServiceImpl implements CustomerKpService {
         return customerKp;
     }
 
+    @Override
+    public void deleteByCustomerId(Integer customerId, String opUserId) throws CustomerException {
+        LOGGER.info("CustomerKpServiceImpl deleteByCustomerId customerId = {}, opUser = {}", customerId, opUserId);
+        if (customerId == null || customerId <= 0 ) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
+        }
 
+        customerKpDBMapper.deleteByCustomerId(customerId);
+        customerKpAuditedService.deleteByCustomerId(customerId);
+    }
 }

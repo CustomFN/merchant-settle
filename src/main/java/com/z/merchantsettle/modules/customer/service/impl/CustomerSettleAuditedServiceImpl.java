@@ -87,4 +87,12 @@ public class CustomerSettleAuditedServiceImpl implements CustomerSettleAuditedSe
             customerSettleAuditedDBMapper.insertSelective(customerSettleAuditedDB);
         }
     }
+
+    @Override
+    public void deleteByCustomerId(Integer customerId) {
+        if (customerId == null || customerId <= 0) {
+            return;
+        }
+        customerSettleAuditedDBMapper.deleteByCustomerId(customerId);
+    }
 }

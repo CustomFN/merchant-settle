@@ -8,7 +8,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.z.merchantsettle.common.PageData;
 import com.z.merchantsettle.exception.CustomerException;
+import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
+import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomerContract;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
@@ -98,9 +100,9 @@ public class CustomerContractServiceImpl implements CustomerContractService {
     private void commitAudit(CustomerContract customerContract, String opUser, boolean isNew) {
         AuditTask auditTask = new AuditTask();
         auditTask.setCustomerId(customerContract.getCustomerId());
-        auditTask.setAuditApplicationType(isNew ? AuditConstant.AuditApplicationType.AUDIT_NEW : AuditConstant.AuditApplicationType.AUDIT_UPDATE);
+        auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
-        auditTask.setAuditType(AuditConstant.AuditType.CUSTOMER_KP);
+        auditTask.setAuditType(AuditTypeEnum.CUSTOMER_CONTRACT.getCode());
         auditTask.setSubmitterId(opUser);
 
         AuditCustomerContract auditCustomerContract = new AuditCustomerContract();
@@ -269,5 +271,16 @@ public class CustomerContractServiceImpl implements CustomerContractService {
                 .totalPage(pageInfo.getPages())
                 .data(contractBaseInfoList)
                 .build();
+    }
+
+    @Override
+    public void deleteByCustomerId(Integer customerId, String opUserId) throws CustomerException {
+        LOGGER.info("CustomerContractServiceImpl deleteByCustomerId customerId = {}, opUser = {}", customerId, opUserId);
+        if (customerId == null || customerId <= 0 ) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
+        }
+
+        customerContractDBMapper.deleteByCustomerId(customerId);
+        customerContractAuditedService.deleteByCustomerId(customerId);
     }
 }

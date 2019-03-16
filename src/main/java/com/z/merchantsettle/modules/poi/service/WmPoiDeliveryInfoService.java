@@ -10,7 +10,7 @@ public interface WmPoiDeliveryInfoService {
 
     WmPoiDeliveryInfo getWmPoiDeliveryInfoById(Integer wmPoiId, Integer effective);
 
-    void setupEffectWmPoiDeliveryInfo(Integer wmPoiId, String opUserId);
+    void setupEffectWmPoiDeliveryInfo(Integer wmPoiId);
 
     List<WmPoiDeliveryInfo> getByWmPoiIdList(List<Integer> wmPoiIdList);
 }

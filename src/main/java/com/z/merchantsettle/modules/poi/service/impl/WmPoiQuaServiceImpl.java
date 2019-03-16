@@ -4,7 +4,9 @@ import cn.hutool.poi.exceptions.POIException;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.z.merchantsettle.exception.PoiException;
+import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
+import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.poi.AuditWmPoiQua;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
@@ -67,9 +69,9 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
     private void commitAudit(WmPoiQuaDB wmPoiQuaDB, boolean isNew, String userId) {
         AuditTask auditTask = new AuditTask();
         auditTask.setPoiId(wmPoiQuaDB.getWmPoiId());
-        auditTask.setAuditApplicationType(isNew ? AuditConstant.AuditApplicationType.AUDIT_NEW : AuditConstant.AuditApplicationType.AUDIT_UPDATE);
+        auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
-        auditTask.setAuditType(AuditConstant.AuditType.CUSTOMER);
+        auditTask.setAuditType(AuditTypeEnum.POI_QUA_INFO.getCode());
         auditTask.setSubmitterId(userId);
 
         AuditWmPoiQua auditWmPoiQua = new AuditWmPoiQua();
@@ -110,7 +112,7 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
 
 
     @Override
-    public void setupEffectWmPoiQua(Integer wmPoiId, String opUserId) {
+    public void setupEffectWmPoiQua(Integer wmPoiId) {
         LOGGER.info("setupEffectWmPoiQua wmPoiId = {}", wmPoiId);
 
         WmPoiQuaDB wmPoiQuaDB = wmPoiQuaDBMapper.getByWmPoiId(wmPoiId);
@@ -124,7 +126,7 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
         WmPoiQuaAudited wmPoiQuaAudited = WmPoiTransferUtil.transWmPoiQuaDB2Audited(wmPoiQuaDB);
         wmPoiQuaAuditedService.saveOrUpdate(wmPoiQuaAudited);
 
-        wmPoiOpLogService.addLog(wmPoiId, PoiConstant.PoiModuleName.POI_QUA, "设置门店资质信息生效", opUserId);
+        wmPoiOpLogService.addLog(wmPoiId, PoiConstant.PoiModuleName.POI_QUA, "设置门店资质信息生效", "系统()");
     }
 
     @Override

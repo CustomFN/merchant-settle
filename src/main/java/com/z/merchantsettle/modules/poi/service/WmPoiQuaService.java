@@ -13,7 +13,7 @@ public interface WmPoiQuaService {
 
     WmPoiQua getWmPoiQuaByWmPoiId(Integer wmPoiId, Integer effective) throws POIException;
 
-    void setupEffectWmPoiQua(Integer wmPoiId, String opUserId);
+    void setupEffectWmPoiQua(Integer wmPoiId);
 
     List<WmPoiQua> getByWmPoiIdList(List<Integer> wmPoiIdList);
 }

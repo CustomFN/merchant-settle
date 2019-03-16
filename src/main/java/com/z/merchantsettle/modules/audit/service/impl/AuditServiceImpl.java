@@ -19,6 +19,7 @@ import com.z.merchantsettle.modules.audit.service.AuditLogService;
 import com.z.merchantsettle.modules.audit.service.AuditService;
 import com.z.merchantsettle.common.PageData;
 import com.z.merchantsettle.exception.AuditException;
+import com.z.merchantsettle.modules.audit.service.callback.AuditCallbackService;
 import com.z.merchantsettle.modules.customer.service.callback.CustomerCallbackService;
 import com.z.merchantsettle.modules.poi.service.callback.WmPoiCallBackService;
 import com.z.merchantsettle.utils.transfer.audit.AuditTransferUtil;
@@ -40,12 +41,6 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
 
     @Autowired
     private AuditLogService auditLogService;
-
-    @Autowired
-    private CustomerCallbackService customerCallbackService;
-
-    @Autowired
-    private WmPoiCallBackService wmPoiCallBackService;
 
 
     /****   ApiService   ****/
@@ -143,52 +138,8 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
         auditLogDB.setLogMsg(logContent);
         auditLogService.saveAuditLog(auditLogDB);
 
-        callbackModules(result, auditTaskDB);
+        AuditTask auditTask = AuditTransferUtil.transAuditTaskDB2Bo(auditTaskDB);
+        AuditCallbackService.getCallbackHandler(auditTask.getAuditType()).handleCallback(result, auditTask);
     }
 
-    private void callbackModules(AuditResult result, AuditTaskDB auditTaskDB) {
-        Integer customerId = auditTaskDB.getCustomerId();
-        Integer wmPoiId = auditTaskDB.getPoiId();
-        Integer auditStatus = result.getAuditStatus();
-        String auditResult = result.getResult();
-        String opUser = result.getOpUser();
-
-        switch (auditTaskDB.getAuditType()) {
-            case AuditConstant.AuditType.CUSTOMER :
-                customerCallbackService.customerAuditCallback(customerId, auditStatus, auditResult);
-                break;
-            case AuditConstant.AuditType.CUSTOMER_KP :
-                customerCallbackService.customerKpAuditCallback(customerId, auditStatus, auditResult);
-                break;
-            case AuditConstant.AuditType.CUSTOMER_CONTRACT :
-                AuditCustomerContract auditCustomerContract = JSON.parseObject(auditTaskDB.getAuditData(), AuditCustomerContract.class);
-                Integer contractId = auditCustomerContract.getContractId();
-
-                customerCallbackService.customerContractAuditCallback(customerId, contractId, auditStatus, auditResult);
-                break;
-            case AuditConstant.AuditType.CUSTOMER_SETTLE :
-                AuditCustomerSettle auditCustomerSettle = JSON.parseObject(auditTaskDB.getAuditData(), AuditCustomerSettle.class);
-                Integer settleId = auditCustomerSettle.getSettleId();
-
-                customerCallbackService.customerSettleAuditCallback(customerId, settleId, auditStatus, auditResult);
-                break;
-
-            case AuditConstant.AuditType.POI_BASE_INFO :
-                wmPoiCallBackService.WmPoiBaseInfoAuditCallBack(wmPoiId, auditStatus, auditResult, opUser);
-                break;
-            case AuditConstant.AuditType.POI_QUA_INFO :
-                AuditWmPoiBaseInfo auditWmPoiBaseInfo = JSON.parseObject(auditTaskDB.getAuditData(), AuditWmPoiBaseInfo.class);
-
-                wmPoiCallBackService.WmPoiQuaAuditCallBack(auditWmPoiBaseInfo.getRecordId(), wmPoiId, auditStatus, auditResult, opUser);
-                break;
-            case AuditConstant.AuditType.POI_DELIVERY_INFO :
-                AuditWmPoiDeliveryInfo auditWmPoiDeliveryInfo = JSON.parseObject(auditTaskDB.getAuditData(), AuditWmPoiDeliveryInfo.class);
-
-                wmPoiCallBackService.WmPoiDeliveryInfoAuditCallBack(auditWmPoiDeliveryInfo.getRecordId(), wmPoiId, auditStatus, auditResult, opUser);
-                break;
-            case AuditConstant.AuditType.POI_BUSINESS_INFO :
-                wmPoiCallBackService.WmPoiBusinessInfoAuditCallBack(wmPoiId, auditStatus, auditResult, opUser);
-                break;
-        }
-    }
 }
