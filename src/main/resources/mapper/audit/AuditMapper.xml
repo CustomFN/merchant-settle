@@ -17,11 +17,13 @@
         <result column="ctime" property="ctime" />
         <result column="utime" property="utime" />
         <result column="valid" property="valid" />
+        <result column="completed" property="completed"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customerId, poiId, aditType, auditApplicationType, auditData, auditStatus, submitterId, transactor, auditResult, ctime, utime, valid
+        id, customerId, poiId, auditType, auditApplicationType, auditData,
+        auditStatus, submitterId, transactor, auditResult, ctime, utime, valid, completed
     </sql>
 
     <insert id="saveAuditTask" parameterType="com.z.merchantsettle.modules.audit.domain.db.AuditTaskDB" useGeneratedKeys="true" keyProperty="id">
@@ -64,26 +66,18 @@
             <if test="auditSearchParam.poiId != null and auditSearchParam.poiId > 0">
                 and poiId = #{auditSearchParam.poiId}
             </if>
-            <if test="auditSearchParam.auditType != null and auditSearchParam.auditType > 0">
-                and auditType = #{auditSearchParam.auditType}
-            </if>
-            <if test="auditSearchParam.auditApplicationType != null and auditSearchParam.auditApplicationType > 0">
-                and auditApplicationType = #{auditSearchParam.auditApplicationType}
-            </if>
-            <if test="auditSearchParam.auditStatus != null and auditSearchParam.auditStatus.size > 0">
-                and auditStatus in
-                <foreach collection="auditSearchParam.auditStatus" item="item" separator="," open="(" close=")">
-                    #{item}
-                </foreach>
-            </if>
             <if test="auditSearchParam.submitterId != null and auditSearchParam.submitterId != ''">
                 and submitterId = #{auditSearchParam.submitterId}
             </if>
             <if test="auditSearchParam.transactor != null">
                 and transactor = #{auditSearchParam.transactor}
             </if>
+            and completed = #{auditSearchParam.completed}
             and valid = 1
         </where>
+        order by
+          id
+        desc
     </select>
 
     <select id="getAuditTaskDetailById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -102,6 +96,7 @@
           <if test="auditStatus != null and auditStatus > 0 ">auditStatus = #{auditStatus},</if>
           <if test="transactor != null and transactor != '' ">transactor = #{transactor},</if>
           <if test="auditResult != null and auditResult != '' ">auditResult = #{auditResult},</if>
+          <if test="completed != null and completed > 0 ">completed = #{completed},</if>
           utime = unix_timestamp()
         where
           id = #{id}

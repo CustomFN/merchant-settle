@@ -1,6 +1,8 @@
 package com.z.merchantsettle.utils.transfer.audit;
 
 import com.google.common.collect.Lists;
+import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
+import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditLog;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.db.AuditLogDB;
@@ -41,6 +43,9 @@ public class AuditTransferUtil {
 
         AuditTask auditTask = new AuditTask();
         TransferUtil.transferAll(auditTaskDB, auditTask);
+
+        auditTask.setAuditTypeStr(AuditTypeEnum.getByCode(auditTask.getAuditType()));
+        auditTask.setAuditApplicationTypeStr(AuditApplicationTypeEnum.getByCode(auditTask.getAuditApplicationType()));
         return auditTask;
     }
 

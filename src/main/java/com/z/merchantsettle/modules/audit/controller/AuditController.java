@@ -31,8 +31,9 @@ public class AuditController {
                                 @RequestParam(defaultValue = "1", name = "pageNum") Integer pageNum,
                                 @RequestParam(defaultValue = "30", name = "pageSize") Integer pageSize) {
 
-        LOGGER.info("listAuditTask auditSearchParam = {}", JSON.toJSONString(auditSearchParam));
+        LOGGER.info("listAuditTask auditSearchParam = {}, pageNum = {}, pageSize = {}", JSON.toJSONString(auditSearchParam), pageNum, pageSize);
         PageData<AuditTask> pageData = auditService.getAuditTaskList(auditSearchParam, pageNum, pageSize);
+        LOGGER.info("listAuditTask pageData = {}", JSON.toJSONString(pageData));
         return ReturnResult.success(pageData);
     }
 
@@ -44,6 +45,8 @@ public class AuditController {
 
         try {
             AuditTask auditTask = auditService.getAuditTaskDetailById(auditTaskId);
+            Object obj = JSON.parse(auditTask.getAuditData());
+            auditTask.setAuditDataObj(obj);
             return ReturnResult.success(auditTask);
         } catch (AuditException e) {
             LOGGER.error("查询审核信息异常 auditTaskId = {}", auditTaskId);

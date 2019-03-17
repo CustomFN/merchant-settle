@@ -18,5 +18,6 @@ public class AuditTaskDB {
     private Long ctime;
     private Long utime;
     private Integer valid;
+    private Integer completed;
 
 }

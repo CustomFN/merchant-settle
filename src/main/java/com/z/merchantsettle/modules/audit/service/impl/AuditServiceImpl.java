@@ -69,16 +69,22 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
 
     @Override
     public PageData<AuditTask> getAuditTaskList(AuditSearchParam auditSearchParam, Integer pageNum, Integer pageSize) {
+        LOGGER.info("getAuditTaskList auditSearchParam = {}", JSON.toJSONString(auditSearchParam));
         PageHelper.startPage(pageNum, pageSize);
         List<AuditTaskDB> auditTaskDBList = auditMapper.selectList(auditSearchParam);
+        LOGGER.info("auditTaskDBList = {}", JSON.toJSONString(auditTaskDBList));
+        PageInfo<AuditTaskDB> pageInfo = new PageInfo<>(auditTaskDBList);
 
         List<AuditTask> auditTaskList = AuditTransferUtil.transAuditTaskDBList2BoList(auditTaskDBList);
-        PageInfo<AuditTask> pageInfo = new PageInfo<>(auditTaskList);
+        for (AuditTask task : auditTaskList) {
+            task.setAuditData("");
+        }
+        LOGGER.info("auditTaskList = {}", JSON.toJSONString(auditTaskList));
         return new PageData.Builder<AuditTask>()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
                 .totalSize((int) pageInfo.getTotal())
-                .totalPage(pageInfo.getPageSize())
+                .totalPage(pageInfo.getPages())
                 .data(auditTaskList)
                 .build();
     }

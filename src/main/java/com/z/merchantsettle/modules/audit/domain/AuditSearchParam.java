@@ -9,9 +9,7 @@ public class AuditSearchParam {
 
     private Integer customerId;
     private Integer poiId;
-    private Integer auditType;
-    private Integer auditApplicationType;
-    private List<Integer> auditStatus;
     private String submitterId;
     private String transactor = "";
+    private Integer completed;
 }
