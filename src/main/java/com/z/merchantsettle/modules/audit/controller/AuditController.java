@@ -1,6 +1,7 @@
 package com.z.merchantsettle.modules.audit.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
 import com.z.merchantsettle.modules.audit.domain.AuditResult;
 import com.z.merchantsettle.modules.audit.domain.AuditSearchParam;
@@ -33,7 +34,6 @@ public class AuditController {
 
         LOGGER.info("listAuditTask auditSearchParam = {}, pageNum = {}, pageSize = {}", JSON.toJSONString(auditSearchParam), pageNum, pageSize);
         PageData<AuditTask> pageData = auditService.getAuditTaskList(auditSearchParam, pageNum, pageSize);
-        LOGGER.info("listAuditTask pageData = {}", JSON.toJSONString(pageData));
         return ReturnResult.success(pageData);
     }
 
@@ -47,7 +47,7 @@ public class AuditController {
             AuditTask auditTask = auditService.getAuditTaskDetailById(auditTaskId);
             Object obj = JSON.parse(auditTask.getAuditData());
             auditTask.setAuditDataObj(obj);
-            return ReturnResult.success(auditTask);
+            return ReturnResult.success(Lists.newArrayList(auditTask));
         } catch (AuditException e) {
             LOGGER.error("查询审核信息异常 auditTaskId = {}", auditTaskId);
             return ReturnResult.fail(e.getMsg());
@@ -69,7 +69,7 @@ public class AuditController {
     }
 
     @RequestMapping("/saveAuditResult")
-    public Object saveAuditResult(@RequestBody AuditResult result) {
+    public Object saveAuditResult( AuditResult result) {
         try {
             Integer auditStatus = StringUtils.isBlank(result.getResult()) ? AuditConstant.AuditStatus.AUDIT_PASS : AuditConstant.AuditStatus.AUDIT_REJECT;
             result.setAuditStatus(auditStatus);

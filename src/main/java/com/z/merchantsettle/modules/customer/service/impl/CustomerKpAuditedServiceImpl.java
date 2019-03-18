@@ -33,7 +33,8 @@ public class CustomerKpAuditedServiceImpl implements CustomerKpAuditedService {
         }
 
         CustomerKpAuditedDB customerKpAuditedDB = CustomerTransferUtil.transCustomerKpAudited2DB(customerKpAudited);
-        if (customerKpAudited.getId() != null && customerKpAudited.getId() > 0) {
+        CustomerKpAuditedDB customerKpAuditedDBInDB = customerKpAuditedDBMapper.selectByCustomerId(customerKpAuditedDB.getCustomerId());
+        if (customerKpAuditedDBInDB != null) {
             customerKpAuditedDBMapper.updateByIdSelective(customerKpAuditedDB);
         } else {
             customerKpAuditedDBMapper.insertSelective(customerKpAuditedDB);

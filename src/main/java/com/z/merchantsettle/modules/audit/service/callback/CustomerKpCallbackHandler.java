@@ -3,6 +3,7 @@ package com.z.merchantsettle.modules.audit.service.callback;
 import com.alibaba.fastjson.JSON;
 import com.z.merchantsettle.modules.audit.domain.AuditResult;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
+import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomerKp;
 import com.z.merchantsettle.modules.customer.service.callback.CustomerCallbackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,10 @@ public class CustomerKpCallbackHandler extends AbstractHandler {
         Integer auditStatus = result.getAuditStatus();
         String auditResult = result.getResult();
         Integer customerId = auditTask.getCustomerId();
-        customerCallbackService.customerKpAuditCallback(customerId, auditStatus, auditResult);
+
+        String auditData = auditTask.getAuditData();
+        AuditCustomerKp auditCustomerKp = JSON.parseObject(auditData, AuditCustomerKp.class);
+        Integer kpId = auditCustomerKp.getKpId();
+        customerCallbackService.customerKpAuditCallback(customerId, kpId, auditStatus, auditResult);
     }
 }

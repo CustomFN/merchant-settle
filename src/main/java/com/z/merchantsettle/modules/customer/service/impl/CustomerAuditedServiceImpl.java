@@ -62,7 +62,8 @@ public class CustomerAuditedServiceImpl implements CustomerAuditedService {
         }
 
         CustomerAuditedDB customerAuditedDB = CustomerTransferUtil.transCustomerAudited2DB(customerAudited);
-        if (customerAudited.getId() != null && customerAudited.getId() > 0) {
+        CustomerAuditedDB customerAuditedDBInDB = customerAuditedDBMapper.selectById(customerAuditedDB.getId());
+        if (customerAuditedDBInDB != null) {
             customerAuditedDBMapper.updateByIdSelective(customerAuditedDB);
         } else {
             customerAuditedDBMapper.insertSelective(customerAuditedDB);

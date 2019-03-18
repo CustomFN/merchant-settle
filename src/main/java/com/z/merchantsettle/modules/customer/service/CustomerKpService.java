@@ -13,4 +13,6 @@ public interface CustomerKpService {
     void setupEffectCustomerKp(Integer customerId) throws CustomerException;
 
     void deleteByCustomerId(Integer customerId, String opUserId) throws CustomerException;
+
+    void updateByIdForAudit(CustomerKp customerKp, String opUserId);
 }

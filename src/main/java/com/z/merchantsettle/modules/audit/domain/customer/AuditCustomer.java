@@ -6,8 +6,8 @@ import lombok.Data;
 public class AuditCustomer {
 
     private Integer customerId;
-    private Integer customerType;
-    private String customerCertificatesPic;
+    private String customerTypeStr;
+    private String[] customerCertificatesPicArr;
     private String customerCertificatesNum;
     private String customerName;
     private String customerLegalPerson;

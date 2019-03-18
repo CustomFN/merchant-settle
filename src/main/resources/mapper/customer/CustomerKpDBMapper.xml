@@ -174,7 +174,9 @@
             </if>
             utime = unix_timestamp()
         </set>
-        where id = #{id}
+        where
+          id = #{id}
+        and valid = 1
     </update>
 
     <update id="updateByCustomerIdSelective" parameterType="com.z.merchantsettle.modules.customer.domain.db.CustomerKpDB" >

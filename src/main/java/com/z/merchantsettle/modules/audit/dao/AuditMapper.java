@@ -14,6 +14,8 @@ public interface AuditMapper {
 
     List<AuditTaskDB> selectList(@Param("auditSearchParam") AuditSearchParam auditSearchParam);
 
+    List<AuditTaskDB> selectListByTransactor(@Param("auditSearchParam") AuditSearchParam auditSearchParam);
+
     AuditTaskDB getAuditTaskDetailById(Integer auditTaskId);
 
     void updateByTaskIdSelective(AuditTaskDB auditTaskDB);

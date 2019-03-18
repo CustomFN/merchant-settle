@@ -51,7 +51,7 @@ public class CustomerCallbackServiceImpl implements CustomerCallbackService {
                     customer.setId(customerId);
                     customer.setStatus(CustomerConstant.CustomerStatus.AUDIT_REJECT.getCode());
                     customer.setAuditResult(auditResult);
-                    customerService.saveOrUpdate(customer, "审核系统()");
+                    customerService.updateByIdForAudit(customer, "审核系统()");
                 }
                 isRetry = false;
             } catch (CustomerException e) {
@@ -62,8 +62,8 @@ public class CustomerCallbackServiceImpl implements CustomerCallbackService {
     }
 
     @Override
-    public void customerKpAuditCallback(Integer customerId, Integer auditStatus, String auditResult) {
-        LOGGER.info("customerKpAuditCallback customerId = {}, auditStatus = {}, auditResult = {}", customerId, auditStatus, auditResult);
+    public void customerKpAuditCallback(Integer customerId, Integer kpId, Integer auditStatus, String auditResult) {
+        LOGGER.info("customerKpAuditCallback customerId = {}, kpId = {}, auditStatus = {}, auditResult = {}", customerId, kpId, auditStatus, auditResult);
         int retry = 0;
         boolean isRetry = true;
 
@@ -73,10 +73,11 @@ public class CustomerCallbackServiceImpl implements CustomerCallbackService {
                     customerKpService.setupEffectCustomerKp(customerId);
                 } else {
                     CustomerKp customerKp = new CustomerKp();
+                    customerKp.setId(kpId);
                     customerKp.setCustomerId(customerId);
                     customerKp.setStatus(CustomerConstant.CustomerStatus.AUDIT_REJECT.getCode());
                     customerKp.setAuditResult(auditResult);
-                    customerKpService.saveOrUpdate(customerKp, "审核系统()");
+                    customerKpService.updateByIdForAudit(customerKp, "审核系统()");
                 }
                 isRetry = false;
             } catch (CustomerException e) {
@@ -97,10 +98,11 @@ public class CustomerCallbackServiceImpl implements CustomerCallbackService {
                     customerContractService.setupEffectCustomerContract(customerId, contractId);
                 } else {
                     CustomerContract customerContract = new CustomerContract();
+                    customerContract.setId(contractId);
                     customerContract.setCustomerId(customerId);
                     customerContract.setStatus(CustomerConstant.CustomerStatus.AUDIT_REJECT.getCode());
                     customerContract.setAuditResult(auditResult);
-                    customerContractService.saveOrUpdate(customerContract, "审核系统()");
+                    customerContractService.updateByIdForAudit(customerContract, "审核系统()");
                 }
                 isRetry = false;
             } catch (CustomerException e) {
@@ -121,10 +123,11 @@ public class CustomerCallbackServiceImpl implements CustomerCallbackService {
                     customerSettleService.setupEffectCustomerSettle(customerId, settleId);
                 } else {
                     CustomerSettle customerSettle = new CustomerSettle();
+                    customerSettle.setId(settleId);
                     customerSettle.setCustomerId(customerId);
                     customerSettle.setStatus(CustomerConstant.CustomerStatus.AUDIT_REJECT.getCode());
                     customerSettle.setAuditResult(auditResult);
-                    customerSettleService.saveOrUpdate(customerSettle, "审核系统()");
+                    customerSettleService.updateByIdForAudit(customerSettle, "审核系统()");
                 }
                 isRetry = false;
             } catch (CustomerException e) {

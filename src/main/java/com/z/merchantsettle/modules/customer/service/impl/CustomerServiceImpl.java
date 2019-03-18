@@ -14,6 +14,7 @@ import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomer;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
 import com.z.merchantsettle.modules.customer.constants.CustomerConstant;
+import com.z.merchantsettle.modules.customer.constants.CustomerTypeEnum;
 import com.z.merchantsettle.modules.customer.dao.CustomerDBMapper;
 import com.z.merchantsettle.modules.customer.dao.CustomerPoiDBMapper;
 import com.z.merchantsettle.modules.customer.domain.CustomerSearchParam;
@@ -106,7 +107,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public void deleteByCustomerId(Integer customerId, String opUserId) throws CustomerException {
         LOGGER.info("CustomerServiceImpl deleteByCustomerId customerId = {}, opUser = {}", customerId, opUserId);
-        if (customerId == null || customerId <= 0 ) {
+        if (customerId == null || customerId <= 0) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
 
@@ -184,6 +185,12 @@ public class CustomerServiceImpl implements CustomerService {
 
         AuditCustomer auditCustomer = new AuditCustomer();
         TransferUtil.transferAll(customerDB, auditCustomer);
+
+        String customerCertificatesPic = customerDB.getCustomerCertificatesPic();
+        String[] picArr = StringUtils.split(customerCertificatesPic, ",");
+        auditCustomer.setCustomerCertificatesPicArr(picArr);
+        auditCustomer.setCustomerTypeStr(CustomerTypeEnum.getByCode(customerDB.getCustomerType()));
+
         auditTask.setAuditData(JSON.toJSONString(auditCustomer));
         apiAuditService.commitAudit(auditTask);
     }
@@ -232,5 +239,25 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerAudited customerAudited = new CustomerAudited();
         TransferUtil.transferAll(customer, customerAudited);
         return customerAudited;
+    }
+
+    @Override
+    public void updateByIdForAudit(Customer customer, String opUserId) {
+        LOGGER.info("updateByIdForAudit customer = {}, opUserId = {}", JSON.toJSONString(customer), opUserId);
+        if (customer == null || StringUtils.isBlank(opUserId)) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
+        }
+
+        CustomerDB customerDB = customerDBMapper.selectById(customer.getId());
+        if (customerDB == null) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_OP_ERROR, "更新客户审核状态异常");
+        }
+
+        customerDB.setStatus(customer.getStatus());
+        customerDB.setAuditResult(customer.getAuditResult());
+        customerDBMapper.updateByIdSelective(customerDB);
+
+        String log = "审核结果:审核驳回:" + customerDB.getAuditResult();
+        customerOpLogService.addLog(customerDB.getId(), "客户", log, "系统()");
     }
 }

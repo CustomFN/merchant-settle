@@ -5,7 +5,7 @@ public interface CustomerCallbackService {
 
     void customerAuditCallback(Integer customerId, Integer auditStatus, String auditResult);
 
-    void customerKpAuditCallback(Integer customerId, Integer auditStatus, String auditResult);
+    void customerKpAuditCallback(Integer customerId, Integer kpId, Integer auditStatus, String auditResult);
 
     void customerContractAuditCallback(Integer customerId, Integer contractId, Integer auditStatus, String auditResult);
 

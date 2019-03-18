@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,9 +39,10 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
 
     @Autowired
     private AuditMapper auditMapper;
-
     @Autowired
     private AuditLogService auditLogService;
+    @Autowired
+    private AuditCallbackService auditCallbackService;
 
 
     /****   ApiService   ****/
@@ -71,15 +73,19 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
     public PageData<AuditTask> getAuditTaskList(AuditSearchParam auditSearchParam, Integer pageNum, Integer pageSize) {
         LOGGER.info("getAuditTaskList auditSearchParam = {}", JSON.toJSONString(auditSearchParam));
         PageHelper.startPage(pageNum, pageSize);
-        List<AuditTaskDB> auditTaskDBList = auditMapper.selectList(auditSearchParam);
-        LOGGER.info("auditTaskDBList = {}", JSON.toJSONString(auditTaskDBList));
+        List<AuditTaskDB> auditTaskDBList;
+        if (StringUtils.isNotBlank(auditSearchParam.getTransactor())) {
+            auditTaskDBList = auditMapper.selectListByTransactor(auditSearchParam);
+        } else {
+            auditTaskDBList = auditMapper.selectList(auditSearchParam);
+        }
+
         PageInfo<AuditTaskDB> pageInfo = new PageInfo<>(auditTaskDBList);
 
         List<AuditTask> auditTaskList = AuditTransferUtil.transAuditTaskDBList2BoList(auditTaskDBList);
         for (AuditTask task : auditTaskList) {
             task.setAuditData("");
         }
-        LOGGER.info("auditTaskList = {}", JSON.toJSONString(auditTaskList));
         return new PageData.Builder<AuditTask>()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
@@ -118,6 +124,7 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
     }
 
     @Override
+    @Transactional
     public void saveAuditResult(AuditResult result) throws AuditException {
         if (result == null || result.getAuditStatus() == null || result.getAuditStatus() <= 0) {
             throw new AuditException(AuditConstant.AUDIT_STATUS_ERROR, "审核状态异常");
@@ -132,6 +139,7 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
         auditTaskDB.setId(result.getAuditTaskId());
         auditTaskDB.setAuditStatus(result.getAuditStatus());
         auditTaskDB.setAuditResult(result.getResult());
+        auditTaskDB.setCompleted(1);
         auditMapper.updateByTaskIdSelective(auditTaskDB);
 
         AuditLogDB auditLogDB = new AuditLogDB();
@@ -145,7 +153,7 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
         auditLogService.saveAuditLog(auditLogDB);
 
         AuditTask auditTask = AuditTransferUtil.transAuditTaskDB2Bo(auditTaskDB);
-        AuditCallbackService.getCallbackHandler(auditTask.getAuditType()).handleCallback(result, auditTask);
+        auditCallbackService.getCallbackHandler(auditTask.getAuditType()).handleCallback(result, auditTask);
     }
 
 }

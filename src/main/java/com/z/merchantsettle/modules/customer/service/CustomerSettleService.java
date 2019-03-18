@@ -22,4 +22,6 @@ public interface CustomerSettleService {
     List<CustomerSettle> getBySettleIdList(List<Integer> customerSettleIdList);
 
     void deleteByCustomerId(Integer customerId, String opUserId) throws CustomerException;
+
+    void updateByIdForAudit(CustomerSettle customerSettle, String opUserId);
 }

@@ -20,4 +20,6 @@ public interface CustomerService {
     Customer saveOrUpdate(Customer customer, String opUserId) throws CustomerException;
 
     void setupEffectCustomer(Integer customerId) throws CustomerException;
+
+    void updateByIdForAudit(Customer customer, String opUserId);
 }

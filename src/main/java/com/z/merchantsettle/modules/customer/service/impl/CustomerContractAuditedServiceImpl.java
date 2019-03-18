@@ -44,7 +44,9 @@ public class CustomerContractAuditedServiceImpl implements CustomerContractAudit
         CustomerSignerAudited partyA = customerContractAudited.getPartyA();
         CustomerSignerAudited partyB = customerContractAudited.getPartyB();
         List<CustomerSignerAudited> customerSignerAuditedList = Lists.newArrayList(partyA, partyB);
-        if (customerContractAudited.getId() != null) {
+
+        CustomerContractAuditedDB customerContractAuditedDBInDB = customerContractAuditedDBMapper.selectById(customerContractAuditedDB.getId());
+        if (customerContractAuditedDBInDB != null) {
             customerContractAuditedDBMapper.updateByIdSelective(customerContractAuditedDB);
             customerSignerAuditedService.saveOrUpdate(customerSignerAuditedList);
         } else {

@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class AuditCustomerKp {
 
+    private Integer kpId;
     private Integer customerId;
     private Integer kpType;
     private Integer kpSiginType;

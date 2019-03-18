@@ -43,6 +43,7 @@ public class CustomerKpServiceImpl implements CustomerKpService {
 
     @Override
     public CustomerKp saveOrUpdate(CustomerKp customerKp, String opUser) throws CustomerException {
+        LOGGER.info("saveOrUpdate customerKp = {}, opUser = {}", JSON.toJSONString(customerKp), opUser);
         if (customerKp == null || StringUtils.isBlank(opUser)) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
@@ -72,6 +73,7 @@ public class CustomerKpServiceImpl implements CustomerKpService {
 
         AuditCustomerKp auditCustomerKp = new AuditCustomerKp();
         TransferUtil.transferAll(customerKp, auditCustomerKp);
+        auditCustomerKp.setKpId(customerKp.getId());
         // TODO: 2019/2/3 根据银行id获取银行名称
         auditTask.setAuditData(JSON.toJSONString(auditCustomerKp));
         apiAuditService.commitAudit(auditTask);
@@ -140,5 +142,25 @@ public class CustomerKpServiceImpl implements CustomerKpService {
 
         customerKpDBMapper.deleteByCustomerId(customerId);
         customerKpAuditedService.deleteByCustomerId(customerId);
+    }
+
+    @Override
+    public void updateByIdForAudit(CustomerKp customerKp, String opUserId) {
+        LOGGER.info("updateByIdForAudit customerKp = {}, opUser = {}", JSON.toJSONString(customerKp), opUserId);
+        if (customerKp == null || StringUtils.isBlank(opUserId)) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
+        }
+
+        CustomerKpDB customerKpDB = customerKpDBMapper.selectByCustomerId(customerKp.getCustomerId());
+        if (customerKpDB == null) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_OP_ERROR, "更新客户KP审核状态异常");
+        }
+
+        customerKpDB.setStatus(customerKp.getStatus());
+        customerKpDB.setAuditResult(customerKp.getAuditResult());
+
+        customerKpDBMapper.updateByIdSelective(customerKpDB);
+        String log = "审核结果:审核驳回:" + customerKpDB.getAuditResult();
+        customerOpLogService.addLog(customerKp.getCustomerId(), "KP",  log, opUserId);
     }
 }

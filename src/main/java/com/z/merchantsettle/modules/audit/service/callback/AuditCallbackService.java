@@ -3,27 +3,47 @@ package com.z.merchantsettle.modules.audit.service.callback;
 import com.z.merchantsettle.exception.AuditException;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
 import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AuditCallbackService {
 
-    public static AbstractHandler getCallbackHandler(int auditType) {
+    @Autowired
+    private  CustomerCallbackHandler customerCallbackHandler;
+    @Autowired
+    private  CustomerKpCallbackHandler customerKpCallbackHandler;
+    @Autowired
+    private  CustomerContractCallbackHandler customerContractCallbackHandler;
+    @Autowired
+    private  CustomerSettleCallbackHandler customerSettleCallbackHandler;
+    @Autowired
+    private  WmPoiBaseInfoCallbackHandler wmPoiBaseInfoCallbackHandler;
+    @Autowired
+    private  WmPoiQuaCallbackHandler wmPoiQuaCallbackHandler;
+    @Autowired
+    private  WmPoiDeliveryInfoCallbackHandler wmPoiDeliveryInfoCallbackHandler;
+    @Autowired
+    private  WmPoiBusinessInfoCallbackHandler wmPoiBusinessInfoCallbackHandler;
+
+    public  AbstractHandler getCallbackHandler(int auditType) {
 
         if (AuditTypeEnum.CUSTOMER.getCode() == auditType) {
-            return new CustomerCallbackHandler();
+            return customerCallbackHandler;
         } else if (AuditTypeEnum.CUSTOMER_KP.getCode() == auditType) {
-            return new CustomerKpCallbackHandler();
+            return customerKpCallbackHandler;
         } else if (AuditTypeEnum.CUSTOMER_CONTRACT.getCode() == auditType) {
-            return new CustomerContractCallbackHandler();
+            return customerContractCallbackHandler;
         } else if (AuditTypeEnum.CUSTOMER_SETTLE.getCode() == auditType) {
-            return new CustomerSettleCallbackHandler();
+            return customerSettleCallbackHandler;
         } else if (AuditTypeEnum.POI_BASE_INFO.getCode() == auditType) {
-            return new WmPoiBaseInfoCallbackHandler();
+            return wmPoiBaseInfoCallbackHandler;
         } else if (AuditTypeEnum.POI_QUA_INFO.getCode() == auditType) {
-            return new WmPoiQuaCallbackHandler();
+            return wmPoiQuaCallbackHandler;
         } else if (AuditTypeEnum.POI_DELIVERY_INFO.getCode() == auditType) {
-            return new WmPoiDeliveryInfoCallbackHandler();
+            return wmPoiDeliveryInfoCallbackHandler;
         } else if (AuditTypeEnum.POI_BUSINESS_INFO.getCode() == auditType) {
-            return new WmPoiBusinessInfoCallbackHandler();
+            return wmPoiBusinessInfoCallbackHandler;
         }
 
         throw new AuditException(AuditConstant.AUDIT_OP_ERROR, "不存在此审核类型");

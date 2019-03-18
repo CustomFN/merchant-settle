@@ -81,7 +81,8 @@ public class CustomerSettleAuditedServiceImpl implements CustomerSettleAuditedSe
         }
 
         CustomerSettleAuditedDB customerSettleAuditedDB = CustomerTransferUtil.transCustomerSettleAudited2DB(customerSettleAudited);
-        if (customerSettleAuditedDB.getId() != null && customerSettleAuditedDB.getId() > 0) {
+        CustomerSettleAuditedDB customerSettleAuditedDBInDB = customerSettleAuditedDBMapper.selectById(customerSettleAuditedDB.getId());
+        if (customerSettleAuditedDBInDB != null) {
             customerSettleAuditedDBMapper.updateByIdSelective(customerSettleAuditedDB);
         } else {
             customerSettleAuditedDBMapper.insertSelective(customerSettleAuditedDB);

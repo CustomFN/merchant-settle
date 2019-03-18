@@ -86,7 +86,7 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
         }
 //        customerSettlePoiService.saveOrUpdateSettlePoi(customerSettleDB.getId(), customerSettle.getWmPoiIdList());
         commitAudit(customerSettle, opUserId, isNew);
-//        customerOpLogService.addLog(customerSettle.getCustomerId(), "结算", "保存客户结算，提交审核", opUserId);
+        customerOpLogService.addLog(customerSettle.getCustomerId(), "结算", "保存客户结算，提交审核", opUserId);
         return customerSettle;
     }
 
@@ -252,5 +252,23 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
         customerSettleAuditedService.deleteByCustomerId(customerId);
 
         customerSender.send(CUSTOMER_SETTLE_TOPIC, customerId, MsgOpType.DELETE);
+    }
+
+    @Override
+    public void updateByIdForAudit(CustomerSettle customerSettle, String opUserId) {
+        LOGGER.info("updateByIdForAudit customerSettle = {}, opUserId = {}", JSON.toJSONString(customerSettle), opUserId);
+        if (customerSettle == null || StringUtils.isBlank(opUserId)) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
+        }
+
+        CustomerSettleDB customerSettleDB = customerSettleDBMapper.selectById(customerSettle.getId());
+        if (customerSettleDB == null) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_OP_ERROR, "更新客户结算审核状态异常");
+        }
+        customerSettleDB.setStatus(customerSettle.getStatus());
+        customerSettleDB.setAuditResult(customerSettle.getAuditResult());
+        customerSettleDBMapper.updateByIdSelective(customerSettleDB);
+        String log = "审核结果:审核驳回:" + customerSettleDB.getAuditResult();
+        customerOpLogService.addLog(customerSettleDB.getCustomerId(), "结算", log, "系统()");
     }
 }

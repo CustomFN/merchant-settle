@@ -93,7 +93,7 @@ public class CustomerContractServiceImpl implements CustomerContractService {
             customerSignerService.updateByIdSelective(Lists.newArrayList(partyA, partyB));
         }
         commitAudit(customerContract, opUser, isNew);
-//        customerOpLogService.addLog(customerContract.getCustomerId(), "合同", "保存合同，提交审核", opUser);
+        customerOpLogService.addLog(customerContract.getCustomerId(), "合同", "保存合同，提交审核", opUser);
         return customerContract;
     }
 
@@ -282,5 +282,24 @@ public class CustomerContractServiceImpl implements CustomerContractService {
 
         customerContractDBMapper.deleteByCustomerId(customerId);
         customerContractAuditedService.deleteByCustomerId(customerId);
+    }
+
+    @Override
+    public void updateByIdForAudit(CustomerContract customerContract, String opUserId) {
+        LOGGER.info("updateByIdForAudit customerContract = {}, opUserId = {}", JSON.toJSONString(customerContract), opUserId);
+        if (customerContract == null || customerContract.getPartyA() == null ||
+                customerContract.getPartyB() == null || StringUtils.isBlank(opUserId)) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
+        }
+
+        CustomerContractDB customerContractDB = customerContractDBMapper.selectById(customerContract.getId());
+        if (customerContractDB == null) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_OP_ERROR, "更新客户合同审核状态异常");
+        }
+        customerContractDB.setStatus(customerContract.getStatus());
+        customerContractDB.setAuditResult(customerContract.getAuditResult());
+        customerContractDBMapper.updateByIdSelective(customerContractDB);
+        String log = "审核结果:审核驳回:" + customerContractDB.getAuditResult();
+        customerOpLogService.addLog(customerContractDB.getCustomerId(), "合同", log, "系统()");
     }
 }

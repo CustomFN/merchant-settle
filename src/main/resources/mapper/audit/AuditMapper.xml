@@ -69,6 +69,29 @@
             <if test="auditSearchParam.submitterId != null and auditSearchParam.submitterId != ''">
                 and submitterId = #{auditSearchParam.submitterId}
             </if>
+            and completed = #{auditSearchParam.completed}
+            and valid = 1
+        </where>
+        order by
+          id
+        desc
+    </select>
+
+    <select id="selectListByTransactor" parameterType="com.z.merchantsettle.modules.audit.domain.AuditSearchParam" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        audit
+        <where>
+            <if test="auditSearchParam.customerId != null and auditSearchParam.customerId > 0">
+                and customerId = #{auditSearchParam.customerId}
+            </if>
+            <if test="auditSearchParam.poiId != null and auditSearchParam.poiId > 0">
+                and poiId = #{auditSearchParam.poiId}
+            </if>
+            <if test="auditSearchParam.submitterId != null and auditSearchParam.submitterId != ''">
+                and submitterId = #{auditSearchParam.submitterId}
+            </if>
             <if test="auditSearchParam.transactor != null">
                 and transactor = #{auditSearchParam.transactor}
             </if>
@@ -76,7 +99,7 @@
             and valid = 1
         </where>
         order by
-          id
+        id
         desc
     </select>
 
