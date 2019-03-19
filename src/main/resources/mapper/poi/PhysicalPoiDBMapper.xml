@@ -15,13 +15,15 @@
         <result column="physicalPoiLatitude" property="physicalPoiLatitude" />
         <result column="physicalPoiPrincipal" property="physicalPoiPrincipal"/>
         <result column="status" property="status" />
+        <result column="ctime" property="ctime" />
         <result column="valid" property="valid" />
+        <result column="claimed" property="claimed"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, physicalCityId, physicalRegionId, physicalPoiName, physicalPoiPhone, physicalPoiCategory,
-        physicalPoiAddress, physicalPoiLongitude, physicalPoiLatitude, physicalPoiPrincipal, status, valid
+        physicalPoiAddress, physicalPoiLongitude, physicalPoiLatitude, physicalPoiPrincipal, status, ctime, valid, claimed
     </sql>
 
 
@@ -33,20 +35,18 @@
           physical_poi
         <where>
             <if test="userId != null and userId != ''">
-                and userId = #{physicalPrincipal},
+                and physicalPoiPrincipal = #{userId}
             </if>
             <if test="physicalPoiReqParam.physicalPoiId != null and physicalPoiReqParam.physicalPoiId > 0">
-                and physicalPoiId = #{physicalPoiReqParam.physicalPoiId},
+                and id = #{physicalPoiReqParam.physicalPoiId}
             </if>
             <if test="physicalPoiReqParam.physicalCityId != null and physicalPoiReqParam.physicalCityId > 0">
-                and physicalCityId = #{physicalPoiReqParam.physicalCityId},
+                and physicalCityId = #{physicalPoiReqParam.physicalCityId}
             </if>
             <if test="physicalPoiReqParam.physicalPoiName != null and physicalPoiReqParam.physicalPoiName != ''">
-                and physicalPoiName like concat(concat('%',#{physicalPoiReqParam.physicalPoiName}),'%'),
+                and physicalPoiName like concat(concat('%',#{physicalPoiReqParam.physicalPoiName}),'%')
             </if>
-            <if test="physicalPoiReqParam.status != null and physicalPoiReqParam.status > 0">
-                and status = #{physicalPoiReqParam.status},
-            </if>
+            and claimed = #{physicalPoiReqParam.claimed}
             and valid = 1
         </where>
     </select>
@@ -87,7 +87,9 @@
             <if test="valid != null" >
                 valid = #{valid},
             </if>
-            utime = unix_timestamp()
+            <if test="claimed != null" >
+                claimed = #{claimed},
+            </if>
         </set>
         where id = #{id}
     </update>
@@ -125,8 +127,10 @@
             <if test="status != null" >
                 status,
             </if>
+            <if test="claimed != null" >
+                claimed,
+            </if>
             ctime,
-            utime,
             valid
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -160,7 +164,9 @@
             <if test="status != null" >
                 #{status},
             </if>
-            unix_timestamp(),
+            <if test="claimed != null" >
+                #{claimed},
+            </if>
             unix_timestamp(),
             1
         </trim>

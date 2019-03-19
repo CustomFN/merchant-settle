@@ -8,7 +8,10 @@ import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomerKp;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
+import com.z.merchantsettle.modules.customer.constants.CertificatesTypeEnum;
 import com.z.merchantsettle.modules.customer.constants.CustomerConstant;
+import com.z.merchantsettle.modules.customer.constants.KpSignerTypeEnum;
+import com.z.merchantsettle.modules.customer.constants.KpTypeEnum;
 import com.z.merchantsettle.modules.customer.dao.CustomerKpDBMapper;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerKp;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerKpAudited;
@@ -75,6 +78,18 @@ public class CustomerKpServiceImpl implements CustomerKpService {
         TransferUtil.transferAll(customerKp, auditCustomerKp);
         auditCustomerKp.setKpId(customerKp.getId());
         // TODO: 2019/2/3 根据银行id获取银行名称
+
+        String kpCertificatesPic = customerKp.getKpCertificatesPic();
+        String[] picArr1 = StringUtils.split(kpCertificatesPic, ",");
+        auditCustomerKp.setCustomerKpCertificatesPicArr(picArr1);
+
+        String kpAuthorizationPic = customerKp.getKpAuthorizationPic();
+        String[] picArr2 = StringUtils.split(kpAuthorizationPic, ",");
+        auditCustomerKp.setCustomerKpCertificatesPicArr(picArr2);
+
+        auditCustomerKp.setKpTypeStr(KpTypeEnum.getByCode(customerKp.getKpType()));
+        auditCustomerKp.setKpSiginTypeStr(KpSignerTypeEnum.getByCode(customerKp.getKpSiginType()));
+        auditCustomerKp.setKpCertificatesTypeStr(CertificatesTypeEnum.getByCode(customerKp.getKpCertificatesType()));
         auditTask.setAuditData(JSON.toJSONString(auditCustomerKp));
         apiAuditService.commitAudit(auditTask);
     }

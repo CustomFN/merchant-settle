@@ -30,7 +30,7 @@ public class PhysicalPoiController {
     public Object listAll(PhysicalPoiReqParam physicalPoiReqParam,
                        @RequestParam(name = "pageNum", defaultValue = "1") Integer pageNum,
                        @RequestParam(name = "pageSize", defaultValue = "30") Integer pageSize) {
-
+        LOGGER.info("PhysicalPoiController listAll = {}, pageNum = {}, pageSize = {}", JSON.toJSONString(physicalPoiReqParam), pageNum, pageSize);
         if (pageNum == null || pageNum < 1 || pageSize == null || pageSize < 1) {
             return ReturnResult.fail("参数错误");
         }
@@ -56,7 +56,7 @@ public class PhysicalPoiController {
     public Object list(PhysicalPoiReqParam physicalPoiReqParam,
                        @RequestParam(name = "pageNum", defaultValue = "1") Integer pageNum,
                        @RequestParam(name = "pageSize", defaultValue = "30") Integer pageSize) {
-
+        LOGGER.info("PhysicalPoiController list = {}, pageNum = {}, pageSize = {}", JSON.toJSONString(physicalPoiReqParam), pageNum, pageSize);
         if (pageNum == null || pageNum < 1 || pageSize == null || pageSize < 1) {
             return ReturnResult.fail("参数错误");
         }
@@ -70,7 +70,7 @@ public class PhysicalPoiController {
     }
 
     @RequestMapping("/save")
-    public Object saveOrUpdate(@RequestBody PhysicalPoi physicalPoi) {
+    public Object saveOrUpdate(PhysicalPoi physicalPoi) {
         LOGGER.info("PhysicalPoiController saveOrUpdate = {}", JSON.toJSONString(physicalPoi));
         if (physicalPoi == null) {
             return ReturnResult.fail("参数错误");

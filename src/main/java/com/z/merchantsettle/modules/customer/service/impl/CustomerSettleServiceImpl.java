@@ -13,7 +13,7 @@ import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomerSettle;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
-import com.z.merchantsettle.modules.customer.constants.CustomerConstant;
+import com.z.merchantsettle.modules.customer.constants.*;
 import com.z.merchantsettle.modules.customer.dao.CustomerSettleDBMapper;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerSettle;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerSettleAudited;
@@ -102,6 +102,11 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
         TransferUtil.transferAll(customerSettle, auditCustomerSettle);
 
         auditCustomerSettle.setSettleId(customerSettle.getId());
+        auditCustomerSettle.setSettleAccTypeStr(SettleAccTypeEnum.getByCode(customerSettle.getSettleAccType()));
+        auditCustomerSettle.setFinancialOfficerCertificatesTypeStr(CertificatesTypeEnum.getByCode(customerSettle.getFinancialOfficerCertificatesType()));
+        auditCustomerSettle.setSettleTypeStr(SettleTypeEnum.getByCode(customerSettle.getSettleType()));
+        auditCustomerSettle.setSettleCycleStr(SettleCycleEnum.getByCode(customerSettle.getSettleCycle()));
+
         List<WmPoiBaseInfo> wmPoiBaseInfoList = wmPoiBaseInfoService.getByIdList(customerSettle.getWmPoiIdList());
         List<String> wmPoiNameList = Lists.transform(wmPoiBaseInfoList, new Function<WmPoiBaseInfo, String>() {
             @Override

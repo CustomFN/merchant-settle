@@ -14,6 +14,7 @@ import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomerContract;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
+import com.z.merchantsettle.modules.customer.constants.ContractTypeEnum;
 import com.z.merchantsettle.modules.customer.constants.CustomerConstant;
 import com.z.merchantsettle.modules.customer.dao.CustomerContractDBMapper;
 import com.z.merchantsettle.modules.customer.domain.ContractRequestParam;
@@ -109,6 +110,12 @@ public class CustomerContractServiceImpl implements CustomerContractService {
         TransferUtil.transferAll(customerContract, auditCustomerContract);
 
         auditCustomerContract.setContractId(customerContract.getId());
+        auditCustomerContract.setCustomerContractTypeStr(ContractTypeEnum.getByCode(customerContract.getCustomerContractType()));
+
+        String contractScan = customerContract.getContractScan();
+        String[] picArr = StringUtils.split(contractScan, ",");
+        auditCustomerContract.setContractScanArr(picArr);
+
         CustomerSigner partyA = customerContract.getPartyA();
         auditCustomerContract.setPartyA(partyA.getParty());
         auditCustomerContract.setPartyAContactPerson(partyA.getPartyContactPerson());

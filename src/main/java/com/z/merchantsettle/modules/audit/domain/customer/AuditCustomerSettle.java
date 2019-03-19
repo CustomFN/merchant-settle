@@ -9,17 +9,17 @@ public class AuditCustomerSettle {
 
     private Integer settleId;
 
-    private Integer settleAccType;
+    private String settleAccTypeStr;
     private String settleAccName;
     private String settleAccNo;
     private String bankName;
     private String reservePhoneNum;
     private String financialOfficer;
     private String financialOfficerPhone;
-    private Integer financialOfficerCertificatesType;
+    private String financialOfficerCertificatesTypeStr;
     private String financialOfficerCertificatesNum;
-    private Integer settleType;
-    private Integer settleCycle;
+    private String settleTypeStr;
+    private String settleCycleStr;
     private Double settleMinAmount;
     List<String> wmPoiName;
 }

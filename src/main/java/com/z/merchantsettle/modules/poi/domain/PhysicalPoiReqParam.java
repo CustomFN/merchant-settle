@@ -8,6 +8,6 @@ public class PhysicalPoiReqParam {
     private Integer physicalPoiId;
     private Integer physicalCityId;
     private String physicalPoiName;
-    private Integer status;
+    private Integer claimed;
 
 }

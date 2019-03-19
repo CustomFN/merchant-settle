@@ -8,10 +8,11 @@ public class AuditCustomerContract {
     private Integer contractId;
 
     private Integer customerId;
-    private Integer customerContractType;
+    private String customerContractTypeStr;
     private String customerContractNum;
     private Long contractEndTime;
     private String contractScan;
+    private String[] contractScanArr;
 
     private String partyA;
     private String partyAContactPerson;

@@ -1,5 +1,6 @@
 package com.z.merchantsettle.modules.poi.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.z.merchantsettle.common.PageData;
@@ -32,14 +33,15 @@ public class PhysicalPoiServiceImpl implements PhysicalPoiService {
     public PageData<PhysicalPoi> getList(String userId, PhysicalPoiReqParam physicalPoiReqParam, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<PhysicalPoiDB> physicalPoiDBList =  physicalPoiDBMapper.selectList(userId, physicalPoiReqParam);
-        List<PhysicalPoi> physicalPoiList = PhysicalPoiTransferUtil.transPhysicalPoiDBList2BoList(physicalPoiDBList);
+        LOGGER.info("PhysicalPoiServiceImpl physicalPoiDBList = {}", JSON.toJSONString(physicalPoiDBList));
+        PageInfo<PhysicalPoiDB> pageInfo = new PageInfo<>(physicalPoiDBList);
 
-        PageInfo<PhysicalPoi> pageInfo = new PageInfo<>(physicalPoiList);
+        List<PhysicalPoi> physicalPoiList = PhysicalPoiTransferUtil.transPhysicalPoiDBList2BoList(physicalPoiDBList);
         return new PageData.Builder<PhysicalPoi>()
                 .pageNum(pageNum)
                 .pageSize(pageSize)
                 .totalSize((int) pageInfo.getTotal())
-                .totalPage(pageInfo.getPageSize())
+                .totalPage(pageInfo.getPages())
                 .data(physicalPoiList)
                 .build();
     }
@@ -51,6 +53,7 @@ public class PhysicalPoiServiceImpl implements PhysicalPoiService {
         PhysicalPoiDB physicalPoiDB = new PhysicalPoiDB();
         physicalPoiDB.setId(physicalPoiId);
         physicalPoiDB.setPhysicalPoiPrincipal(userId);
+        physicalPoiDB.setClaimed(1);
         physicalPoiDBMapper.updateSelective(physicalPoiDB);
     }
 

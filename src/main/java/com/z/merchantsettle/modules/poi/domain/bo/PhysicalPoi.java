@@ -16,6 +16,8 @@ public class PhysicalPoi {
     private String physicalPoiLatitude;
     private String physicalPoiPrincipal;
     private Integer status;
+    private Long ctime;
     private Integer valid;
+    private Integer claimed;
 
 }

@@ -7,12 +7,12 @@ public class AuditCustomerKp {
 
     private Integer kpId;
     private Integer customerId;
-    private Integer kpType;
-    private Integer kpSiginType;
-    private String customeraAuthorizationPic;
-    private String customerKpCertificatesPic;
+    private String kpTypeStr;
+    private String kpSiginTypeStr;
+    private String[] customeraAuthorizationPicArr;
+    private String[] customerKpCertificatesPicArr;
     private String kpName;
-    private Integer kpCertificatesType;
+    private String kpCertificatesTypeStr;
     private String kpCertificatesNum;
     private String kpPhoneNum;
     private String bankName;
