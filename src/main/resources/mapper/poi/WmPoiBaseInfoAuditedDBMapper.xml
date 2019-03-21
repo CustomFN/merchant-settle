@@ -29,6 +29,8 @@
         <result column="orderMealTime" property="orderMealTime"/>
         <result column="orderMealTel" property="orderMealTel"/>
         <result column="businessInfoStatus" property="businessInfoStatus" />
+
+        <result column="coopState" property="coopState"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -36,7 +38,8 @@
         id, customerId, wmPoiName, wmPoiLinkMan, wmPoiPhone, wmPoiCategory, wmPoiCityId, wmPoiRegionId,
         wmPoiAddress, wmPoiLongitude, wmPoiLatitude, wmPoiLogo,wmPoiEnvironmentPic, wmPoiPrincipal,
         status,ctime,utime valid,
-        orderMealDate, orderMealTime, orderMealTel, businessInfoStatus
+        orderMealDate, orderMealTime, orderMealTel, businessInfoStatus,
+        coopState
     </sql>
 
     <update id="updateSelective" parameterType="com.z.merchantsettle.modules.poi.domain.db.WmPoiBaseInfoDB" >
@@ -47,9 +50,6 @@
             </if>
             <if test="wmPoiLinkMan != null" >
                 wmPoiLinkMan = #{wmPoiLinkMan},
-            </if>
-            <if test="physicalPoiName != null" >
-                physicalPoiName = #{physicalPoiName},
             </if>
             <if test="wmPoiPhone != null" >
                 wmPoiPhone = #{wmPoiPhone},
@@ -96,6 +96,9 @@
             <if test="businessInfoStatus != null" >
                 businessInfoStatus = #{businessInfoStatus},
             </if>
+            <if test="coopState != null">
+                coopState = #{coopState},
+            </if>
             utime = unix_timestamp()
         </set>
         where id = #{id}
@@ -110,9 +113,6 @@
             </if>
             <if test="wmPoiLinkMan != null" >
                 wmPoiLinkMan,
-            </if>
-            <if test="physicalPoiName != null" >
-                physicalPoiName,
             </if>
             <if test="wmPoiPhone != null" >
                 wmPoiPhone,
@@ -159,6 +159,9 @@
             <if test="businessInfoStatus != null" >
                 businessInfoStatus,
             </if>
+            <if test="coopState != null">
+                coopState,
+            </if>
             ctime,
             utime,
             valid
@@ -170,9 +173,6 @@
             </if>
             <if test="wmPoiLinkMan != null" >
                 #{wmPoiLinkMan},
-            </if>
-            <if test="physicalPoiName != null" >
-                #{physicalPoiName},
             </if>
             <if test="wmPoiPhone != null" >
                 #{wmPoiPhone},
@@ -219,6 +219,9 @@
             <if test="businessInfoStatus != null" >
                 #{businessInfoStatus},
             </if>
+            <if test="coopState != null">
+                #{coopState},
+            </if>
             unix_timestamp(),
             unix_timestamp(),
             1
@@ -236,34 +239,5 @@
           valid = 1
     </select>
 
-    <select id="getList" parameterType="com.z.merchantsettle.modules.poi.domain.WmPoiSearchParam" resultMap="BaseResultMap">
-        SELECT
-          <include refid="Base_Column_List"/>
-        FROM
-          wm_poi_base_info_audited
-        <where>
-            <if test="wmPoiSearchParam.wmPoiId != null and wmPoiSearchParam.wmPoiId > 0">
-                and id = #{wmPoiSearchParam.wmPoiId}
-            </if>
-            <if test="wmPoiSearchParam.wmCityId != null and wmPoiSearchParam.wmCityId > 0">
-                and wmCityId = #{wmPoiSearchParam.wmCityId}
-            </if>
-            <if test="wmPoiSearchParam.wmPoiName != null and wmPoiSearchParam.wmPoiName != ''">
-                and wmPoiName like concat(concat('%',#{wmPoiSearchParam.wmPoiName}),'%'),
-            </if>
-            <if test="wmPoiSearchParam.wmPoiPrincipal != null and wmPoiSearchParam.wmPoiPrincipal != ''">
-                and wmPoiPrincipal = #{wmPoiSearchParam.wmPoiPrincipal}
-            </if>
-            <if test="wmPoiSearchParam.status != null and wmPoiSearchParam.status.size > 0">
-                and status in
-                <foreach collection="wmPoiSearchParam.status" close=")" open="(" separator="," item="item">
-                    #{item}
-                </foreach>
-            </if>
-            and valid = 1
-        </where>
-        order by
-          id
-        desc
-    </select>
+
 </mapper>

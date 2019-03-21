@@ -4,6 +4,7 @@ import cn.hutool.poi.exceptions.POIException;
 import com.z.merchantsettle.exception.PoiException;
 import com.z.merchantsettle.modules.poi.constants.PoiConstant;
 import com.z.merchantsettle.modules.poi.dao.WmPoiQuaAuditedDBMapper;
+import com.z.merchantsettle.modules.poi.domain.bo.WmPoiQua;
 import com.z.merchantsettle.modules.poi.domain.bo.WmPoiQuaAudited;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiQuaDB;
 import com.z.merchantsettle.modules.poi.service.WmPoiQuaAuditedService;
@@ -18,13 +19,13 @@ public class WmPoiQuaAuditedServiceImpl implements WmPoiQuaAuditedService {
     private WmPoiQuaAuditedDBMapper wmPoiQuaAuditedDBMapper;
 
     @Override
-    public void saveOrUpdate(WmPoiQuaAudited wmPoiQuaAudited) {
-        if (wmPoiQuaAudited == null) {
+    public void saveOrUpdate(WmPoiQua wmPoiQua) {
+        if (wmPoiQua == null) {
             throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
         }
 
-        WmPoiQuaAudited wmPoiQuaAuditedInDB = getWmPoiQuaAuditedById(wmPoiQuaAudited.getId());
-        WmPoiQuaDB wmPoiQuaDB = WmPoiTransferUtil.transWmPoiQuaAudited2DB(wmPoiQuaAudited);
+        WmPoiQua wmPoiQuaAuditedInDB = getWmPoiQuaAuditedById(wmPoiQua.getId());
+        WmPoiQuaDB wmPoiQuaDB = WmPoiTransferUtil.transWmPoiQua2DB(wmPoiQua);
         if (wmPoiQuaAuditedInDB == null) {
             wmPoiQuaAuditedDBMapper.insertSelective(wmPoiQuaDB);
         } else {
@@ -33,11 +34,11 @@ public class WmPoiQuaAuditedServiceImpl implements WmPoiQuaAuditedService {
     }
 
     @Override
-    public WmPoiQuaAudited getWmPoiQuaAuditedById(Integer wmPoiId) throws POIException {
+    public WmPoiQua getWmPoiQuaAuditedById(Integer wmPoiId) throws POIException {
         if (wmPoiId == null || wmPoiId <= 0) {
             throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
         }
 
-        return WmPoiTransferUtil.transWmPoiQuaDB2Audited(wmPoiQuaAuditedDBMapper.getById(wmPoiId));
+        return WmPoiTransferUtil.transWmPoiQuaDB2Bo(wmPoiQuaAuditedDBMapper.getById(wmPoiId));
     }
 }

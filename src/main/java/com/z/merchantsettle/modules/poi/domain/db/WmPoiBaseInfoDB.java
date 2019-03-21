@@ -26,8 +26,11 @@ public class WmPoiBaseInfoDB {
     private String auditResult;
 
     private String orderMealDate;
-    private String orderMealTime;
+    private String orderMealStartTime;
+    private String orderMealEndTime;
     private String orderMealTel;
     private Integer businessInfoStatus;
     private String businessInfoAuditResult;
+
+    private Integer coopState;
 }

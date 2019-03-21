@@ -14,10 +14,7 @@ import com.z.merchantsettle.utils.shiro.ShiroUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/wmpoi/qua")
@@ -29,7 +26,7 @@ public class WmPoiQuaController {
     private WmPoiQuaService wmPoiQuaService;
 
     @RequestMapping("/save")
-    public Object saveOrUpdate(@RequestBody WmPoiQua wmPoiQua) {
+    public Object saveOrUpdate(WmPoiQua wmPoiQua) {
         LOGGER.info("WmPoiQuaController saveOrUpdate = {}", JSON.toJSONString(wmPoiQua));
         if (wmPoiQua == null) {
             return ReturnResult.fail("参数错误");
@@ -42,8 +39,8 @@ public class WmPoiQuaController {
 
         try {
             User user = ShiroUtils.getSysUser();
-            wmPoiQuaService.saveOrUpdate(wmPoiQua, user.getUserId());
-            return ReturnResult.success();
+            wmPoiQua = wmPoiQuaService.saveOrUpdate(wmPoiQua, user.getUserId());
+            return ReturnResult.success(wmPoiQua);
         } catch (UpmException | PoiException e) {
             LOGGER.error("保存门店资质信息异常", e);
             return ReturnResult.fail(PoiConstant.POI_OP_ERROR, "保存门店资质信息异常");
@@ -51,7 +48,7 @@ public class WmPoiQuaController {
     }
 
     @RequestMapping("/show/{wmPoiId}")
-    public Object getWmPoiQuaById(@RequestParam(name = "wmPoiId") Integer wmPoiId, @RequestParam(name = "effective") Integer effective) {
+    public Object getWmPoiQuaById(@PathVariable(name = "wmPoiId") Integer wmPoiId, @RequestParam(name = "effective") Integer effective) {
         LOGGER.info("getWmPoiQuaById wmPoiId = {}, effective = {}", wmPoiId, effective);
         if (wmPoiId == null || wmPoiId <= 0 || effective < 0) {
             return ReturnResult.fail(PoiConstant.POI_PARAM_ERROR, "参数错误");

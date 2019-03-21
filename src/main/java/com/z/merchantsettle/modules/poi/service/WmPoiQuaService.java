@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface WmPoiQuaService {
 
-    void saveOrUpdate(WmPoiQua wmPoiQua, String userId);
+    WmPoiQua saveOrUpdate(WmPoiQua wmPoiQua, String userId);
 
     WmPoiQua getWmPoiQuaByWmPoiId(Integer wmPoiId, Integer effective) throws POIException;
 

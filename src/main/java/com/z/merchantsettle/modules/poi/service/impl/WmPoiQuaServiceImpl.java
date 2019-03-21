@@ -13,7 +13,6 @@ import com.z.merchantsettle.modules.audit.service.ApiAuditService;
 import com.z.merchantsettle.modules.poi.constants.PoiConstant;
 import com.z.merchantsettle.modules.poi.dao.WmPoiQuaDBMapper;
 import com.z.merchantsettle.modules.poi.domain.bo.WmPoiQua;
-import com.z.merchantsettle.modules.poi.domain.bo.WmPoiQuaAudited;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiQuaDB;
 import com.z.merchantsettle.modules.poi.service.WmPoiOpLogService;
 import com.z.merchantsettle.modules.poi.service.WmPoiQuaAuditedService;
@@ -48,7 +47,7 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
 
 
     @Override
-    public void saveOrUpdate(WmPoiQua wmPoiQua, String userId) {
+    public WmPoiQua saveOrUpdate(WmPoiQua wmPoiQua, String userId) {
         if (wmPoiQua == null || StringUtils.isBlank(userId)) {
             throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
         }
@@ -56,14 +55,16 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
         WmPoiQuaDB wmPoiQuaDB = WmPoiTransferUtil.transWmPoiQua2DB(wmPoiQua);
         boolean isNew = !(wmPoiQuaDB.getId() != null && wmPoiQuaDB.getId() > 0);
         if (isNew) {
-            wmPoiQuaDBMapper.updateSelective(wmPoiQuaDB);
-        } else {
+            wmPoiQuaDB.setStatus(PoiConstant.PoiModuleStatus.AUDING.getCode());
             wmPoiQuaDBMapper.insertSelective(wmPoiQuaDB);
+        } else {
+            wmPoiQuaDBMapper.updateSelective(wmPoiQuaDB);
         }
+        wmPoiQua = WmPoiTransferUtil.transWmPoiQuaDB2Bo(wmPoiQuaDB);
         wmPoiOpLogService.addLog(wmPoiQua.getWmPoiId(), PoiConstant.PoiModuleName.POI_QUA, "保存门店资质信息", userId);
-
         commitAudit(wmPoiQuaDB, isNew, userId);
         wmPoiOpLogService.addLog(wmPoiQua.getWmPoiId(), PoiConstant.PoiModuleName.POI_QUA, "门店资质信息提交审核成功", userId);
+        return wmPoiQua;
     }
 
     private void commitAudit(WmPoiQuaDB wmPoiQuaDB, boolean isNew, String userId) {
@@ -90,23 +91,11 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
 
         WmPoiQua wmPoiQua;
         if (PoiConstant.EFFECTIVE == effective) {
-            WmPoiQuaAudited wmPoiQuaAudited = wmPoiQuaAuditedService.getWmPoiQuaAuditedById(wmPoiId);
-            wmPoiQua = transWmPoiQuaAudited2WmPoiQua(wmPoiQuaAudited);
+            wmPoiQua = wmPoiQuaAuditedService.getWmPoiQuaAuditedById(wmPoiId);
         } else {
             WmPoiQuaDB wmPoiQuaDB = wmPoiQuaDBMapper.getByWmPoiId(wmPoiId);
             wmPoiQua = WmPoiTransferUtil.transWmPoiQuaDB2Bo(wmPoiQuaDB);
         }
-        return wmPoiQua;
-    }
-
-
-    private WmPoiQua transWmPoiQuaAudited2WmPoiQua(WmPoiQuaAudited wmPoiQuaAudited) {
-        if (wmPoiQuaAudited == null) {
-            return null;
-        }
-
-        WmPoiQua wmPoiQua = new WmPoiQua();
-        TransferUtil.transferAll(wmPoiQuaAudited, wmPoiQua);
         return wmPoiQua;
     }
 
@@ -120,10 +109,10 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
             return;
         }
 
-        wmPoiQuaDB.setStatus(PoiConstant.PoiModuleStatus.EFFECT);
+        wmPoiQuaDB.setStatus(PoiConstant.PoiModuleStatus.EFFECT.getCode());
         wmPoiQuaDBMapper.updateSelective(wmPoiQuaDB);
 
-        WmPoiQuaAudited wmPoiQuaAudited = WmPoiTransferUtil.transWmPoiQuaDB2Audited(wmPoiQuaDB);
+        WmPoiQua wmPoiQuaAudited = WmPoiTransferUtil.transWmPoiQuaDB2Bo(wmPoiQuaDB);
         wmPoiQuaAuditedService.saveOrUpdate(wmPoiQuaAudited);
 
         wmPoiOpLogService.addLog(wmPoiId, PoiConstant.PoiModuleName.POI_QUA, "设置门店资质信息生效", "系统()");

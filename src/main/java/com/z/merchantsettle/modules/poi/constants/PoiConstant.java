@@ -30,17 +30,86 @@ public class PoiConstant {
         public static final String POI_BUSINESS_INFO = "门店营业信息";
     }
 
-    public static class PoiModuleStatus {
+    public enum PoiModuleStatus {
 
-        public static final int STATUS_ERROR = 410;
+        STATUS_ERROR(410, "状态错误"),
+        TO_INPUT(411, "待输入"),
+        AUDING(412, "审核中"),
+        AUDIT_REJECT(413, "审核驳回"),
+        EFFECT(414, "审核通过");
 
-        public static final int TO_INPUT = 411;
+        private Integer code;
+        private String desc;
 
-        public static final int AUDING = 412;
+        public Integer getCode() {
+            return code;
+        }
 
-        public static final int AUDIT_REJECT = 413;
+        public void setCode(Integer code) {
+            this.code = code;
+        }
 
-        public static final int EFFECT = 414;
+        public String getDesc() {
+            return desc;
+        }
+
+        public void setDesc(String desc) {
+            this.desc = desc;
+        }
+
+        PoiModuleStatus(Integer code, String desc) {
+            this.code = code;
+            this.desc = desc;
+        }
+
+        public static String getByCode(int code) {
+            for (PoiModuleStatus poiModuleStatus : values()) {
+                if (code == poiModuleStatus.getCode()) {
+                    return poiModuleStatus.getDesc();
+                }
+            }
+            throw new RuntimeException("不存在此状态");
+        }
+    }
+
+    public enum PoiCoopState {
+
+        COOPERATING(1, "上单中"),
+        OFFLINE(2, "下线中"),
+        ONLINE(412, "上线中");
+
+        private Integer code;
+        private String desc;
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public void setCode(Integer code) {
+            this.code = code;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+
+        public void setDesc(String desc) {
+            this.desc = desc;
+        }
+
+        PoiCoopState(Integer code, String desc) {
+            this.code = code;
+            this.desc = desc;
+        }
+
+        public static String getByCode(int code) {
+            for (PoiCoopState poiCoopState : values()) {
+                if (code == poiCoopState.getCode()) {
+                    return poiCoopState.getDesc();
+                }
+            }
+            throw new RuntimeException("不存在此状态");
+        }
     }
 
     public static class OrderMealType {

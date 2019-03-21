@@ -11,6 +11,7 @@ import com.z.merchantsettle.modules.poi.domain.PhysicalPoiReqParam;
 import com.z.merchantsettle.modules.poi.domain.bo.PhysicalPoi;
 import com.z.merchantsettle.modules.poi.domain.db.PhysicalPoiDB;
 import com.z.merchantsettle.modules.poi.service.PhysicalPoiService;
+import com.z.merchantsettle.utils.TransferUtil;
 import com.z.merchantsettle.utils.transfer.poi.PhysicalPoiTransferUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -65,5 +66,35 @@ public class PhysicalPoiServiceImpl implements PhysicalPoiService {
 
         PhysicalPoiDB physicalPoiDB = PhysicalPoiTransferUtil.transPhysicalPoi2DB(physicalPoi);
         physicalPoiDBMapper.insertSelective(physicalPoiDB);
+    }
+
+    @Override
+    public PhysicalPoi getById(Integer physicalPoiId) {
+        if (physicalPoiId == null || physicalPoiId <= 0) {
+            throw new PhysicalPoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
+        }
+        PhysicalPoiDB physicalPoiDB = physicalPoiDBMapper.getById(physicalPoiId);
+        return transPhysicalPoiDB2Bo(physicalPoiDB);
+    }
+
+    @Override
+    public void updateStateById(Integer physicalPoiId) {
+        if (physicalPoiId == null || physicalPoiId <= 0) {
+            throw new PhysicalPoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
+        }
+        PhysicalPoiDB physicalPoiDB = new PhysicalPoiDB();
+        physicalPoiDB.setId(physicalPoiId);
+        physicalPoiDB.setStatus(1);
+        physicalPoiDBMapper.updateSelective(physicalPoiDB);
+    }
+
+    private PhysicalPoi transPhysicalPoiDB2Bo(PhysicalPoiDB physicalPoiDB) {
+        if (physicalPoiDB == null) {
+            return null;
+        }
+
+        PhysicalPoi physicalPoi = new PhysicalPoi();
+        TransferUtil.transferAll(physicalPoiDB, physicalPoi);
+        return physicalPoi;
     }
 }

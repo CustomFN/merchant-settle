@@ -16,4 +16,6 @@ public interface PhysicalPoiDBMapper {
     void updateSelective(PhysicalPoiDB physicalPoiDB);
 
     void insertSelective(PhysicalPoiDB physicalPoiDB);
+
+    PhysicalPoiDB getById(@Param("id") Integer physicalPoiId);
 }

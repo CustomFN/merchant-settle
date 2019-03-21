@@ -26,11 +26,20 @@ public class PhysicalPoiController {
     @Autowired
     private PhysicalPoiService physicalPoiService;
 
+    @RequestMapping("/show/{physicalPoiId}")
+    public Object show(@PathVariable("physicalPoiId") Integer physicalPoiId) {
+        LOGGER.info("PhysicalPoiController###show physicalPoiId = {}", physicalPoiId);
+        if (physicalPoiId == null || physicalPoiId <= 0){
+            return ReturnResult.fail("参数错误");
+        }
+        return ReturnResult.success(physicalPoiService.getById(physicalPoiId));
+    }
+
     @RequestMapping("/listall")
     public Object listAll(PhysicalPoiReqParam physicalPoiReqParam,
                        @RequestParam(name = "pageNum", defaultValue = "1") Integer pageNum,
                        @RequestParam(name = "pageSize", defaultValue = "30") Integer pageSize) {
-        LOGGER.info("PhysicalPoiController listAll = {}, pageNum = {}, pageSize = {}", JSON.toJSONString(physicalPoiReqParam), pageNum, pageSize);
+        LOGGER.info("PhysicalPoiController listAll physicalPoiReqParam = {}, pageNum = {}, pageSize = {}", JSON.toJSONString(physicalPoiReqParam), pageNum, pageSize);
         if (pageNum == null || pageNum < 1 || pageSize == null || pageSize < 1) {
             return ReturnResult.fail("参数错误");
         }
@@ -56,7 +65,7 @@ public class PhysicalPoiController {
     public Object list(PhysicalPoiReqParam physicalPoiReqParam,
                        @RequestParam(name = "pageNum", defaultValue = "1") Integer pageNum,
                        @RequestParam(name = "pageSize", defaultValue = "30") Integer pageSize) {
-        LOGGER.info("PhysicalPoiController list = {}, pageNum = {}, pageSize = {}", JSON.toJSONString(physicalPoiReqParam), pageNum, pageSize);
+        LOGGER.info("PhysicalPoiController list physicalPoiReqParam = {}, pageNum = {}, pageSize = {}", JSON.toJSONString(physicalPoiReqParam), pageNum, pageSize);
         if (pageNum == null || pageNum < 1 || pageSize == null || pageSize < 1) {
             return ReturnResult.fail("参数错误");
         }
@@ -90,5 +99,15 @@ public class PhysicalPoiController {
             LOGGER.error("保存物理门店失败", e);
             return ReturnResult.fail(PoiConstant.POI_PARAM_ERROR ,"保存失败");
         }
+    }
+
+    @RequestMapping("/update")
+    public Object updateState(@RequestParam("physicalPoiId") Integer physicalPoiId) {
+        LOGGER.info("PhysicalPoiController###updateState physicalPoiId = {}", physicalPoiId);
+        if (physicalPoiId == null || physicalPoiId <= 0){
+            return ReturnResult.fail("参数错误");
+        }
+        physicalPoiService.updateStateById(physicalPoiId);
+        return ReturnResult.success();
     }
 }

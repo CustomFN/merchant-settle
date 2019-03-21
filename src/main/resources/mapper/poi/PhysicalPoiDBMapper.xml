@@ -47,6 +47,7 @@
                 and physicalPoiName like concat(concat('%',#{physicalPoiReqParam.physicalPoiName}),'%')
             </if>
             and claimed = #{physicalPoiReqParam.claimed}
+            and status = 0
             and valid = 1
         </where>
     </select>
@@ -171,4 +172,15 @@
             1
         </trim>
     </insert>
+
+    <select id="getById" resultMap="BaseResultMap" resultType="java.lang.Integer">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM
+          physical_poi
+        where
+          id = #{id}
+        and
+          valid = 1
+    </select>
 </mapper>

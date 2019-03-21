@@ -1,6 +1,7 @@
 package com.z.merchantsettle.modules.poi.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -18,6 +19,8 @@ import com.z.merchantsettle.modules.poi.domain.bo.WmPoiInfo;
 import com.z.merchantsettle.modules.poi.domain.bo.WmPoiQua;
 import com.z.merchantsettle.modules.poi.service.*;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +29,8 @@ import java.util.Map;
 
 @Service
 public class WmPoiServiceImpl implements WmPoiService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(WmPoiServiceImpl.class);
 
     @Autowired
     private WmPoiBaseInfoService wmPoiBaseInfoService;
@@ -51,25 +56,11 @@ public class WmPoiServiceImpl implements WmPoiService {
 
     @Override
     public PageData<WmPoiInfo> getBaseList(WmPoiSearchParam wmPoiSearchParam, Integer pageNum, Integer pageSize) {
-        PageData<WmPoiBaseInfo> pageData =  wmPoiBaseInfoAuditedService.getBaseInfoList(wmPoiSearchParam, pageNum, pageSize);
+        PageData<WmPoiBaseInfo> pageData =  wmPoiBaseInfoService.getBaseInfoList(wmPoiSearchParam, pageNum, pageSize);
         List<WmPoiBaseInfo> wmPoiBaseInfoList = pageData.getData();
         if (CollectionUtils.isEmpty(wmPoiBaseInfoList)) {
             return new PageData<WmPoiInfo>();
         }
-
-        List<Integer> wmPoiIdList = Lists.transform(wmPoiBaseInfoList, new Function<WmPoiBaseInfo, Integer>() {
-            @Override
-            public Integer apply(WmPoiBaseInfo input) {
-                return input.getId();
-            }
-        });
-
-        Map<String, Map<Integer, Integer>> wmPoiBaseMap = getWmPoiBaseMap(wmPoiIdList);
-        Map<Integer, Integer> wmPoiBaseInfoStatusMap = wmPoiBaseMap.get(POI_BASE_INFO);
-        Map<Integer, Integer> wmPoiQuaStatusMap = getWmPoiQuaStatusMap(wmPoiIdList);
-        Map<Integer, Integer> wmPoiSettleStatusMap = getWmPoiSettleStatusMap(wmPoiIdList);
-        Map<Integer, Integer> wmPoiDeliveryStatusMap = getWmPoiDeliveryStatusMap(wmPoiIdList);
-        Map<Integer, Integer> wmPoiBusinessStatusMap = wmPoiBaseMap.get(POI_BUSINESS_INFO);
 
         List<WmPoiInfo> wmPoiInfoList = Lists.newArrayList();
         for (WmPoiBaseInfo wmPoiBaseInfo : wmPoiBaseInfoList) {
@@ -79,20 +70,14 @@ public class WmPoiServiceImpl implements WmPoiService {
             wmPoiInfo.setWmPoiId(wmPoiId);
             wmPoiInfo.setWmPoiName(wmPoiBaseInfo.getWmPoiName());
             wmPoiInfo.setWmPoiAddress(wmPoiBaseInfo.getWmPoiAddress());
-            wmPoiInfo.setWmPoiCategory("");
+            wmPoiInfo.setWmPoiCategory(wmPoiBaseInfo.getWmPoiCategory().toString());
             wmPoiInfo.setWmPoiTel(wmPoiBaseInfo.getWmPoiPhone());
-            wmPoiInfo.setWmPoiPricipal(wmPoiBaseInfo.getWmPoiPrincipal());
+            wmPoiInfo.setWmPoiPrincipal(wmPoiBaseInfo.getWmPoiPrincipal());
+            wmPoiInfo.setWmPoiCoopState(PoiConstant.PoiCoopState.getByCode(wmPoiBaseInfo.getCoopState()));
 
-            List<Integer> wmPoiModuleStatusList = Lists.newArrayList();
-            wmPoiModuleStatusList.add(wmPoiBaseInfoStatusMap.get(wmPoiId) != null ? wmPoiBaseInfoStatusMap.get(wmPoiId) : PoiConstant.PoiModuleStatus.STATUS_ERROR);
-            wmPoiModuleStatusList.add(wmPoiQuaStatusMap.get(wmPoiId) != null ? wmPoiQuaStatusMap.get(wmPoiId) : PoiConstant.PoiModuleStatus.STATUS_ERROR);
-            wmPoiModuleStatusList.add(wmPoiSettleStatusMap.get(wmPoiId) != null ? wmPoiSettleStatusMap.get(wmPoiId) : PoiConstant.PoiModuleStatus.STATUS_ERROR);
-            wmPoiModuleStatusList.add(wmPoiDeliveryStatusMap.get(wmPoiId) != null ? wmPoiDeliveryStatusMap.get(wmPoiId) : PoiConstant.PoiModuleStatus.STATUS_ERROR);
-            wmPoiModuleStatusList.add(wmPoiBusinessStatusMap.get(wmPoiId) != null ? wmPoiBusinessStatusMap.get(wmPoiId) : PoiConstant.PoiModuleStatus.STATUS_ERROR);
-            wmPoiInfo.setWmPoiModuleStatus(wmPoiModuleStatusList);
-
-            wmPoiBaseInfoList.add(wmPoiBaseInfo);
+            wmPoiInfoList.add(wmPoiInfo);
         }
+        LOGGER.info("WmPoiServiceImpl##getBaseList wmPoiInfoList = {}", JSON.toJSONString(wmPoiInfoList));
         return new PageData.Builder<WmPoiInfo>()
                 .pageNum(pageNum)
                 .pageSize(pageSize)

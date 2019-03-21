@@ -1,16 +1,20 @@
 package com.z.merchantsettle.utils.transfer.poi;
 
 import com.google.common.collect.Lists;
+import com.z.merchantsettle.modules.poi.constants.PoiConstant;
 import com.z.merchantsettle.modules.poi.domain.bo.*;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiBaseInfoDB;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiDeliveryInfoDB;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiQuaDB;
 import com.z.merchantsettle.utils.TransferUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 public class WmPoiTransferUtil {
+
+    private static final String separator = ",";
 
     public static WmPoiBaseInfo transWmPoiBaseInfoDB2Bo(WmPoiBaseInfoDB wmPoiBaseInfoDB) {
         if (wmPoiBaseInfoDB == null) {
@@ -19,6 +23,23 @@ public class WmPoiTransferUtil {
 
         WmPoiBaseInfo wmPoiBaseInfo = new WmPoiBaseInfo();
         TransferUtil.transferAll(wmPoiBaseInfoDB, wmPoiBaseInfo);
+
+        if (StringUtils.isNotBlank(wmPoiBaseInfoDB.getWmPoiLogo())) {
+            String[] pics = StringUtils.split(wmPoiBaseInfoDB.getWmPoiLogo(), separator);
+            wmPoiBaseInfo.setWmPoiLogoList(Lists.newArrayList(pics));
+        }
+        if (StringUtils.isNotBlank(wmPoiBaseInfoDB.getWmPoiEnvironmentPic())) {
+            String[] pics = StringUtils.split(wmPoiBaseInfoDB.getWmPoiEnvironmentPic(), separator);
+            wmPoiBaseInfo.setWmPoiEnvironmentPicList(Lists.newArrayList(pics));
+        }
+        if (StringUtils.isNotBlank(wmPoiBaseInfoDB.getOrderMealDate())) {
+            String[] pics = StringUtils.split(wmPoiBaseInfoDB.getOrderMealDate(), separator);
+            wmPoiBaseInfo.setOrderMealDateList(Lists.newArrayList(pics));
+        }
+        if (wmPoiBaseInfoDB.getBusinessInfoStatus() != null && wmPoiBaseInfoDB.getBusinessInfoStatus() > 0) {
+            wmPoiBaseInfo.setBusinessInfoStatusStr(PoiConstant.PoiModuleStatus.getByCode(wmPoiBaseInfoDB.getBusinessInfoStatus()));
+        }
+        wmPoiBaseInfo.setStatusStr(PoiConstant.PoiModuleStatus.getByCode(wmPoiBaseInfoDB.getStatus()));
         return wmPoiBaseInfo;
     }
 
@@ -41,6 +62,19 @@ public class WmPoiTransferUtil {
 
         WmPoiBaseInfoDB wmPoiBaseInfoDB = new WmPoiBaseInfoDB();
         TransferUtil.transferAll(wmPoiBaseInfo, wmPoiBaseInfoDB);
+
+        if (CollectionUtils.isNotEmpty(wmPoiBaseInfo.getWmPoiLogoList())) {
+            String pic = StringUtils.join(wmPoiBaseInfo.getWmPoiLogoList(), separator);
+            wmPoiBaseInfoDB.setWmPoiLogo(pic);
+        }
+        if (CollectionUtils.isNotEmpty(wmPoiBaseInfo.getWmPoiEnvironmentPicList())) {
+            String pic = StringUtils.join(wmPoiBaseInfo.getWmPoiEnvironmentPicList(), separator);
+            wmPoiBaseInfoDB.setWmPoiEnvironmentPic(pic);
+        }
+        if (CollectionUtils.isNotEmpty(wmPoiBaseInfo.getOrderMealDateList())) {
+            String pic = StringUtils.join(wmPoiBaseInfo.getOrderMealDateList(), separator);
+            wmPoiBaseInfoDB.setOrderMealDate(pic);
+        }
         return wmPoiBaseInfoDB;
     }
 
@@ -51,6 +85,15 @@ public class WmPoiTransferUtil {
 
         WmPoiQuaDB wmPoiQuaDB = new WmPoiQuaDB();
         TransferUtil.transferAll(wmPoiQua, wmPoiQuaDB);
+
+        if (CollectionUtils.isNotEmpty(wmPoiQua.getWmPoiLinkManIDCardPicList())) {
+            String pic = StringUtils.join(wmPoiQua.getWmPoiLinkManIDCardPicList(), separator);
+            wmPoiQuaDB.setWmPoiLinkManIDCardPic(pic);
+        }
+        if (CollectionUtils.isNotEmpty(wmPoiQua.getWmPoiBusinessLicencePicList())) {
+            String pic = StringUtils.join(wmPoiQua.getWmPoiBusinessLicencePicList(), separator);
+            wmPoiQuaDB.setWmPoiBusinessLicencePic(pic);
+        }
         return wmPoiQuaDB;
     }
 
@@ -61,6 +104,16 @@ public class WmPoiTransferUtil {
 
         WmPoiQua wmPoiQua = new WmPoiQua();
         TransferUtil.transferAll(wmPoiQuaDB, wmPoiQua);
+
+        if (StringUtils.isNotBlank(wmPoiQuaDB.getWmPoiLinkManIDCardPic())) {
+            String[] pics = StringUtils.split(wmPoiQuaDB.getWmPoiLinkManIDCardPic(), separator);
+            wmPoiQua.setWmPoiLinkManIDCardPicList(Lists.newArrayList(pics));
+        }
+        if (StringUtils.isNotBlank(wmPoiQuaDB.getWmPoiBusinessLicencePic())) {
+            String[] pics = StringUtils.split(wmPoiQuaDB.getWmPoiBusinessLicencePic(), separator);
+            wmPoiQua.setWmPoiBusinessLicencePicList(Lists.newArrayList(pics));
+        }
+        wmPoiQua.setStatusStr(PoiConstant.PoiModuleStatus.getByCode(wmPoiQuaDB.getStatus()));
         return wmPoiQua;
     }
 
@@ -76,25 +129,7 @@ public class WmPoiTransferUtil {
         return wmPoiQuaList;
     }
 
-    public static WmPoiQuaAudited transWmPoiQuaDB2Audited(WmPoiQuaDB wmPoiQuaDB) {
-        if (wmPoiQuaDB == null) {
-            return null;
-        }
 
-        WmPoiQuaAudited wmPoiQuaAudited = new WmPoiQuaAudited();
-        TransferUtil.transferAll(wmPoiQuaDB, wmPoiQuaAudited);
-        return wmPoiQuaAudited;
-    }
-
-    public static WmPoiQuaDB transWmPoiQuaAudited2DB(WmPoiQuaAudited wmPoiQuaAudited) {
-        if (wmPoiQuaAudited == null) {
-            return null;
-        }
-
-        WmPoiQuaDB wmPoiQuaDB =  new WmPoiQuaDB();
-        TransferUtil.transferAll(wmPoiQuaAudited, wmPoiQuaDB);
-        return wmPoiQuaDB;
-    }
 
     public static WmPoiDeliveryInfoDB transWmPoiDeliveryInfo2DB(WmPoiDeliveryInfo wmPoiDeliveryInfo) {
         if (wmPoiDeliveryInfo == null) {
@@ -114,26 +149,6 @@ public class WmPoiTransferUtil {
         WmPoiDeliveryInfo wmPoiDeliveryInfo = new WmPoiDeliveryInfo();
         TransferUtil.transferAll(wmPoiDeliveryInfoDB, wmPoiDeliveryInfo);
         return wmPoiDeliveryInfo;
-    }
-
-    public static WmPoiDeliveryInfoAudited transWmPoiDeliveryInfoDB2Audited(WmPoiDeliveryInfoDB wmPoiDeliveryInfoDB) {
-        if (wmPoiDeliveryInfoDB == null) {
-            return null;
-        }
-
-        WmPoiDeliveryInfoAudited wmPoiDeliveryInfoAudited = new WmPoiDeliveryInfoAudited();
-        TransferUtil.transferAll(wmPoiDeliveryInfoDB, wmPoiDeliveryInfoAudited);
-        return wmPoiDeliveryInfoAudited;
-    }
-
-    public static WmPoiDeliveryInfoDB transWmPoiDeliveryInfoAudited2DB(WmPoiDeliveryInfoAudited wmPoiDeliveryInfoAudited) {
-        if (wmPoiDeliveryInfoAudited == null) {
-            return null;
-        }
-
-        WmPoiDeliveryInfoDB wmPoiDeliveryInfoDB = new WmPoiDeliveryInfoDB();
-        TransferUtil.transferAll(wmPoiDeliveryInfoAudited, wmPoiDeliveryInfoDB);
-        return wmPoiDeliveryInfoDB;
     }
 
 

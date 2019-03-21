@@ -2,12 +2,12 @@ package com.z.merchantsettle.modules.poi.service;
 
 
 import cn.hutool.poi.exceptions.POIException;
-import com.z.merchantsettle.modules.poi.domain.bo.WmPoiQuaAudited;
+import com.z.merchantsettle.modules.poi.domain.bo.WmPoiQua;
 
 
 public interface WmPoiQuaAuditedService {
 
-    void saveOrUpdate(WmPoiQuaAudited wmPoiQuaAudited);
+    void saveOrUpdate(WmPoiQua wmPoiQua);
 
-    WmPoiQuaAudited getWmPoiQuaAuditedById(Integer wmPoiId) throws POIException;
+    WmPoiQua getWmPoiQuaAuditedById(Integer wmPoiId) throws POIException;
 }

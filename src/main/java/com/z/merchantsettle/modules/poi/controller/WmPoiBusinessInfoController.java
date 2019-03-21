@@ -14,10 +14,7 @@ import com.z.merchantsettle.utils.shiro.ShiroUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/wmpoi/businessinfo")
@@ -29,7 +26,7 @@ public class WmPoiBusinessInfoController {
     private WmPoiBusinessInfoService wmPoiBusinessInfoService;
 
     @RequestMapping("/save")
-    public Object saveOrUpdate(@RequestBody WmPoiBaseInfo wmPoiBaseInfo) {
+    public Object saveOrUpdate(WmPoiBaseInfo wmPoiBaseInfo) {
         LOGGER.info("WmPoiBusinessInfoController saveOrUpdate = {}", JSON.toJSONString(wmPoiBaseInfo));
         if (wmPoiBaseInfo == null) {
             return ReturnResult.fail("参数错误");
@@ -42,8 +39,8 @@ public class WmPoiBusinessInfoController {
 
         try {
             User user = ShiroUtils.getSysUser();
-            wmPoiBusinessInfoService.saveOrUpdate(wmPoiBaseInfo, user.getUserId());
-            return ReturnResult.success();
+            wmPoiBaseInfo = wmPoiBusinessInfoService.saveOrUpdate(wmPoiBaseInfo, user.getUserId());
+            return ReturnResult.success(wmPoiBaseInfo);
         } catch (UpmException | PoiException e) {
             LOGGER.error("保存门店营业信息异常", e);
             return ReturnResult.fail(PoiConstant.POI_OP_ERROR, "保存门店营业信息异常");
@@ -51,7 +48,7 @@ public class WmPoiBusinessInfoController {
     }
 
     @RequestMapping("/show/{wmPoiId}")
-    public Object getWmPoiBusinessInfoById(@RequestParam(name = "wmPoiId") Integer wmPoiId, @RequestParam(name = "effective") Integer effective) {
+    public Object getWmPoiBusinessInfoById(@PathVariable(name = "wmPoiId") Integer wmPoiId, @RequestParam(name = "effective") Integer effective) {
         LOGGER.info("getWmPoiBusinessInfoById wmPoiId = {}, effective = {}", wmPoiId, effective);
         if (wmPoiId == null || wmPoiId <= 0 || effective < 0) {
             return ReturnResult.fail(PoiConstant.POI_PARAM_ERROR, "参数错误");

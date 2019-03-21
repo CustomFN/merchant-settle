@@ -13,4 +13,8 @@ public interface PhysicalPoiService {
     void claimPhysicalPoi(String userId, Integer physicalPoiId);
 
     void save(PhysicalPoi physicalPoi, String opUserId);
+
+    PhysicalPoi getById(Integer physicalPoiId);
+
+    void updateStateById(Integer physicalPoiId);
 }

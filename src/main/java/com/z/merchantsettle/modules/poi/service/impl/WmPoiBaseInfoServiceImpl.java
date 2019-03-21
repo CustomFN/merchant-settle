@@ -2,7 +2,10 @@ package com.z.merchantsettle.modules.poi.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import com.z.merchantsettle.common.PageData;
 import com.z.merchantsettle.exception.PoiException;
 import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
@@ -12,6 +15,7 @@ import com.z.merchantsettle.modules.audit.domain.poi.AuditWmPoiBaseInfo;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
 import com.z.merchantsettle.modules.poi.constants.PoiConstant;
 import com.z.merchantsettle.modules.poi.dao.WmPoiBaseInfoDBMapper;
+import com.z.merchantsettle.modules.poi.domain.WmPoiSearchParam;
 import com.z.merchantsettle.modules.poi.domain.bo.WmPoiBaseInfo;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiBaseInfoDB;
 import com.z.merchantsettle.modules.poi.service.WmPoiBaseInfoAuditedService;
@@ -47,7 +51,7 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
 
 
     @Override
-    public void saveOrUpdate(WmPoiBaseInfo wmPoiBaseInfo, String userId) {
+    public WmPoiBaseInfo saveOrUpdate(WmPoiBaseInfo wmPoiBaseInfo, String userId) {
         if (wmPoiBaseInfo == null || StringUtils.isBlank(userId)) {
             throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
         }
@@ -55,15 +59,20 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
         WmPoiBaseInfoDB wmPoiBaseInfoDB = WmPoiTransferUtil.transWmPoiBaseInfo2DB(wmPoiBaseInfo);
         boolean isNew = !(wmPoiBaseInfoDB.getId() != null && wmPoiBaseInfoDB.getId() > 0);
         if (isNew) {
-            wmPoiBaseInfoDBMapper.updateSelective(wmPoiBaseInfoDB);
-        } else {
+            wmPoiBaseInfoDB.setWmPoiPrincipal(userId);
+            wmPoiBaseInfoDB.setStatus(PoiConstant.PoiModuleStatus.AUDING.getCode());
+            wmPoiBaseInfoDB.setCoopState(PoiConstant.PoiCoopState.COOPERATING.getCode());
             wmPoiBaseInfoDBMapper.insertSelective(wmPoiBaseInfoDB);
+        } else {
+            wmPoiBaseInfoDBMapper.updateSelective(wmPoiBaseInfoDB);
         }
+        wmPoiBaseInfo = WmPoiTransferUtil.transWmPoiBaseInfoDB2Bo(wmPoiBaseInfoDB);
 
         wmPoiOpLogService.addLog(wmPoiBaseInfoDB.getId(), PoiConstant.PoiModuleName.POI_BASE_INFO, "保存门店基本信息", userId);
-
         commitAudit(wmPoiBaseInfoDB, isNew, userId);
         wmPoiOpLogService.addLog(wmPoiBaseInfoDB.getId(), PoiConstant.PoiModuleName.POI_BASE_INFO, "提交审核", userId);
+
+        return wmPoiBaseInfo;
     }
 
     private void commitAudit(WmPoiBaseInfoDB wmPoiBaseInfoDB, boolean isNew, String userId) {
@@ -109,7 +118,7 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
             return;
         }
 
-        wmPoiBaseInfoDB.setStatus(PoiConstant.PoiModuleStatus.EFFECT);
+        wmPoiBaseInfoDB.setStatus(PoiConstant.PoiModuleStatus.EFFECT.getCode());
         wmPoiBaseInfoDBMapper.updateSelective(wmPoiBaseInfoDB);
 
         WmPoiBaseInfo wmPoiBaseInfo = WmPoiTransferUtil.transWmPoiBaseInfoDB2Bo(wmPoiBaseInfoDB);
@@ -134,8 +143,7 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
             throw new PoiException(PoiConstant.POI_OP_ERROR, "参数错误");
         }
 
-        WmPoiBaseInfoDB wmPoiBaseInfoDB = new WmPoiBaseInfoDB();
-        wmPoiBaseInfoDB.setId(wmPoiId);
+        WmPoiBaseInfoDB wmPoiBaseInfoDB = wmPoiBaseInfoDBMapper.getById(wmPoiId);
         wmPoiBaseInfoDB.setWmPoiPrincipal(principalId);
         wmPoiBaseInfoDBMapper.updateSelective(wmPoiBaseInfoDB);
 
@@ -144,5 +152,22 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
 
         String diffContent = String.format("门店责任人变更: %s", principalId);
         wmPoiOpLogService.addLog(wmPoiId, PoiConstant.PoiModuleName.POI_BASE_INFO, diffContent, opUserId);
+    }
+
+    @Override
+    public PageData<WmPoiBaseInfo> getBaseInfoList(WmPoiSearchParam wmPoiSearchParam, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<WmPoiBaseInfoDB> wmPoiBaseInfoDBList = wmPoiBaseInfoDBMapper.getList(wmPoiSearchParam);
+        LOGGER.info("getBaseInfoList wmPoiBaseInfoDBList = {}", JSON.toJSONString(wmPoiBaseInfoDBList));
+        PageInfo<WmPoiBaseInfoDB> pageInfo = new PageInfo<>(wmPoiBaseInfoDBList);
+        List<WmPoiBaseInfo> wmPoiBaseInfoList = WmPoiTransferUtil.transWmPoiBaseInfoDBList2BoList(wmPoiBaseInfoDBList);
+
+        return new PageData.Builder<WmPoiBaseInfo>()
+                .pageNum(pageNum)
+                .pageSize(pageSize)
+                .totalSize((int) pageInfo.getTotal())
+                .totalPage(pageInfo.getPages())
+                .data(wmPoiBaseInfoList)
+                .build();
     }
 }

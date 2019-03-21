@@ -20,7 +20,7 @@ public class WmPoiQuaDB {
     private String wmPoiBusinessLicenceAddress;
     private String wmPoiRegistrationDate;
     private String wmPoiRegisterDepartment;
-    private String wmPoiBusinessLicenceValidTime;
+    private Long wmPoiBusinessLicenceValidTime;
 
     private Integer status;
     private Integer valid;

@@ -49,7 +49,7 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
                 } else {
                     WmPoiBaseInfo wmPoiBaseInfo = new WmPoiBaseInfo();
                     wmPoiBaseInfo.setId(wmPoiId);
-                    wmPoiBaseInfo.setStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT);
+                    wmPoiBaseInfo.setStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT.getCode());
                     wmPoiBaseInfo.setAuditResult(auditResult);
                     wmPoiBaseInfoService.saveOrUpdate(wmPoiBaseInfo, "审核系统()");
                 }
@@ -74,7 +74,7 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
                     WmPoiQua wmPoiQua = new WmPoiQua();
                     wmPoiQua.setId(recordId);
                     wmPoiQua.setWmPoiId(wmPoiId);
-                    wmPoiQua.setStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT);
+                    wmPoiQua.setStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT.getCode());
                     wmPoiQua.setAuditResult(auditResult);
                     wmPoiQuaService.saveOrUpdate(wmPoiQua, "审核系统()");
                 }
@@ -98,7 +98,7 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
                 } else {
                     WmPoiBaseInfo wmPoiBaseInfo = new WmPoiBaseInfo();
                     wmPoiBaseInfo.setId(wmPoiId);
-                    wmPoiBaseInfo.setBusinessInfoStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT);
+                    wmPoiBaseInfo.setBusinessInfoStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT.getCode());
                     wmPoiBaseInfo.setBusinessInfoAuditResult(auditResult);
                     wmPoiBusinessInfoService.saveOrUpdate(wmPoiBaseInfo, "审核系统()");
                 }
@@ -123,7 +123,7 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
                     WmPoiDeliveryInfo wmPoiDeliveryInfo = new WmPoiDeliveryInfo();
                     wmPoiDeliveryInfo.setId(recordId);
                     wmPoiDeliveryInfo.setWmPoiId(wmPoiId);
-                    wmPoiDeliveryInfo.setStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT);
+                    wmPoiDeliveryInfo.setStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT.getCode());
                     wmPoiDeliveryInfo.setAuditResult(auditResult);
                     wmPoiDeliveryInfoService.saveOrUpdate(wmPoiDeliveryInfo, "审核系统()");
                 }

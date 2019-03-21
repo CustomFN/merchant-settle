@@ -1,5 +1,6 @@
 package com.z.merchantsettle.modules.poi.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.z.merchantsettle.common.ReturnResult;
 import com.z.merchantsettle.exception.PoiException;
 import com.z.merchantsettle.exception.UpmException;
@@ -12,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,10 +27,10 @@ public class WmPoiController {
     private WmPoiService wmPoiService;
 
     @RequestMapping("/list")
-    public Object list(@RequestBody WmPoiSearchParam wmPoiSearchParam,
+    public Object list(WmPoiSearchParam wmPoiSearchParam,
                        @RequestParam(defaultValue = "1", name = "pageNum") Integer pageNum,
                        @RequestParam(defaultValue = "30", name = "pageSize") Integer pageSize) {
-
+        LOGGER.info("WmPoiController wmPoiSearchParam = {}, pageNum = {}, pageSize = {}", JSON.toJSONString(wmPoiSearchParam), pageNum, pageSize);
         if (pageNum == null || pageNum < 1 || pageSize == null || pageSize < 1) {
             return ReturnResult.fail("参数错误");
         }
@@ -38,7 +38,8 @@ public class WmPoiController {
     }
 
     @RequestMapping("/distributePrincipal")
-    public Object distributePrincipal(Integer wmPoiId, String principalId) {
+    public Object distributePrincipal(@RequestParam("wmPoiId") Integer wmPoiId, @RequestParam("wmPoiPrincipal") String principalId) {
+        LOGGER.info("WmPoiController##distributePrincipal wmPoiId = {}, principalId = {}", wmPoiId, principalId);
         if (wmPoiId == null || wmPoiId <= 0 || StringUtils.isBlank(principalId)) {
             return ReturnResult.fail("参数错误");
         }

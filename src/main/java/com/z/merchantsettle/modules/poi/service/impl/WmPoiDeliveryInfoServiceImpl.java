@@ -92,22 +92,11 @@ public class WmPoiDeliveryInfoServiceImpl implements WmPoiDeliveryInfoService {
 
         WmPoiDeliveryInfo wmPoiDeliveryInfo;
         if (PoiConstant.EFFECTIVE == effective) {
-            WmPoiDeliveryInfoAudited wmPoiDeliveryInfoAudited  = wmPoiDeliveryInfoAuditedService.getWmPoiDeliveryInfoAuditedById(wmPoiId);
-            wmPoiDeliveryInfo = transWmPoiDeliveryInfoAudited2Info(wmPoiDeliveryInfoAudited);
+            wmPoiDeliveryInfo  = wmPoiDeliveryInfoAuditedService.getWmPoiDeliveryInfoAuditedById(wmPoiId);
         } else {
             WmPoiDeliveryInfoDB wmPoiDeliveryInfoDB = wmPoiDeliveryInfoDBMapper.getByWmPoiId(wmPoiId);
             wmPoiDeliveryInfo = WmPoiTransferUtil.transWmPoiDeliveryInfoDB2Bo(wmPoiDeliveryInfoDB);
         }
-        return wmPoiDeliveryInfo;
-    }
-
-    private WmPoiDeliveryInfo transWmPoiDeliveryInfoAudited2Info(WmPoiDeliveryInfoAudited wmPoiDeliveryInfoAudited) {
-        if (wmPoiDeliveryInfoAudited == null) {
-            return null;
-        }
-
-        WmPoiDeliveryInfo wmPoiDeliveryInfo = new WmPoiDeliveryInfo();
-        TransferUtil.transferAll(wmPoiDeliveryInfoAudited, wmPoiDeliveryInfo);
         return wmPoiDeliveryInfo;
     }
 
@@ -120,10 +109,10 @@ public class WmPoiDeliveryInfoServiceImpl implements WmPoiDeliveryInfoService {
             return;
         }
 
-        wmPoiDeliveryInfoDB.setStatus(PoiConstant.PoiModuleStatus.EFFECT);
+        wmPoiDeliveryInfoDB.setStatus(PoiConstant.PoiModuleStatus.EFFECT.getCode());
         wmPoiDeliveryInfoDBMapper.updateSelective(wmPoiDeliveryInfoDB);
 
-        WmPoiDeliveryInfoAudited wmPoiDeliveryInfoAudited = WmPoiTransferUtil.transWmPoiDeliveryInfoDB2Audited(wmPoiDeliveryInfoDB);
+        WmPoiDeliveryInfo wmPoiDeliveryInfoAudited = WmPoiTransferUtil.transWmPoiDeliveryInfoDB2Bo(wmPoiDeliveryInfoDB);
         wmPoiDeliveryInfoAuditedService.saveOrUpdate(wmPoiDeliveryInfoAudited);
 
         wmPoiOpLogService.addLog(wmPoiId, PoiConstant.PoiModuleName.POI_DELIVERY_INFO, "设置门店配送信息生效", "系统()");

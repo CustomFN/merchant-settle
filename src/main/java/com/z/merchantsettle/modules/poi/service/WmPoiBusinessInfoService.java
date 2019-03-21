@@ -4,7 +4,7 @@ import com.z.merchantsettle.modules.poi.domain.bo.WmPoiBaseInfo;
 
 public interface WmPoiBusinessInfoService {
 
-    void saveOrUpdate(WmPoiBaseInfo wmPoiBaseInfo,  String userId);
+    WmPoiBaseInfo saveOrUpdate(WmPoiBaseInfo wmPoiBaseInfo,  String userId);
 
     WmPoiBaseInfo getWmPoiBaseInfoById(Integer wmPoiId, Integer effective);
 

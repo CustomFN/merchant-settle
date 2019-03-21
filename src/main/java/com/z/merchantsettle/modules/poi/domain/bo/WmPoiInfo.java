@@ -12,7 +12,7 @@ public class WmPoiInfo {
     private String wmPoiAddress;
     private String wmPoiTel;
     private String wmPoiCategory;
-    private String wmPoiPricipal;
+    private String wmPoiPrincipal;
 
-    private List<Integer> wmPoiModuleStatus;
+    private String wmPoiCoopState;
 }

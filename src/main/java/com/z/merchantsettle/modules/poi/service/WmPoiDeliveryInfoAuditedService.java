@@ -1,10 +1,10 @@
 package com.z.merchantsettle.modules.poi.service;
 
-import com.z.merchantsettle.modules.poi.domain.bo.WmPoiDeliveryInfoAudited;
+import com.z.merchantsettle.modules.poi.domain.bo.WmPoiDeliveryInfo;
 
 public interface WmPoiDeliveryInfoAuditedService {
 
-    void saveOrUpdate(WmPoiDeliveryInfoAudited wmPoiDeliveryInfoAudited);
+    void saveOrUpdate(WmPoiDeliveryInfo wmPoiDeliveryInfoAudited);
 
-    WmPoiDeliveryInfoAudited getWmPoiDeliveryInfoAuditedById(Integer wmPoiId);
+    WmPoiDeliveryInfo getWmPoiDeliveryInfoAuditedById(Integer wmPoiId);
 }

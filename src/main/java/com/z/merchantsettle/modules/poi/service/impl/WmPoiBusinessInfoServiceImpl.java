@@ -46,7 +46,7 @@ public class WmPoiBusinessInfoServiceImpl implements WmPoiBusinessInfoService {
 
 
     @Override
-    public void saveOrUpdate(WmPoiBaseInfo wmPoiBaseInfo, String userId) {
+    public WmPoiBaseInfo saveOrUpdate(WmPoiBaseInfo wmPoiBaseInfo, String userId) {
         if (wmPoiBaseInfo == null || StringUtils.isBlank(userId)) {
             throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
         }
@@ -54,14 +54,18 @@ public class WmPoiBusinessInfoServiceImpl implements WmPoiBusinessInfoService {
         WmPoiBaseInfoDB wmPoiBaseInfoDB = WmPoiTransferUtil.transWmPoiBaseInfo2DB(wmPoiBaseInfo);
         boolean isNew = !(wmPoiBaseInfoDB.getId() != null && wmPoiBaseInfoDB.getId() > 0);
         if (isNew) {
-            wmPoiBaseInfoDBMapper.updateSelective(wmPoiBaseInfoDB);
-        } else {
+            wmPoiBaseInfoDB.setBusinessInfoStatus(PoiConstant.PoiModuleStatus.AUDING.getCode());
             wmPoiBaseInfoDBMapper.insertSelective(wmPoiBaseInfoDB);
+        } else {
+            wmPoiBaseInfoDB.setBusinessInfoStatus(PoiConstant.PoiModuleStatus.AUDING.getCode());
+            wmPoiBaseInfoDBMapper.updateSelective(wmPoiBaseInfoDB);
         }
-        wmPoiOpLogService.addLog(wmPoiBaseInfo.getId(), PoiConstant.PoiModuleName.POI_BUSINESS_INFO, "保存门店营业信息", userId);
+        wmPoiBaseInfo = WmPoiTransferUtil.transWmPoiBaseInfoDB2Bo(wmPoiBaseInfoDB);
 
+        wmPoiOpLogService.addLog(wmPoiBaseInfo.getId(), PoiConstant.PoiModuleName.POI_BUSINESS_INFO, "保存门店营业信息", userId);
         commitAudit(wmPoiBaseInfoDB, isNew, userId);
         wmPoiOpLogService.addLog(wmPoiBaseInfo.getId(), PoiConstant.PoiModuleName.POI_BUSINESS_INFO, "门店营业信息提交审核成功", userId);
+        return wmPoiBaseInfo;
     }
 
     private void commitAudit(WmPoiBaseInfoDB wmPoiBaseInfoDB, boolean isNew, String userId) {
@@ -95,7 +99,7 @@ public class WmPoiBusinessInfoServiceImpl implements WmPoiBusinessInfoService {
             return;
         }
 
-        wmPoiBaseInfoDB.setBusinessInfoStatus(PoiConstant.PoiModuleStatus.EFFECT);
+        wmPoiBaseInfoDB.setBusinessInfoStatus(PoiConstant.PoiModuleStatus.EFFECT.getCode());
         wmPoiBaseInfoDBMapper.updateSelective(wmPoiBaseInfoDB);
 
         wmPoiBaseInfoAuditedService.saveOrUpdate(WmPoiTransferUtil.transWmPoiBaseInfoDB2Bo(wmPoiBaseInfoDB));
