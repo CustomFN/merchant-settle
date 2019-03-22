@@ -19,7 +19,6 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager());
 
         Map<String, String> map = Maps.newHashMap();
-        map.put("/logout", "logout");
         map.put("/**", "authc");
         shiroFilterFactoryBean.setLoginUrl("/login");
         shiroFilterFactoryBean.setSuccessUrl("/index");

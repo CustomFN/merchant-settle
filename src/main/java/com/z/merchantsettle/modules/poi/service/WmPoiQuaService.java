@@ -16,4 +16,6 @@ public interface WmPoiQuaService {
     void setupEffectWmPoiQua(Integer wmPoiId);
 
     List<WmPoiQua> getByWmPoiIdList(List<Integer> wmPoiIdList);
+
+    void updateByIdForAudit(WmPoiQua wmPoiQua, String opUserId);
 }

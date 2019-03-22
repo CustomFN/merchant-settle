@@ -33,16 +33,16 @@
           customer_oplog
         <where>
             <if test="opLogSearchParam.customerId != null and opLogSearchParam.customerId >= 0">
-                customerId = #{opLogSearchParam.customerId}
+                and customerId = #{opLogSearchParam.customerId}
             </if>
             <if test="opLogSearchParam.module != null and opLogSearchParam.module != ''">
-                module = #{opLogSearchParam.module}
+                and module like concat(concat('%',#{opLogSearchParam.module}),'%')
             </if>
             <if test="opLogSearchParam.content != null and opLogSearchParam.content != ''">
-                content like concat(concat('%',#{opLogSearchParam.content}),'%'),
+                and content like concat(concat('%',#{opLogSearchParam.content}),'%')
             </if>
             <if test="opLogSearchParam.opUserId != null and opLogSearchParam.opUserId != ''">
-                opUserId = #{opLogSearchParam.opUserId}
+                and opUserId = #{opLogSearchParam.opUserId}
             </if>
         </where>
         order by

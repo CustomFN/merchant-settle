@@ -287,7 +287,7 @@
                 and id = #{wmPoiSearchParam.wmPoiId}
             </if>
             <if test="wmPoiSearchParam.wmCityId != null and wmPoiSearchParam.wmCityId > 0">
-                and wmCityId = #{wmPoiSearchParam.wmCityId}
+                and wmPoiCityId = #{wmPoiSearchParam.wmCityId}
             </if>
             <if test="wmPoiSearchParam.wmPoiName != null and wmPoiSearchParam.wmPoiName != ''">
                 and wmPoiName like concat(concat('%',#{wmPoiSearchParam.wmPoiName}),'%'),

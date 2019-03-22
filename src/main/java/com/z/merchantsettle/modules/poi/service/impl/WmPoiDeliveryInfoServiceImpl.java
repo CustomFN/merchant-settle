@@ -1,7 +1,6 @@
 package com.z.merchantsettle.modules.poi.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.z.merchantsettle.exception.PoiException;
 import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
@@ -14,7 +13,7 @@ import com.z.merchantsettle.modules.audit.service.ApiAuditService;
 import com.z.merchantsettle.modules.poi.constants.PoiConstant;
 import com.z.merchantsettle.modules.poi.dao.WmPoiDeliveryInfoDBMapper;
 import com.z.merchantsettle.modules.poi.domain.bo.WmPoiDeliveryInfo;
-import com.z.merchantsettle.modules.poi.domain.bo.WmPoiDeliveryInfoAudited;
+import com.z.merchantsettle.modules.poi.domain.bo.WmPoiProject;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiDeliveryInfoDB;
 import com.z.merchantsettle.modules.poi.service.WmPoiDeliveryInfoAuditedService;
 import com.z.merchantsettle.modules.poi.service.WmPoiDeliveryInfoService;
@@ -49,7 +48,7 @@ public class WmPoiDeliveryInfoServiceImpl implements WmPoiDeliveryInfoService {
 
 
     @Override
-    public void saveOrUpdate(WmPoiDeliveryInfo wmPoiDeliveryInfo, String opUserId) {
+    public WmPoiDeliveryInfo saveOrUpdate(WmPoiDeliveryInfo wmPoiDeliveryInfo, String opUserId) {
         if (wmPoiDeliveryInfo == null || StringUtils.isBlank(opUserId)) {
             throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
         }
@@ -57,28 +56,40 @@ public class WmPoiDeliveryInfoServiceImpl implements WmPoiDeliveryInfoService {
         WmPoiDeliveryInfoDB wmPoiDeliveryInfoDB = WmPoiTransferUtil.transWmPoiDeliveryInfo2DB(wmPoiDeliveryInfo);
         boolean isNew = !(wmPoiDeliveryInfoDB.getId() != null && wmPoiDeliveryInfoDB.getId() > 0);
         if (isNew) {
-            wmPoiDeliveryInfoDBMapper.updateSelective(wmPoiDeliveryInfoDB);
-        } else {
+            wmPoiDeliveryInfoDB.setStatus(PoiConstant.PoiModuleStatus.AUDING.getCode());
             wmPoiDeliveryInfoDBMapper.insertSelective(wmPoiDeliveryInfoDB);
+        } else {
+            wmPoiDeliveryInfoDBMapper.updateSelective(wmPoiDeliveryInfoDB);
         }
+        wmPoiDeliveryInfo = WmPoiTransferUtil.transWmPoiDeliveryInfoDB2Bo(wmPoiDeliveryInfoDB);
         wmPoiOpLogService.addLog(wmPoiDeliveryInfo.getWmPoiId(), PoiConstant.PoiModuleName.POI_DELIVERY_INFO, "保存门店配送信息", opUserId);
 
-        commitAudit(wmPoiDeliveryInfoDB, isNew, opUserId);
+        commitAudit(wmPoiDeliveryInfo, isNew, opUserId);
         wmPoiOpLogService.addLog(wmPoiDeliveryInfo.getWmPoiId(), PoiConstant.PoiModuleName.POI_DELIVERY_INFO, "门店配送信息提交审核成功", opUserId);
+        return wmPoiDeliveryInfo;
     }
 
-    private void commitAudit(WmPoiDeliveryInfoDB wmPoiDeliveryInfoDB, boolean isNew, String opUserId) {
+    private void commitAudit(WmPoiDeliveryInfo wmPoiDeliveryInfo, boolean isNew, String opUserId) {
         AuditTask auditTask = new AuditTask();
-        auditTask.setPoiId(wmPoiDeliveryInfoDB.getWmPoiId());
+        auditTask.setPoiId(wmPoiDeliveryInfo.getWmPoiId());
         auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
         auditTask.setAuditType(AuditTypeEnum.POI_DELIVERY_INFO.getCode());
         auditTask.setSubmitterId(opUserId);
 
         AuditWmPoiDeliveryInfo auditWmPoiDeliveryInfo = new AuditWmPoiDeliveryInfo();
-        TransferUtil.transferAll(wmPoiDeliveryInfoDB, auditWmPoiDeliveryInfo);
-        auditWmPoiDeliveryInfo.setWmPoiProjectList(JSONArray.parseArray(wmPoiDeliveryInfoDB.getWmPoiProjects(), AuditWmPoiProject.class));
-        auditWmPoiDeliveryInfo.setRecordId(wmPoiDeliveryInfoDB.getId());
+        TransferUtil.transferAll(wmPoiDeliveryInfo, auditWmPoiDeliveryInfo);
+
+        List<WmPoiProject> wmPoiProjectList = wmPoiDeliveryInfo.getWmPoiProjectList();
+        List<AuditWmPoiProject> auditWmPoiProjectList = Lists.newArrayList();
+        for (WmPoiProject wmPoiProject : wmPoiProjectList) {
+            AuditWmPoiProject auditWmPoiProject = new AuditWmPoiProject();
+            TransferUtil.transferAll(wmPoiProject, auditWmPoiProject);
+            auditWmPoiProjectList.add(auditWmPoiProject);
+        }
+        auditWmPoiDeliveryInfo.setWmPoiProjectList(auditWmPoiProjectList);
+        auditWmPoiDeliveryInfo.setRecordId(wmPoiDeliveryInfo.getId());
+        auditWmPoiDeliveryInfo.setWmPoiId(wmPoiDeliveryInfo.getWmPoiId());
         auditTask.setAuditData(JSON.toJSONString(auditWmPoiDeliveryInfo));
         apiAuditService.commitAudit(auditTask);
     }
@@ -126,5 +137,25 @@ public class WmPoiDeliveryInfoServiceImpl implements WmPoiDeliveryInfoService {
 
         List<WmPoiDeliveryInfoDB> wmPoiDeliveryInfoDBList = wmPoiDeliveryInfoDBMapper.getByWmPoiIdList(wmPoiIdList);
         return WmPoiTransferUtil.transWmPoiDeliveryInfoDBList2BoList(wmPoiDeliveryInfoDBList);
+    }
+
+    @Override
+    public void updateByIdForAudit(WmPoiDeliveryInfo wmPoiDeliveryInfo, String opUserId) {
+        LOGGER.info("updateByIdForAudit wmPoiDeliveryInfo = {}, opUserId = {}", JSON.toJSONString(wmPoiDeliveryInfo), opUserId);
+        if (wmPoiDeliveryInfo == null || StringUtils.isBlank(opUserId)) {
+            throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
+        }
+
+        WmPoiDeliveryInfoDB wmPoiDeliveryInfoDB = wmPoiDeliveryInfoDBMapper.getByWmPoiId(wmPoiDeliveryInfo.getWmPoiId());
+        if (wmPoiDeliveryInfoDB == null) {
+            throw new PoiException(PoiConstant.POI_OP_ERROR, "更新门店配送信息审核状态异常");
+        }
+
+        wmPoiDeliveryInfoDB.setStatus(wmPoiDeliveryInfo.getStatus());
+        wmPoiDeliveryInfoDB.setAuditResult(wmPoiDeliveryInfo.getAuditResult());
+        wmPoiDeliveryInfoDBMapper.updateSelective(wmPoiDeliveryInfoDB);
+
+        String log = "审核结果:审核驳回:" + wmPoiDeliveryInfoDB.getAuditResult();
+        wmPoiOpLogService.addLog(wmPoiDeliveryInfoDB.getWmPoiId(), PoiConstant.PoiModuleName.POI_DELIVERY_INFO, log, opUserId);
     }
 }

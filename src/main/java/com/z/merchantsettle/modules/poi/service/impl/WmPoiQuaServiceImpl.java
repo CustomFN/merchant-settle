@@ -3,6 +3,8 @@ package com.z.merchantsettle.modules.poi.service.impl;
 import cn.hutool.poi.exceptions.POIException;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import com.z.merchantsettle.common.CertificatesTypeEnum;
+import com.z.merchantsettle.exception.CustomerException;
 import com.z.merchantsettle.exception.PoiException;
 import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
@@ -62,22 +64,24 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
         }
         wmPoiQua = WmPoiTransferUtil.transWmPoiQuaDB2Bo(wmPoiQuaDB);
         wmPoiOpLogService.addLog(wmPoiQua.getWmPoiId(), PoiConstant.PoiModuleName.POI_QUA, "保存门店资质信息", userId);
-        commitAudit(wmPoiQuaDB, isNew, userId);
+        commitAudit(wmPoiQua, isNew, userId);
         wmPoiOpLogService.addLog(wmPoiQua.getWmPoiId(), PoiConstant.PoiModuleName.POI_QUA, "门店资质信息提交审核成功", userId);
         return wmPoiQua;
     }
 
-    private void commitAudit(WmPoiQuaDB wmPoiQuaDB, boolean isNew, String userId) {
+    private void commitAudit(WmPoiQua wmPoiQua, boolean isNew, String userId) {
         AuditTask auditTask = new AuditTask();
-        auditTask.setPoiId(wmPoiQuaDB.getWmPoiId());
+        auditTask.setPoiId(wmPoiQua.getWmPoiId());
         auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
         auditTask.setAuditType(AuditTypeEnum.POI_QUA_INFO.getCode());
         auditTask.setSubmitterId(userId);
 
         AuditWmPoiQua auditWmPoiQua = new AuditWmPoiQua();
-        TransferUtil.transferAll(wmPoiQuaDB, auditWmPoiQua);
-        auditWmPoiQua.setRecordId(wmPoiQuaDB.getId());
+        TransferUtil.transferAll(wmPoiQua, auditWmPoiQua);
+        auditWmPoiQua.setRecordId(wmPoiQua.getId());
+        auditWmPoiQua.setWmPoiId(wmPoiQua.getWmPoiId());
+        auditWmPoiQua.setWmPoiLinkManIDCardType(CertificatesTypeEnum.getByCode(wmPoiQua.getWmPoiLinkManIDCardType()));
         auditTask.setAuditData(JSON.toJSONString(auditWmPoiQua));
         apiAuditService.commitAudit(auditTask);
     }
@@ -125,5 +129,25 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
         }
         List<WmPoiQuaDB> wmPoiQuaDBList = wmPoiQuaDBMapper.getByWmPoiIdList(wmPoiIdList);
         return WmPoiTransferUtil.transWmPoiQuaDBList2BoList(wmPoiQuaDBList);
+    }
+
+    @Override
+    public void updateByIdForAudit(WmPoiQua wmPoiQua, String opUserId) {
+        LOGGER.info("updateByIdForAudit wmPoiQua = {}, opUserId = {}", JSON.toJSONString(wmPoiQua), opUserId);
+        if (wmPoiQua == null || StringUtils.isBlank(opUserId)) {
+            throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
+        }
+
+        WmPoiQuaDB wmPoiQuaDB = wmPoiQuaDBMapper.getByWmPoiId(wmPoiQua.getWmPoiId());
+        if (wmPoiQuaDB == null) {
+            throw new PoiException(PoiConstant.POI_OP_ERROR, "更新门店资质信息审核状态异常");
+        }
+
+        wmPoiQuaDB.setStatus(wmPoiQua.getStatus());
+        wmPoiQuaDB.setAuditResult(wmPoiQua.getAuditResult());
+        wmPoiQuaDBMapper.updateSelective(wmPoiQuaDB);
+
+        String log = "审核结果:审核驳回:" + wmPoiQuaDB.getAuditResult();
+        wmPoiOpLogService.addLog(wmPoiQuaDB.getWmPoiId(), PoiConstant.PoiModuleName.POI_QUA, log, opUserId);
     }
 }

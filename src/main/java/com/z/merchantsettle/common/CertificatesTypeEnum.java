@@ -1,4 +1,4 @@
-package com.z.merchantsettle.modules.customer.constants;
+package com.z.merchantsettle.common;
 
 public enum CertificatesTypeEnum {
 

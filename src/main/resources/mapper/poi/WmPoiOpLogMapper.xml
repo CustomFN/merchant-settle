@@ -10,7 +10,7 @@
         <result column="ctime" property="ctime" jdbcType="BIGINT" />
     </resultMap>
     <sql id="Base_Column_List" >
-        id, customerId, module, content, opUser, ctime
+        id, wmPoiId, module, content, opUser, ctime
     </sql>
 
     <insert id="insert" parameterType="com.z.merchantsettle.modules.poi.domain.WmPoiOpLog" useGeneratedKeys="true" keyProperty="id">
@@ -32,17 +32,17 @@
         FROM
           wm_poi_oplog
         <where>
-            <if test="opLogSearchParam.customerId != null and opLogSearchParam.customerId >= 0">
-                wmPoiId = #{opLogSearchParam.wmPoiId}
+            <if test="opLogSearchParam.wmPoiId != null and opLogSearchParam.wmPoiId >= 0">
+                and wmPoiId = #{opLogSearchParam.wmPoiId}
             </if>
             <if test="opLogSearchParam.module != null and opLogSearchParam.module != ''">
-                module = #{opLogSearchParam.module}
+                and module like concat(concat('%',#{opLogSearchParam.module}),'%')
             </if>
             <if test="opLogSearchParam.content != null and opLogSearchParam.content != ''">
-                content like concat(concat('%',#{opLogSearchParam.content}),'%'),
+                and content like concat(concat('%',#{opLogSearchParam.content}),'%')
             </if>
             <if test="opLogSearchParam.opUser != null and opLogSearchParam.opUser != ''">
-                opUser = #{opLogSearchParam.opUser}
+                and opUser = #{opLogSearchParam.opUser}
             </if>
         </where>
         order by

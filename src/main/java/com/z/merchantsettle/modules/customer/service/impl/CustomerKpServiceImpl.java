@@ -8,7 +8,7 @@ import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomerKp;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
-import com.z.merchantsettle.modules.customer.constants.CertificatesTypeEnum;
+import com.z.merchantsettle.common.CertificatesTypeEnum;
 import com.z.merchantsettle.modules.customer.constants.CustomerConstant;
 import com.z.merchantsettle.modules.customer.constants.KpSignerTypeEnum;
 import com.z.merchantsettle.modules.customer.constants.KpTypeEnum;

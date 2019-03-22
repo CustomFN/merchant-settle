@@ -9,4 +9,6 @@ public interface WmPoiBusinessInfoService {
     WmPoiBaseInfo getWmPoiBaseInfoById(Integer wmPoiId, Integer effective);
 
     void setupEffectWmPoiBusinessInfo(Integer wmPoiId);
+
+    void updateByIdForAudit(WmPoiBaseInfo wmPoiBaseInfo, String opUserId);
 }

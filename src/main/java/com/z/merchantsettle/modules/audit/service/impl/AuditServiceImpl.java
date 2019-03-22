@@ -150,6 +150,7 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
         String logContent = AuditConstant.AuditStatus.AUDIT_PASS == result.getAuditStatus()
                 ? "审核通过" : "审核驳回\n" + result.getResult();
         auditLogDB.setLogMsg(logContent);
+        LOGGER.info("saveAuditResult auditLogDB = {}", JSON.toJSONString(auditLogDB));
         auditLogService.saveAuditLog(auditLogDB);
 
         AuditTask auditTask = AuditTransferUtil.transAuditTaskDB2Bo(auditTaskDB);

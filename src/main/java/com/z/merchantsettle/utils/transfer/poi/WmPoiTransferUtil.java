@@ -1,7 +1,9 @@
 package com.z.merchantsettle.utils.transfer.poi;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.z.merchantsettle.modules.poi.constants.PoiConstant;
+import com.z.merchantsettle.modules.poi.constants.WmDeliveryTypeEnum;
 import com.z.merchantsettle.modules.poi.domain.bo.*;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiBaseInfoDB;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiDeliveryInfoDB;
@@ -138,6 +140,8 @@ public class WmPoiTransferUtil {
 
         WmPoiDeliveryInfoDB wmPoiDeliveryInfoDB = new WmPoiDeliveryInfoDB();
         TransferUtil.transferAll(wmPoiDeliveryInfo, wmPoiDeliveryInfoDB);
+
+        wmPoiDeliveryInfoDB.setWmPoiProjects(JSON.toJSONString(wmPoiDeliveryInfo.getWmPoiProjectList()));
         return wmPoiDeliveryInfoDB;
     }
 
@@ -148,6 +152,10 @@ public class WmPoiTransferUtil {
 
         WmPoiDeliveryInfo wmPoiDeliveryInfo = new WmPoiDeliveryInfo();
         TransferUtil.transferAll(wmPoiDeliveryInfoDB, wmPoiDeliveryInfo);
+        wmPoiDeliveryInfo.setWmPoiProjectList(JSON.parseArray(wmPoiDeliveryInfoDB.getWmPoiProjects(),  WmPoiProject.class));
+
+        wmPoiDeliveryInfo.setWmDeliveryTypeStr(WmDeliveryTypeEnum.getByCode(wmPoiDeliveryInfoDB.getWmDeliveryType()));
+        wmPoiDeliveryInfo.setStatusStr(PoiConstant.PoiModuleStatus.getByCode(wmPoiDeliveryInfoDB.getStatus()));
         return wmPoiDeliveryInfo;
     }
 

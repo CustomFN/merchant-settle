@@ -51,7 +51,7 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
                     wmPoiBaseInfo.setId(wmPoiId);
                     wmPoiBaseInfo.setStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT.getCode());
                     wmPoiBaseInfo.setAuditResult(auditResult);
-                    wmPoiBaseInfoService.saveOrUpdate(wmPoiBaseInfo, "审核系统()");
+                    wmPoiBaseInfoService.updateByIdForAudit(wmPoiBaseInfo, "审核系统()");
                 }
                 isRetry = false;
             } catch (PoiException e) {
@@ -76,7 +76,7 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
                     wmPoiQua.setWmPoiId(wmPoiId);
                     wmPoiQua.setStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT.getCode());
                     wmPoiQua.setAuditResult(auditResult);
-                    wmPoiQuaService.saveOrUpdate(wmPoiQua, "审核系统()");
+                    wmPoiQuaService.updateByIdForAudit(wmPoiQua, "审核系统()");
                 }
                 isRetry = false;
             } catch (PoiException e) {
@@ -100,7 +100,7 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
                     wmPoiBaseInfo.setId(wmPoiId);
                     wmPoiBaseInfo.setBusinessInfoStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT.getCode());
                     wmPoiBaseInfo.setBusinessInfoAuditResult(auditResult);
-                    wmPoiBusinessInfoService.saveOrUpdate(wmPoiBaseInfo, "审核系统()");
+                    wmPoiBusinessInfoService.updateByIdForAudit(wmPoiBaseInfo, "审核系统()");
                 }
                 isRetry = false;
             } catch (PoiException e) {
@@ -125,7 +125,7 @@ public class WmPoiCallBackServiceImpl implements WmPoiCallBackService {
                     wmPoiDeliveryInfo.setWmPoiId(wmPoiId);
                     wmPoiDeliveryInfo.setStatus(PoiConstant.PoiModuleStatus.AUDIT_REJECT.getCode());
                     wmPoiDeliveryInfo.setAuditResult(auditResult);
-                    wmPoiDeliveryInfoService.saveOrUpdate(wmPoiDeliveryInfo, "审核系统()");
+                    wmPoiDeliveryInfoService.updateByIdForAudit(wmPoiDeliveryInfo, "审核系统()");
                 }
                 isRetry = false;
             } catch (PoiException e) {

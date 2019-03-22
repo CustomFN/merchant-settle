@@ -14,10 +14,7 @@ import com.z.merchantsettle.utils.shiro.ShiroUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/wmpoi/delivery")
@@ -43,8 +40,8 @@ public class WmPoiDeliveryInfoController {
 
         try {
             User user = ShiroUtils.getSysUser();
-            wmPoiDeliveryInfoService.saveOrUpdate(wmPoiDeliveryInfo, user.getUserId());
-            return ReturnResult.success();
+            wmPoiDeliveryInfo = wmPoiDeliveryInfoService.saveOrUpdate(wmPoiDeliveryInfo, user.getUserId());
+            return ReturnResult.success(wmPoiDeliveryInfo);
         } catch (UpmException | PoiException e) {
             LOGGER.error("保存门店配送信息异常", e);
             return ReturnResult.fail(PoiConstant.POI_OP_ERROR, "保存门店配送信息异常");
@@ -52,7 +49,7 @@ public class WmPoiDeliveryInfoController {
     }
 
     @RequestMapping("/show/{wmPoiId}")
-    public Object getWmPoiDeliveryInfoById(@RequestParam(name = "wmPoiId") Integer wmPoiId, @RequestParam(name = "effective") Integer effective) {
+    public Object getWmPoiDeliveryInfoById(@PathVariable(name = "wmPoiId") Integer wmPoiId, @RequestParam(name = "effective") Integer effective) {
         LOGGER.info("getWmPoiDeliveryInfoById wmPoiId = {}, effective = {}", wmPoiId, effective);
         if (wmPoiId == null || wmPoiId <= 0 || effective < 0) {
             return ReturnResult.fail(PoiConstant.POI_PARAM_ERROR, "参数错误");

@@ -6,11 +6,13 @@ import java.util.List;
 
 public interface WmPoiDeliveryInfoService {
 
-    void saveOrUpdate(WmPoiDeliveryInfo wmPoiDeliveryInfo, String opUserId);
+    WmPoiDeliveryInfo saveOrUpdate(WmPoiDeliveryInfo wmPoiDeliveryInfo, String opUserId);
 
     WmPoiDeliveryInfo getWmPoiDeliveryInfoById(Integer wmPoiId, Integer effective);
 
     void setupEffectWmPoiDeliveryInfo(Integer wmPoiId);
 
     List<WmPoiDeliveryInfo> getByWmPoiIdList(List<Integer> wmPoiIdList);
+
+    void updateByIdForAudit(WmPoiDeliveryInfo wmPoiDeliveryInfo, String opUserId);
 }

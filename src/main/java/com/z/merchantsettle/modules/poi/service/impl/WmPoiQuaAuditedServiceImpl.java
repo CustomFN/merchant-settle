@@ -5,7 +5,6 @@ import com.z.merchantsettle.exception.PoiException;
 import com.z.merchantsettle.modules.poi.constants.PoiConstant;
 import com.z.merchantsettle.modules.poi.dao.WmPoiQuaAuditedDBMapper;
 import com.z.merchantsettle.modules.poi.domain.bo.WmPoiQua;
-import com.z.merchantsettle.modules.poi.domain.bo.WmPoiQuaAudited;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiQuaDB;
 import com.z.merchantsettle.modules.poi.service.WmPoiQuaAuditedService;
 import com.z.merchantsettle.utils.transfer.poi.WmPoiTransferUtil;

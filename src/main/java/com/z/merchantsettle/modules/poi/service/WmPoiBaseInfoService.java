@@ -19,4 +19,6 @@ public interface WmPoiBaseInfoService {
     void distributePrincipal(Integer wmPoiId, String principalId, String opUserId);
 
     PageData<WmPoiBaseInfo> getBaseInfoList(WmPoiSearchParam wmPoiSearchParam, Integer pageNum, Integer pageSize);
+
+    void updateByIdForAudit(WmPoiBaseInfo wmPoiBaseInfo, String opUserId);
 }

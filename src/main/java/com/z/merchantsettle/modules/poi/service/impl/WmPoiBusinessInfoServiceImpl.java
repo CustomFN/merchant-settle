@@ -1,6 +1,7 @@
 package com.z.merchantsettle.modules.poi.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.z.merchantsettle.exception.CustomerException;
 import com.z.merchantsettle.exception.PoiException;
 import com.z.merchantsettle.modules.audit.constants.AuditApplicationTypeEnum;
 import com.z.merchantsettle.modules.audit.constants.AuditConstant;
@@ -63,24 +64,25 @@ public class WmPoiBusinessInfoServiceImpl implements WmPoiBusinessInfoService {
         wmPoiBaseInfo = WmPoiTransferUtil.transWmPoiBaseInfoDB2Bo(wmPoiBaseInfoDB);
 
         wmPoiOpLogService.addLog(wmPoiBaseInfo.getId(), PoiConstant.PoiModuleName.POI_BUSINESS_INFO, "保存门店营业信息", userId);
-        commitAudit(wmPoiBaseInfoDB, isNew, userId);
+        commitAudit(wmPoiBaseInfo, isNew, userId);
         wmPoiOpLogService.addLog(wmPoiBaseInfo.getId(), PoiConstant.PoiModuleName.POI_BUSINESS_INFO, "门店营业信息提交审核成功", userId);
         return wmPoiBaseInfo;
     }
 
-    private void commitAudit(WmPoiBaseInfoDB wmPoiBaseInfoDB, boolean isNew, String userId) {
+    private void commitAudit(WmPoiBaseInfo wmPoiBaseInfo, boolean isNew, String userId) {
         AuditTask auditTask = new AuditTask();
-        auditTask.setCustomerId(wmPoiBaseInfoDB.getCustomerId());
-        auditTask.setPoiId(wmPoiBaseInfoDB.getId());
+        auditTask.setCustomerId(wmPoiBaseInfo.getCustomerId());
+        auditTask.setPoiId(wmPoiBaseInfo.getId());
         auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
         auditTask.setAuditType(AuditTypeEnum.POI_BUSINESS_INFO.getCode());
         auditTask.setSubmitterId(userId);
 
         AuditBusinessInfo auditBusinessInfo = new AuditBusinessInfo();
-        TransferUtil.transferAll(wmPoiBaseInfoDB, auditBusinessInfo);
-        auditBusinessInfo.setRecordId(wmPoiBaseInfoDB.getId());
-        auditBusinessInfo.setWmPoiId(wmPoiBaseInfoDB.getId());
+        TransferUtil.transferAll(wmPoiBaseInfo, auditBusinessInfo);
+        auditBusinessInfo.setRecordId(wmPoiBaseInfo.getId());
+        auditBusinessInfo.setWmPoiId(wmPoiBaseInfo.getId());
+        auditBusinessInfo.setOrderMealDate(StringUtils.join(wmPoiBaseInfo.getOrderMealDateList(), "/"));
         auditTask.setAuditData(JSON.toJSONString(auditBusinessInfo));
         apiAuditService.commitAudit(auditTask);
     }
@@ -105,5 +107,25 @@ public class WmPoiBusinessInfoServiceImpl implements WmPoiBusinessInfoService {
         wmPoiBaseInfoAuditedService.saveOrUpdate(WmPoiTransferUtil.transWmPoiBaseInfoDB2Bo(wmPoiBaseInfoDB));
 
         wmPoiOpLogService.addLog(wmPoiId, PoiConstant.PoiModuleName.POI_BUSINESS_INFO, "门店营业信息提交审核成功", "系统()");
+    }
+
+    @Override
+    public void updateByIdForAudit(WmPoiBaseInfo wmPoiBaseInfo, String opUserId) {
+        LOGGER.info("updateByIdForAudit wmPoiBaseInfo = {}, opUserId = {}", JSON.toJSONString(wmPoiBaseInfo), opUserId);
+        if (wmPoiBaseInfo == null || StringUtils.isBlank(opUserId)) {
+            throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
+        }
+
+        WmPoiBaseInfoDB wmPoiBaseInfoDB = wmPoiBaseInfoDBMapper.getById(wmPoiBaseInfo.getId());
+        if (wmPoiBaseInfoDB == null) {
+            throw new PoiException(PoiConstant.POI_OP_ERROR, "更新门店营业信息审核状态异常");
+        }
+
+        wmPoiBaseInfoDB.setStatus(wmPoiBaseInfo.getBusinessInfoStatus());
+        wmPoiBaseInfoDB.setAuditResult(wmPoiBaseInfo.getBusinessInfoAuditResult());
+        wmPoiBaseInfoDBMapper.updateSelective(wmPoiBaseInfoDB);
+
+        String log = "审核结果:审核驳回:" + wmPoiBaseInfoDB.getAuditResult();
+        wmPoiOpLogService.addLog(wmPoiBaseInfoDB.getId(), PoiConstant.PoiModuleName.POI_BUSINESS_INFO, log, opUserId);
     }
 }

@@ -2,6 +2,8 @@ package com.z.merchantsettle.modules.audit.domain.poi;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class AuditWmPoiBaseInfo {
 
@@ -16,7 +18,7 @@ public class AuditWmPoiBaseInfo {
     private String wmPoiAddress;
     private String wmPoiLongitude;
     private String wmPoiLatitude;
-    private String wmPoiLogo;
-    private String wmPoiEnvironmentPic;
+    private List<String> wmPoiLogoList;
+    private List<String> wmPoiEnvironmentPicList;
     private String wmPoiPrincipal;
 }

@@ -8,6 +8,7 @@ public class AuditBusinessInfo {
     private Integer recordId;
     private Integer wmPoiId;
     private String orderMealDate;
-    private String orderMealTime;
+    private String orderMealStartTime;
+    private String orderMealEndTime;
     private String orderMealTel;
 }

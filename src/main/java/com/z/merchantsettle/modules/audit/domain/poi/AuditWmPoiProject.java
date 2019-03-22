@@ -13,5 +13,6 @@ public class AuditWmPoiProject {
     private Double dispatcherMoney;
 
     private Integer deliveryAreaType;
-    private List<Double> deliveryArea;
+    private Integer deliveryRadius;
+    private List<List<String>> deliveryArea;
 }

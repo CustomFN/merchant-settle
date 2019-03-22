@@ -69,25 +69,28 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
         wmPoiBaseInfo = WmPoiTransferUtil.transWmPoiBaseInfoDB2Bo(wmPoiBaseInfoDB);
 
         wmPoiOpLogService.addLog(wmPoiBaseInfoDB.getId(), PoiConstant.PoiModuleName.POI_BASE_INFO, "保存门店基本信息", userId);
-        commitAudit(wmPoiBaseInfoDB, isNew, userId);
+        commitAudit(wmPoiBaseInfo, isNew, userId);
         wmPoiOpLogService.addLog(wmPoiBaseInfoDB.getId(), PoiConstant.PoiModuleName.POI_BASE_INFO, "提交审核", userId);
 
         return wmPoiBaseInfo;
     }
 
-    private void commitAudit(WmPoiBaseInfoDB wmPoiBaseInfoDB, boolean isNew, String userId) {
+    private void commitAudit(WmPoiBaseInfo wmPoiBaseInfo, boolean isNew, String userId) {
         AuditTask auditTask = new AuditTask();
-        auditTask.setCustomerId(wmPoiBaseInfoDB.getCustomerId());
-        auditTask.setPoiId(wmPoiBaseInfoDB.getId());
+        auditTask.setCustomerId(wmPoiBaseInfo.getCustomerId());
+        auditTask.setPoiId(wmPoiBaseInfo.getId());
         auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
         auditTask.setAuditType(AuditTypeEnum.POI_BASE_INFO.getCode());
         auditTask.setSubmitterId(userId);
 
         AuditWmPoiBaseInfo auditWmPoiBaseInfo = new AuditWmPoiBaseInfo();
-        TransferUtil.transferAll(wmPoiBaseInfoDB, auditWmPoiBaseInfo);
-        auditWmPoiBaseInfo.setRecordId(wmPoiBaseInfoDB.getId());
-        auditWmPoiBaseInfo.setWmPoiId(wmPoiBaseInfoDB.getId());
+        TransferUtil.transferAll(wmPoiBaseInfo, auditWmPoiBaseInfo);
+        auditWmPoiBaseInfo.setRecordId(wmPoiBaseInfo.getId());
+        auditWmPoiBaseInfo.setWmPoiId(wmPoiBaseInfo.getId());
+        auditWmPoiBaseInfo.setWmPoiCityRegion(wmPoiBaseInfo.getWmPoiCityId() + " - " + wmPoiBaseInfo.getWmPoiRegionId());
+        auditWmPoiBaseInfo.setWmPoiCategory(wmPoiBaseInfo.getWmPoiCategory().toString());
+
         auditTask.setAuditData(JSON.toJSONString(auditWmPoiBaseInfo));
         apiAuditService.commitAudit(auditTask);
     }
@@ -169,5 +172,25 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
                 .totalPage(pageInfo.getPages())
                 .data(wmPoiBaseInfoList)
                 .build();
+    }
+
+    @Override
+    public void updateByIdForAudit(WmPoiBaseInfo wmPoiBaseInfo, String opUserId) {
+        LOGGER.info("updateByIdForAudit wmPoiBaseInfo = {}, opUserId = {}", JSON.toJSONString(wmPoiBaseInfo), opUserId);
+        if (wmPoiBaseInfo == null || StringUtils.isBlank(opUserId)) {
+            throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
+        }
+
+        WmPoiBaseInfoDB wmPoiBaseInfoDB = wmPoiBaseInfoDBMapper.getById(wmPoiBaseInfo.getId());
+        if (wmPoiBaseInfoDB == null) {
+            throw new PoiException(PoiConstant.POI_OP_ERROR, "更新门店基本信息审核状态异常");
+        }
+
+        wmPoiBaseInfoDB.setStatus(wmPoiBaseInfo.getStatus());
+        wmPoiBaseInfoDB.setAuditResult(wmPoiBaseInfo.getAuditResult());
+        wmPoiBaseInfoDBMapper.updateSelective(wmPoiBaseInfoDB);
+
+        String log = "审核结果:审核驳回:" + wmPoiBaseInfoDB.getAuditResult();
+        wmPoiOpLogService.addLog(wmPoiBaseInfoDB.getId(), PoiConstant.PoiModuleName.POI_BASE_INFO, log, opUserId);
     }
 }

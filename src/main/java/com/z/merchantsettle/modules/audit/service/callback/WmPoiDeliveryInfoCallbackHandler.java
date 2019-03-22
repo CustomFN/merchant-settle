@@ -1,6 +1,7 @@
 package com.z.merchantsettle.modules.audit.service.callback;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.z.merchantsettle.modules.audit.domain.AuditResult;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.poi.AuditWmPoiDeliveryInfo;
@@ -28,8 +29,8 @@ public class WmPoiDeliveryInfoCallbackHandler extends AbstractHandler {
         Integer wmPoiId = auditTask.getPoiId();
 
         String auditData = auditTask.getAuditData();
-        AuditWmPoiDeliveryInfo auditWmPoiDeliveryInfo = JSON.parseObject(auditData, AuditWmPoiDeliveryInfo.class);
-        Integer recordId = auditWmPoiDeliveryInfo.getRecordId();
+        JSONObject jsonObject = JSON.parseObject(auditData);
+        Integer recordId = (Integer) jsonObject.get("recordId");
         wmPoiCallBackService.wmPoiDeliveryInfoAuditCallBack(recordId, wmPoiId, auditStatus, auditResult);
     }
 }

@@ -10,6 +10,7 @@ public class WmPoiDeliveryInfo {
     private Integer id;
     private Integer wmPoiId;
     private Integer wmDeliveryType;
+    private String wmDeliveryTypeStr;
 
     private Double poportion;
     private Double minMoney;
@@ -17,5 +18,6 @@ public class WmPoiDeliveryInfo {
     private List<WmPoiProject> wmPoiProjectList;
 
     private Integer status;
+    private String statusStr;
     private String auditResult;
 }
