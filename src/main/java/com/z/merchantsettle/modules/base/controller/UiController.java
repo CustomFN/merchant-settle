@@ -1,22 +1,18 @@
 package com.z.merchantsettle.modules.base.controller;
 
-import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.z.merchantsettle.common.ReturnResult;
 import com.z.merchantsettle.modules.base.service.BankService;
+import com.z.merchantsettle.modules.base.service.CategoryService;
+import com.z.merchantsettle.modules.base.service.GeoService;
 import com.z.merchantsettle.utils.qiniu.QiniuUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 @RestController
 @RequestMapping("/ui")
@@ -26,32 +22,34 @@ public class UiController {
 
     @Autowired
     private BankService bankService;
+    @Autowired
+    private GeoService geoService;
+    @Autowired
+    private CategoryService categoryService;
+
+    @RequestMapping("/getCategories")
+    public Object getCategories() {
+        return ReturnResult.success(categoryService.getCategories());
+    }
+
+    @RequestMapping("/getProvinces")
+    public Object getProvinces() {
+        return ReturnResult.success(geoService.getProvinces());
+    }
+
+    @RequestMapping("/getCities")
+    public Object getCities(@RequestParam("provinceId") Integer provinceId) {
+        return ReturnResult.success(geoService.getCities(provinceId));
+    }
 
     @RequestMapping("/getBanks")
-    public Object getBanks() {
-        return ReturnResult.success(bankService.getBanks());
+    public Object getBanks(@RequestParam("cityId") Integer cityId) {
+        return ReturnResult.success(bankService.getBanks(cityId));
     }
 
-    @RequestMapping("/getSubBanks/{bankId}")
-    public Object getSubBanks(@PathVariable(name = "bankId") Integer bankId) {
+    @RequestMapping("/getSubBanks")
+    public Object getSubBanks(@RequestParam("bankId") Integer bankId) {
         return ReturnResult.success(bankService.getSubBanks(bankId));
-    }
-
-    @RequestMapping("/getGeoInfo")
-    public Object getGeoInfo() {
-        Resource provincesRes = new ClassPathResource("json/provinces.json");
-        Resource citiesRes = new ClassPathResource("json/cities.json");
-        Resource areasRes = new ClassPathResource("json/areas.json");
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("provinces", JSON.parse(IoUtil.read(provincesRes.getInputStream(), Charset.forName("UTF-8"))));
-            jsonObject.put("cities", JSON.parse(IoUtil.read(citiesRes.getInputStream(), Charset.forName("UTF-8"))));
-            jsonObject.put("areas", JSON.parse(IoUtil.read(areasRes.getInputStream(), Charset.forName("UTF-8"))));
-
-            return ReturnResult.success(jsonObject);
-        } catch (IOException e) {
-            return ReturnResult.fail();
-        }
     }
 
     @PostMapping("/upload")
@@ -69,8 +67,4 @@ public class UiController {
         }
     }
 
-    public static void main(String[] args) {
-        UiController uiController = new UiController();
-        uiController.getGeoInfo();
-    }
 }

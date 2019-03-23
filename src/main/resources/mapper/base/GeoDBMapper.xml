@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.z.merchantsettle.modules.base.dao.GeoDBMapper" >
+    <resultMap id="ProvinceResultMap" type="com.z.merchantsettle.modules.base.domain.bo.ProvinceInfo" >
+        <result column="provinceId" property="provinceId"/>
+        <result column="province" property="provinceName"/>
+    </resultMap>
+    <resultMap id="CityResultMap" type="com.z.merchantsettle.modules.base.domain.bo.CityInfo" >
+        <result column="provinceId" property="provinceId"/>
+        <result column="cityId" property="cityId"/>
+        <result column="city" property="cityName"/>
+    </resultMap>
+
+    <select id="getProvinces" resultMap="ProvinceResultMap">
+        SELECT
+        DISTINCT
+            provinceId, province
+        FROM
+            banks
+        ORDER BY
+            provinceId
+    </select>
+
+    <select id="getCities" resultMap="CityResultMap" parameterType="java.lang.Integer">
+        SELECT
+        DISTINCT
+          provinceId, cityId, cityName
+        FROM
+          banks
+        WHERE
+          provinceId = #{provinceId}
+        ORDER BY
+          provinceId
+    </select>
+
+</mapper>

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface BankService {
 
-    List<BankInfo> getBanks();
+    List<BankInfo> getBanks(Integer cityId);
 
     List<BankInfo> getSubBanks(Integer bankId);
 

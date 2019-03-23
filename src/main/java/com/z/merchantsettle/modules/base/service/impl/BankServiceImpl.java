@@ -15,12 +15,12 @@ public class BankServiceImpl implements BankService {
     private BankInfoDBMapper bankInfoDBMapper;
 
     @Override
-    public List<BankInfo> getBanks() {
-        return null;
+    public List<BankInfo> getBanks(Integer cityId) {
+        return bankInfoDBMapper.getBanks(cityId);
     }
 
     @Override
     public List<BankInfo> getSubBanks(Integer bankId) {
-        return null;
+        return bankInfoDBMapper.getSubBanks(bankId);
     }
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.z.merchantsettle.modules.base.dao.BankInfoDBMapper" >
+    <resultMap id="BaseResultMap" type="com.z.merchantsettle.modules.base.domain.bo.BankInfo" >
+        <result column="bankId" property="bankId"/>
+        <result column="bankName" property="bankName"/>
+        <result column="subBranchId" property="subBankId"/>
+        <result column="subBranchName" property="subBankName"/>
+    </resultMap>
+
+    <select id="getBanks" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+        DISTINCT
+            bankId, bankName
+        FROM
+            banks
+        WHERE
+            cityId = #{cityId}
+        ORDER BY
+            bankId
+    </select>
+
+    <select id="getSubBanks" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+        DISTINCT
+          bankId, bankName, subBranchId, subBranchName
+        FROM
+          banks
+        WHERE
+          bankId = #{bankId}
+        ORDER BY
+          bankId
+    </select>
+
+
+</mapper>
