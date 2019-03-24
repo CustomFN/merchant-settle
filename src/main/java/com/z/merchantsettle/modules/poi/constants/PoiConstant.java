@@ -6,6 +6,8 @@ public class PoiConstant {
 
     public static final int POI_OP_ERROR = 4002;
 
+    public static final int POI_VALID_ERROR = 4003;
+
     public static final int EFFECTIVE = 1;
 
     public static class PoiStatus {

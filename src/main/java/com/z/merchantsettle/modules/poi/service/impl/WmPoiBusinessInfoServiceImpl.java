@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class WmPoiBusinessInfoServiceImpl implements WmPoiBusinessInfoService {
@@ -47,6 +48,7 @@ public class WmPoiBusinessInfoServiceImpl implements WmPoiBusinessInfoService {
 
 
     @Override
+    @Transactional
     public WmPoiBaseInfo saveOrUpdate(WmPoiBaseInfo wmPoiBaseInfo, String userId) {
         if (wmPoiBaseInfo == null || StringUtils.isBlank(userId)) {
             throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
@@ -93,6 +95,7 @@ public class WmPoiBusinessInfoServiceImpl implements WmPoiBusinessInfoService {
     }
 
     @Override
+    @Transactional
     public void setupEffectWmPoiBusinessInfo(Integer wmPoiId) {
         LOGGER.info("setupEffectWmPoiBusinessInfo wmPoiId = {}", wmPoiId);
 

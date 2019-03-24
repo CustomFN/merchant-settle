@@ -21,6 +21,7 @@ import com.z.merchantsettle.modules.customer.domain.CustomerSearchParam;
 import com.z.merchantsettle.modules.customer.domain.bo.Customer;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerAudited;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerBaseInfo;
+import com.z.merchantsettle.modules.customer.domain.bo.CustomerContract;
 import com.z.merchantsettle.modules.customer.domain.db.CustomerAuditedDB;
 import com.z.merchantsettle.modules.customer.domain.db.CustomerDB;
 import com.z.merchantsettle.modules.customer.service.CustomerAuditedService;
@@ -31,6 +32,7 @@ import com.z.merchantsettle.modules.upm.service.UserService;
 import com.z.merchantsettle.mq.MsgOpType;
 import com.z.merchantsettle.mq.customer.CustomerSender;
 import com.z.merchantsettle.utils.TransferUtil;
+import com.z.merchantsettle.utils.aliyun.AliyunUtil;
 import com.z.merchantsettle.utils.shiro.ShiroUtils;
 import com.z.merchantsettle.utils.shiro.UserUtil;
 import com.z.merchantsettle.utils.transfer.customer.CustomerTransferUtil;
@@ -82,7 +84,7 @@ public class CustomerServiceImpl implements CustomerService {
             CustomerBaseInfo customerBaseInfo = new CustomerBaseInfo();
             customerBaseInfo.setCustomerId(customerDB.getId());
             customerBaseInfo.setCustomerName(customerDB.getCustomerName());
-            customerBaseInfo.setCustomerType(CustomerConstant.CustomerTypeEnum.getByCode(customerDB.getCustomerType()));
+            customerBaseInfo.setCustomerType(CustomerTypeEnum.getByCode(customerDB.getCustomerType()));
             customerBaseInfo.setCustomerStatus(CustomerConstant.CustomerStatus.getByCode(customerDB.getStatus()));
 
             User user = userUtil.getUser(customerDB.getCustomerPrincipal());
@@ -152,11 +154,17 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+
     public Customer saveOrUpdate(Customer customer, String opUserId) throws CustomerException {
         LOGGER.info("saveOrUpdate customer = {}, opUserId = {}", JSON.toJSONString(customer), opUserId);
         if (customer == null || StringUtils.isBlank(opUserId)) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
+
+        if (false) {
+            checkCustomer(customer);
+        }
+
 
         CustomerDB customerDB = CustomerTransferUtil.transCustomer2DB(customer);
         boolean isNew = (null == customer.getId() || customerDB.getId() <= 0);
@@ -173,6 +181,19 @@ public class CustomerServiceImpl implements CustomerService {
         commitAudit(customerDB, opUserId, isNew);
         customerOpLogService.addLog(customerDB.getId(), "KP", "保存客户，提交审核", opUserId);
         return customer;
+    }
+
+    private void checkCustomer(Customer customer) {
+        boolean validResult = true;
+        if (CustomerTypeEnum.CUSTOMER_TYPE_ENTERPRISE.getCode() == customer.getCustomerType()) {
+            validResult = AliyunUtil.enterpriseValid(customer.getCustomerCertificatesNum(), customer.getCustomerName(), customer.getCustomerLegalPerson());
+        } else {
+            validResult = AliyunUtil.iDCardValid(customer.getCustomerCertificatesNum(), customer.getCustomerName());
+        }
+
+        if (!validResult) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_VALID_ERROR, "客户资质验证失败,请重新确认!");
+        }
     }
 
     private void commitAudit(CustomerDB customerDB, String opUserId, boolean isNew) {

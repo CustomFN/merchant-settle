@@ -13,6 +13,11 @@ import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.poi.AuditWmPoiBaseInfo;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
+import com.z.merchantsettle.modules.base.domain.bo.CategoryInfo;
+import com.z.merchantsettle.modules.base.domain.bo.CityInfo;
+import com.z.merchantsettle.modules.base.service.BankService;
+import com.z.merchantsettle.modules.base.service.CategoryService;
+import com.z.merchantsettle.modules.base.service.GeoService;
 import com.z.merchantsettle.modules.poi.constants.PoiConstant;
 import com.z.merchantsettle.modules.poi.dao.WmPoiBaseInfoDBMapper;
 import com.z.merchantsettle.modules.poi.domain.WmPoiSearchParam;
@@ -29,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,8 +55,15 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
     @Autowired
     private WmPoiOpLogService wmPoiOpLogService;
 
+    @Autowired
+    private GeoService geoService;
+
+    @Autowired
+    private CategoryService categoryService;
+
 
     @Override
+    @Transactional
     public WmPoiBaseInfo saveOrUpdate(WmPoiBaseInfo wmPoiBaseInfo, String userId) {
         if (wmPoiBaseInfo == null || StringUtils.isBlank(userId)) {
             throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
@@ -88,8 +101,13 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
         TransferUtil.transferAll(wmPoiBaseInfo, auditWmPoiBaseInfo);
         auditWmPoiBaseInfo.setRecordId(wmPoiBaseInfo.getId());
         auditWmPoiBaseInfo.setWmPoiId(wmPoiBaseInfo.getId());
-        auditWmPoiBaseInfo.setWmPoiCityRegion(wmPoiBaseInfo.getWmPoiCityId() + " - " + wmPoiBaseInfo.getWmPoiRegionId());
-        auditWmPoiBaseInfo.setWmPoiCategory(wmPoiBaseInfo.getWmPoiCategory().toString());
+
+        CityInfo cityInfo = geoService.getByProvinceIdAndCityId(wmPoiBaseInfo.getWmPoiCityId(), wmPoiBaseInfo.getWmPoiRegionId());
+        String cityRegion = cityInfo == null ? "" : cityInfo.getProvinceName() + "-" + cityInfo.getCityName();
+        auditWmPoiBaseInfo.setWmPoiCityRegion(cityRegion);
+
+        CategoryInfo categoryInfo = categoryService.getById(wmPoiBaseInfo.getWmPoiCategory());
+        auditWmPoiBaseInfo.setWmPoiCategory(categoryInfo == null ? "" : categoryInfo.getCategoryName());
 
         auditTask.setAuditData(JSON.toJSONString(auditWmPoiBaseInfo));
         apiAuditService.commitAudit(auditTask);
@@ -113,6 +131,7 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
     }
 
     @Override
+    @Transactional
     public void setupEffectWmPoiBaseInfo(Integer wmPoiId) {
         LOGGER.info("setupEffectWmPoiBaseInfo wmPoiId = {}", wmPoiId);
 

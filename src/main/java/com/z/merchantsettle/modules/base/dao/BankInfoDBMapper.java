@@ -13,4 +13,7 @@ public interface BankInfoDBMapper {
 
     List<BankInfo> getSubBanks(@Param("bankId") Integer bankId);
 
+    BankInfo getByBankIdAndBranchId(@Param("bankId") Integer bankId, @Param("branchId") Integer branchId);
+
+    BankInfo getByBankId(@Param("bankId") Integer bankId);
 }

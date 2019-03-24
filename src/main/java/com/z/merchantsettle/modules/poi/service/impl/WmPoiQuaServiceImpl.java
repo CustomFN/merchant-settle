@@ -20,6 +20,7 @@ import com.z.merchantsettle.modules.poi.service.WmPoiOpLogService;
 import com.z.merchantsettle.modules.poi.service.WmPoiQuaAuditedService;
 import com.z.merchantsettle.modules.poi.service.WmPoiQuaService;
 import com.z.merchantsettle.utils.TransferUtil;
+import com.z.merchantsettle.utils.aliyun.AliyunUtil;
 import com.z.merchantsettle.utils.transfer.poi.WmPoiTransferUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,9 +51,13 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
 
 
     @Override
+    @Transactional
     public WmPoiQua saveOrUpdate(WmPoiQua wmPoiQua, String userId) {
         if (wmPoiQua == null || StringUtils.isBlank(userId)) {
             throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
+        }
+        if (false) {
+            checkWmPoiQua(wmPoiQua);
         }
 
         WmPoiQuaDB wmPoiQuaDB = WmPoiTransferUtil.transWmPoiQua2DB(wmPoiQua);
@@ -67,6 +73,20 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
         commitAudit(wmPoiQua, isNew, userId);
         wmPoiOpLogService.addLog(wmPoiQua.getWmPoiId(), PoiConstant.PoiModuleName.POI_QUA, "门店资质信息提交审核成功", userId);
         return wmPoiQua;
+    }
+
+    private void checkWmPoiQua(WmPoiQua wmPoiQua) {
+        boolean validResult = true;
+        validResult = AliyunUtil.iDCardValid(wmPoiQua.getWmPoiLinkManIDCardNo(), wmPoiQua.getWmPoiLinkManName());
+        if (!validResult) {
+            throw new PoiException(PoiConstant.POI_VALID_ERROR, "门店资质个人证件验证失败,请重新确认!");
+        }
+
+        validResult = AliyunUtil.enterpriseValid(wmPoiQua.getWmPoiBusinessLicenceNo(),
+                wmPoiQua.getWmPoiBusinessLicenceName(), wmPoiQua.getWmPoiOperatorName());
+        if (!validResult) {
+            throw new PoiException(PoiConstant.POI_VALID_ERROR, "门店资质营业执照验证失败,请重新确认!");
+        }
     }
 
     private void commitAudit(WmPoiQua wmPoiQua, boolean isNew, String userId) {
@@ -105,6 +125,7 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
 
 
     @Override
+    @Transactional
     public void setupEffectWmPoiQua(Integer wmPoiId) {
         LOGGER.info("setupEffectWmPoiQua wmPoiId = {}", wmPoiId);
 

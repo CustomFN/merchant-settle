@@ -13,4 +13,7 @@ public interface GeoDBMapper {
     List<ProvinceInfo> getProvinces();
 
     List<CityInfo> getCities(@Param("provinceId") Integer provinceId);
+
+    CityInfo getByProvinceIdAndCityId(@Param("provinceId") Integer provinceId, @Param("cityId") Integer cityId);
+
 }

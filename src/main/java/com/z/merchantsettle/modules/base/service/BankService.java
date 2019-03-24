@@ -10,4 +10,7 @@ public interface BankService {
 
     List<BankInfo> getSubBanks(Integer bankId);
 
+    BankInfo getByBankId(Integer bankId);
+
+    BankInfo getByBankIdAndBranchId(Integer bankId, Integer branchId);
 }

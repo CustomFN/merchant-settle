@@ -32,5 +32,24 @@
           bankId
     </select>
 
+    <select id="getByBankIdAndBranchId" resultType="com.z.merchantsettle.modules.base.domain.bo.BankInfo">
+        SELECT
+          bankId, bankName, subBranchId, subBranchName
+        FROM
+          banks
+        WHERE
+          bankId = #{bankId}
+        and
+          subBranchId = #{branchId}
+    </select>
 
+    <select id="getByBankId" resultType="com.z.merchantsettle.modules.base.domain.bo.BankInfo">
+        SELECT
+            bankId, bankName
+        FROM
+            banks
+        WHERE
+            bankId = #{bankId}
+        limit 1
+    </select>
 </mapper>

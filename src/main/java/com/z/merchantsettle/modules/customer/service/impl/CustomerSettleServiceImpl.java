@@ -14,6 +14,10 @@ import com.z.merchantsettle.modules.audit.constants.AuditTypeEnum;
 import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomerSettle;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
+import com.z.merchantsettle.modules.base.domain.bo.BankInfo;
+import com.z.merchantsettle.modules.base.domain.bo.CityInfo;
+import com.z.merchantsettle.modules.base.service.BankService;
+import com.z.merchantsettle.modules.base.service.GeoService;
 import com.z.merchantsettle.modules.customer.constants.*;
 import com.z.merchantsettle.modules.customer.dao.CustomerSettleDBMapper;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerSettle;
@@ -30,6 +34,7 @@ import com.z.merchantsettle.modules.poi.service.WmPoiBaseInfoService;
 import com.z.merchantsettle.mq.MsgOpType;
 import com.z.merchantsettle.mq.customer.CustomerSender;
 import com.z.merchantsettle.utils.TransferUtil;
+import com.z.merchantsettle.utils.aliyun.AliyunUtil;
 import com.z.merchantsettle.utils.transfer.customer.CustomerTransferUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +42,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -66,13 +73,23 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
     @Autowired
     private CustomerSender customerSender;
 
+    @Autowired
+    private GeoService geoService;
+
+    @Autowired
+    private BankService bankService;
+
     private static final String CUSTOMER_SETTLE_TOPIC = "customer_settle_topic";
 
     @Override
+    @Transactional
     public CustomerSettle saveOrUpdate(CustomerSettle customerSettle, String opUserId) {
         LOGGER.info("saveOrUpdate customerSettle = {}, opUserId = {}", JSON.toJSONString(customerSettle), opUserId);
-        if (customerSettle == null || StringUtils.isBlank(opUserId) || CollectionUtils.isEmpty(customerSettle.getWmPoiIdList())) {
+        if (customerSettle == null || StringUtils.isBlank(opUserId) || StringUtils.isBlank(customerSettle.getWmPoiIds())) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
+        }
+        if (false) {
+            checkCustomerSettle(customerSettle);
         }
 
         CustomerSettleDB customerSettleDB = CustomerTransferUtil.transCustomerSettle2DB(customerSettle);
@@ -85,10 +102,31 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
         } else {
             customerSettleDBMapper.updateByIdSelective(customerSettleDB);
         }
-//        customerSettlePoiService.saveOrUpdateSettlePoi(customerSettleDB.getId(), customerSettle.getWmPoiIdList());
+        List<Integer> wmPoiIdList = Lists.transform(Lists.newArrayList(StringUtils.split(customerSettle.getWmPoiIds(), ",")), new Function<String, Integer>() {
+            @Override
+            public Integer apply(String input) {
+                return Integer.parseInt(input);
+            }
+        });
+        customerSettlePoiService.saveOrUpdateSettlePoi(customerSettleDB.getId(), wmPoiIdList);
         commitAudit(customerSettle, opUserId, isNew);
         customerOpLogService.addLog(customerSettle.getCustomerId(), "结算", "保存客户结算，提交审核", opUserId);
         return customerSettle;
+    }
+
+    private void checkCustomerSettle(CustomerSettle customerSettle) {
+        boolean validResult = true;
+        if (CertificatesTypeEnum.ID_CARD.getCode() == customerSettle.getFinancialOfficerCertificatesType()) {
+            validResult = AliyunUtil.iDCardValid(customerSettle.getFinancialOfficerCertificatesNum(), customerSettle.getSettleAccName());
+        }
+        if (!validResult) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_VALID_ERROR, "客户结算负责人信息验证失败,请重新确认!");
+        }
+
+        validResult = AliyunUtil.bankCardValid(customerSettle.getSettleAccNo(), customerSettle.getFinancialOfficerCertificatesNum(), customerSettle.getSettleAccName());
+        if (!validResult) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_VALID_ERROR, "客户结算银行信息验证失败,请重新确认!");
+        }
     }
 
     private void commitAudit(CustomerSettle customerSettle, String opUserId, boolean isNew) {
@@ -108,15 +146,16 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
         auditCustomerSettle.setSettleTypeStr(SettleTypeEnum.getByCode(customerSettle.getSettleType()));
         auditCustomerSettle.setSettleCycleStr(SettleCycleEnum.getByCode(customerSettle.getSettleCycle()));
 
-        List<WmPoiBaseInfo> wmPoiBaseInfoList = wmPoiBaseInfoService.getByIdList(customerSettle.getWmPoiIdList());
-        List<String> wmPoiNameList = Lists.transform(wmPoiBaseInfoList, new Function<WmPoiBaseInfo, String>() {
-            @Override
-            public String apply(WmPoiBaseInfo input) {
-                return input.getWmPoiName();
-            }
-        });
-        auditCustomerSettle.setWmPoiName(wmPoiNameList);
-
+        CityInfo cityInfo = geoService.getByProvinceIdAndCityId(customerSettle.getProvince(), customerSettle.getCity());
+        BankInfo bankInfo = bankService.getByBankIdAndBranchId(customerSettle.getBankId(), customerSettle.getBranchId());
+        StringBuilder bankName = new StringBuilder();
+        if (cityInfo != null) {
+            bankName.append(cityInfo.getProvinceName()).append("-").append(cityInfo.getCityName()).append("-");
+        }
+        if (bankInfo != null) {
+            bankName.append(bankInfo.getBankName()).append("-").append(bankInfo.getSubBankName());
+        }
+        auditCustomerSettle.setBankName(bankName.toString());
         auditTask.setAuditData(JSON.toJSONString(auditCustomerSettle));
         apiAuditService.commitAudit(auditTask);
     }
@@ -207,6 +246,7 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
     }
 
     @Override
+    @Transactional
     public void setupEffectCustomerSettle(Integer customerId, Integer settleId) {
         LOGGER.info("setupEffectCustomerSettle customerId = {}, settleId = {}", customerId, settleId);
 

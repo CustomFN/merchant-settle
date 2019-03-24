@@ -31,5 +31,5 @@ public class CustomerSettle {
     private Integer valid;
     private Integer customerId;
     private String auditResult;
-    private List<Integer> wmPoiIdList;
+    private String wmPoiIds;
 }

@@ -8,4 +8,5 @@ public interface CategoryService {
 
     List<CategoryInfo> getCategories();
 
+    CategoryInfo getById(Integer categoryId);
 }

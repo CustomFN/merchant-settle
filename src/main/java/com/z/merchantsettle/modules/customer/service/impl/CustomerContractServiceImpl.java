@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ public class CustomerContractServiceImpl implements CustomerContractService {
     }
 
     @Override
+    @Transactional
     public CustomerContract saveOrUpdate(CustomerContract customerContract, String opUser) throws CustomerException {
         if (customerContract == null || customerContract.getPartyA() == null ||
                 customerContract.getPartyB() == null || StringUtils.isBlank(opUser)) {
@@ -187,6 +189,7 @@ public class CustomerContractServiceImpl implements CustomerContractService {
     }
 
     @Override
+    @Transactional
     public void setupEffectCustomerContract(Integer customerId, Integer contractId) throws CustomerException {
         LOGGER.info("setupEffectCustomerContract customerId = {}, contractId = {}", customerId, contractId);
 

@@ -9,6 +9,8 @@ import com.z.merchantsettle.modules.audit.domain.bo.AuditTask;
 import com.z.merchantsettle.modules.audit.domain.customer.AuditCustomerKp;
 import com.z.merchantsettle.modules.audit.service.ApiAuditService;
 import com.z.merchantsettle.common.CertificatesTypeEnum;
+import com.z.merchantsettle.modules.base.domain.bo.BankInfo;
+import com.z.merchantsettle.modules.base.service.BankService;
 import com.z.merchantsettle.modules.customer.constants.CustomerConstant;
 import com.z.merchantsettle.modules.customer.constants.KpSignerTypeEnum;
 import com.z.merchantsettle.modules.customer.constants.KpTypeEnum;
@@ -20,12 +22,14 @@ import com.z.merchantsettle.modules.customer.service.CustomerKpAuditedService;
 import com.z.merchantsettle.modules.customer.service.CustomerKpService;
 import com.z.merchantsettle.modules.customer.service.CustomerOpLogService;
 import com.z.merchantsettle.utils.TransferUtil;
+import com.z.merchantsettle.utils.aliyun.AliyunUtil;
 import com.z.merchantsettle.utils.transfer.customer.CustomerTransferUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CustomerKpServiceImpl implements CustomerKpService {
@@ -44,11 +48,18 @@ public class CustomerKpServiceImpl implements CustomerKpService {
     @Autowired
     private CustomerOpLogService customerOpLogService;
 
+    @Autowired
+    private BankService bankService;
+
     @Override
+    @Transactional
     public CustomerKp saveOrUpdate(CustomerKp customerKp, String opUser) throws CustomerException {
         LOGGER.info("saveOrUpdate customerKp = {}, opUser = {}", JSON.toJSONString(customerKp), opUser);
         if (customerKp == null || StringUtils.isBlank(opUser)) {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
+        }
+        if (false) {
+            checkCustomerKp(customerKp);
         }
 
         CustomerKpDB customerKpDB = CustomerTransferUtil.transCustomerKp2DB(customerKp);
@@ -66,6 +77,17 @@ public class CustomerKpServiceImpl implements CustomerKpService {
         return customerKp;
     }
 
+    private void checkCustomerKp(CustomerKp customerKp) {
+        boolean validResult = true;
+        if (CertificatesTypeEnum.ID_CARD.getCode() == customerKp.getKpCertificatesType()) {
+            validResult = AliyunUtil.iDCardValid(customerKp.getKpCertificatesNum(), customerKp.getKpName());
+        }
+
+        if (!validResult) {
+            throw new CustomerException(CustomerConstant.CUSTOMER_VALID_ERROR, "客户KP信息验证失败,请重新确认!");
+        }
+    }
+
     private void commitAudit(CustomerKp customerKp, String opUser, boolean isNew) {
         AuditTask auditTask = new AuditTask();
         auditTask.setCustomerId(customerKp.getCustomerId());
@@ -77,7 +99,8 @@ public class CustomerKpServiceImpl implements CustomerKpService {
         AuditCustomerKp auditCustomerKp = new AuditCustomerKp();
         TransferUtil.transferAll(customerKp, auditCustomerKp);
         auditCustomerKp.setKpId(customerKp.getId());
-        // TODO: 2019/2/3 根据银行id获取银行名称
+        BankInfo bankInfo = bankService.getByBankId(customerKp.getBankId());
+        auditCustomerKp.setBankName(bankInfo == null ? "" : bankInfo.getBankName());
 
         String kpCertificatesPic = customerKp.getKpCertificatesPic();
         String[] picArr1 = StringUtils.split(kpCertificatesPic, ",");
@@ -113,6 +136,7 @@ public class CustomerKpServiceImpl implements CustomerKpService {
     }
 
     @Override
+    @Transactional
     public void setupEffectCustomerKp(Integer customerId) throws CustomerException {
         LOGGER.info("setupEffectCustomerKp customerId = {}", customerId);
 

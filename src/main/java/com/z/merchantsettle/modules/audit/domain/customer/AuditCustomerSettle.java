@@ -21,5 +21,5 @@ public class AuditCustomerSettle {
     private String settleTypeStr;
     private String settleCycleStr;
     private Double settleMinAmount;
-    List<String> wmPoiName;
+    private String wmPoiIds;
 }

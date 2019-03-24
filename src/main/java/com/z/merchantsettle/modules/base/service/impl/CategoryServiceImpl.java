@@ -19,4 +19,9 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryInfo> getCategories() {
         return categoryDBMapper.getCategories();
     }
+
+    @Override
+    public CategoryInfo getById(Integer categoryId) {
+        return categoryDBMapper.getById(categoryId);
+    }
 }

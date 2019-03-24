@@ -7,6 +7,7 @@
     </resultMap>
     <resultMap id="CityResultMap" type="com.z.merchantsettle.modules.base.domain.bo.CityInfo" >
         <result column="provinceId" property="provinceId"/>
+        <result column="province" property="provinceName"/>
         <result column="cityId" property="cityId"/>
         <result column="city" property="cityName"/>
     </resultMap>
@@ -24,13 +25,24 @@
     <select id="getCities" resultMap="CityResultMap" parameterType="java.lang.Integer">
         SELECT
         DISTINCT
-          provinceId, cityId, cityName
+          provinceId, cityId, city
         FROM
           banks
         WHERE
           provinceId = #{provinceId}
         ORDER BY
           provinceId
+    </select>
+
+    <select id="getByProvinceIdAndCityId" resultType="com.z.merchantsettle.modules.base.domain.bo.CityInfo">
+        SELECT
+            provinceId, cityId, city
+        FROM
+          banks
+        WHERE
+            provinceId = #{provinceId}
+        and
+            cityId = #{cityId}
     </select>
 
 </mapper>

@@ -24,4 +24,9 @@ public class GeoServiceImpl implements GeoService {
     public List<CityInfo> getCities(Integer provinceId) {
         return geoDBMapper.getCities(provinceId);
     }
+
+    @Override
+    public CityInfo getByProvinceIdAndCityId(Integer provinceId, Integer cityId) {
+        return geoDBMapper.getByProvinceIdAndCityId(provinceId, cityId);
+    }
 }

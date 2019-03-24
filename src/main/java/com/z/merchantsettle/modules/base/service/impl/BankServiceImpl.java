@@ -23,4 +23,14 @@ public class BankServiceImpl implements BankService {
     public List<BankInfo> getSubBanks(Integer bankId) {
         return bankInfoDBMapper.getSubBanks(bankId);
     }
+
+    @Override
+    public BankInfo getByBankId(Integer bankId) {
+        return bankInfoDBMapper.getByBankId(bankId);
+    }
+
+    @Override
+    public BankInfo getByBankIdAndBranchId(Integer bankId, Integer branchId) {
+        return bankInfoDBMapper.getByBankIdAndBranchId(bankId, branchId);
+    }
 }

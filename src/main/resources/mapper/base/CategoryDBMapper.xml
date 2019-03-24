@@ -16,4 +16,13 @@
             categoryId
     </select>
 
+    <select id="getById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+          categoryId, categoryName
+        FROM
+          category
+        WHERE
+          categoryId = #{categoryId}
+    </select>
+
 </mapper>

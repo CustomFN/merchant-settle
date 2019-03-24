@@ -6,6 +6,7 @@ import lombok.Data;
 public class CityInfo {
 
     private Integer provinceId;
+    private String provinceName;
     private Integer cityId;
     private String cityName;
 }

@@ -10,4 +10,6 @@ public interface GeoService {
     List<ProvinceInfo> getProvinces();
 
     List<CityInfo> getCities(Integer provinceId);
+
+    CityInfo getByProvinceIdAndCityId(Integer provinceId, Integer cityId);
 }
