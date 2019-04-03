@@ -22,6 +22,7 @@ import com.z.merchantsettle.modules.customer.domain.bo.*;
 import com.z.merchantsettle.modules.customer.domain.db.CustomerContractAuditedDB;
 import com.z.merchantsettle.modules.customer.domain.db.CustomerContractDB;
 import com.z.merchantsettle.modules.customer.service.*;
+import com.z.merchantsettle.utils.DiffUtil;
 import com.z.merchantsettle.utils.TransferUtil;
 import com.z.merchantsettle.utils.transfer.customer.CustomerTransferUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -91,9 +92,16 @@ public class CustomerContractServiceImpl implements CustomerContractService {
             customerContract = CustomerTransferUtil.transCustomerContractDB2Bo(customerContractDB);
             customerContract.setPartyA(partyA);
             customerContract.setPartyB(partyB);
+
+            String diff = DiffUtil.diff(null, customerContract);
+            customerOpLogService.addLog(customerContract.getCustomerId(), "合同", diff, opUser);
         } else {
+            CustomerContractDB customerContractDBInDB = customerContractDBMapper.selectById(customerContract.getId());
             customerContractDBMapper.updateByIdSelective(customerContractDB);
             customerSignerService.updateByIdSelective(Lists.newArrayList(partyA, partyB));
+
+            String diff = DiffUtil.diff(customerContractDBInDB, customerContractDB);
+            customerOpLogService.addLog(customerContract.getCustomerId(), "合同", diff, opUser);
         }
         commitAudit(customerContract, opUser, isNew);
         customerOpLogService.addLog(customerContract.getCustomerId(), "合同", "保存合同，提交审核", opUser);

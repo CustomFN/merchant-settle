@@ -33,6 +33,7 @@ import com.z.merchantsettle.modules.poi.domain.bo.WmPoiBaseInfo;
 import com.z.merchantsettle.modules.poi.service.WmPoiBaseInfoService;
 import com.z.merchantsettle.mq.MsgOpType;
 import com.z.merchantsettle.mq.customer.CustomerSender;
+import com.z.merchantsettle.utils.DiffUtil;
 import com.z.merchantsettle.utils.TransferUtil;
 import com.z.merchantsettle.utils.aliyun.AliyunUtil;
 import com.z.merchantsettle.utils.transfer.customer.CustomerTransferUtil;
@@ -99,8 +100,14 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
             customerSettleDBMapper.insertSelective(customerSettleDB);
 
             customerSettle = CustomerTransferUtil.transCustomerSettleDB2Bo(customerSettleDB);
+            String diff = DiffUtil.diff(null, customerSettle);
+            customerOpLogService.addLog(customerSettle.getCustomerId(), "结算", diff, opUserId);
         } else {
+            CustomerSettleDB customerSettleDBInDB = customerSettleDBMapper.selectById(customerSettle.getId());
             customerSettleDBMapper.updateByIdSelective(customerSettleDB);
+
+            String diff = DiffUtil.diff(customerSettleDBInDB, customerSettle);
+            customerOpLogService.addLog(customerSettle.getCustomerId(), "结算", diff, opUserId);
         }
         List<Integer> wmPoiIdList = Lists.transform(Lists.newArrayList(StringUtils.split(customerSettle.getWmPoiIds(), ",")), new Function<String, Integer>() {
             @Override

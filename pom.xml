@@ -133,6 +133,13 @@
 			<version>24.0-jre</version>
 		</dependency>
 
+		<!-- Diff -->
+		<dependency>
+			<groupId>de.danielbechler</groupId>
+			<artifactId>java-object-diff</artifactId>
+			<version>0.93.2</version>
+		</dependency>
+
 		<!-- HTTP CLIENT -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

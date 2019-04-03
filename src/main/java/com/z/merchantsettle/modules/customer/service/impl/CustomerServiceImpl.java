@@ -31,6 +31,7 @@ import com.z.merchantsettle.modules.upm.domain.bo.User;
 import com.z.merchantsettle.modules.upm.service.UserService;
 import com.z.merchantsettle.mq.MsgOpType;
 import com.z.merchantsettle.mq.customer.CustomerSender;
+import com.z.merchantsettle.utils.DiffUtil;
 import com.z.merchantsettle.utils.TransferUtil;
 import com.z.merchantsettle.utils.aliyun.AliyunUtil;
 import com.z.merchantsettle.utils.shiro.ShiroUtils;
@@ -174,12 +175,18 @@ public class CustomerServiceImpl implements CustomerService {
             customerDBMapper.insertSelective(customerDB);
 
             customer = CustomerTransferUtil.transCustomerDB2Bo(customerDB);
+            String diff = DiffUtil.diff(null, customer);
+            customerOpLogService.addLog(customerDB.getId(), "客户", diff, opUserId);
         } else {
+            CustomerDB customerDBInDB = customerDBMapper.selectById(customerDB.getId());
             customerDBMapper.updateByIdSelective(customerDB);
+
+            String diff = DiffUtil.diff(customerDBInDB, customerDB);
+            customerOpLogService.addLog(customerDB.getId(), "客户", diff, opUserId);
         }
 
         commitAudit(customerDB, opUserId, isNew);
-        customerOpLogService.addLog(customerDB.getId(), "KP", "保存客户，提交审核", opUserId);
+        customerOpLogService.addLog(customerDB.getId(), "客户", "保存客户，提交审核", opUserId);
         return customer;
     }
 

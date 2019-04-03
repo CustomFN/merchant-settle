@@ -21,6 +21,7 @@ import com.z.merchantsettle.modules.customer.domain.db.CustomerKpDB;
 import com.z.merchantsettle.modules.customer.service.CustomerKpAuditedService;
 import com.z.merchantsettle.modules.customer.service.CustomerKpService;
 import com.z.merchantsettle.modules.customer.service.CustomerOpLogService;
+import com.z.merchantsettle.utils.DiffUtil;
 import com.z.merchantsettle.utils.TransferUtil;
 import com.z.merchantsettle.utils.aliyun.AliyunUtil;
 import com.z.merchantsettle.utils.transfer.customer.CustomerTransferUtil;
@@ -69,8 +70,14 @@ public class CustomerKpServiceImpl implements CustomerKpService {
             customerKpDBMapper.insertSelective(customerKpDB);
 
             customerKp = CustomerTransferUtil.transCustomerKpDB2Bo(customerKpDB);
+            String diff = DiffUtil.diff(null, customerKp);
+            customerOpLogService.addLog(customerKpDB.getId(), "KP", diff, opUser);
         } else {
+            CustomerKpDB customerKpDBInDB = customerKpDBMapper.selectByCustomerId(customerKp.getCustomerId());
             customerKpDBMapper.updateByIdSelective(customerKpDB);
+
+            String diff = DiffUtil.diff(customerKpDBInDB, customerKpDB);
+            customerOpLogService.addLog(customerKp.getCustomerId(), "KP", diff, opUser);
         }
         commitAudit(customerKp, opUser, isNew);
         customerOpLogService.addLog(customerKp.getCustomerId(), "KP", "保存客户KP，提交审核", opUser);
