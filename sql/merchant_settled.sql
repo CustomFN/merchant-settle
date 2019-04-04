@@ -513,7 +513,7 @@ CREATE TABLE `user` (
 DROP TABLE IF EXISTS `user_role`;
 CREATE TABLE `user_role` (
   `id` int(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
-  `userId` varchar(10) NOT NULL COMMENT '用户id',
+  `userId` varchar(20) NOT NULL COMMENT '用户id',
   `roleId` varchar(32) NOT NULL COMMENT '角色id',
   `ctime` bigint(20) NOT NULL COMMENT '创建时间',
   `utime` bigint(20) NOT NULL,
