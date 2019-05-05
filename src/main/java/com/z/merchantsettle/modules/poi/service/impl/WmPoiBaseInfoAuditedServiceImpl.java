@@ -12,6 +12,7 @@ import com.z.merchantsettle.modules.poi.domain.bo.WmPoiBaseInfo;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiBaseInfoDB;
 import com.z.merchantsettle.modules.poi.service.WmPoiBaseInfoAuditedService;
 import com.z.merchantsettle.utils.transfer.poi.WmPoiTransferUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,15 @@ public class WmPoiBaseInfoAuditedServiceImpl implements WmPoiBaseInfoAuditedServ
         }
 
         return WmPoiTransferUtil.transWmPoiBaseInfoDB2Bo(wmPoiBaseInfoAuditedDBMapper.getById(wmPoiId));
+    }
+
+    @Override
+    public void deleteByIdList(List<Integer> wmPoiIdList) {
+        if (CollectionUtils.isEmpty(wmPoiIdList)) {
+            throw new PoiException(PoiConstant.POI_PARAM_ERROR, "参数错误");
+        }
+
+        wmPoiBaseInfoAuditedDBMapper.deleteByIdList(wmPoiIdList);
     }
 
 

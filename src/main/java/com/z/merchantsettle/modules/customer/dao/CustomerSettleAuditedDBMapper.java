@@ -20,4 +20,6 @@ public interface CustomerSettleAuditedDBMapper {
     List<CustomerSettleAuditedDB> getSettleList(@Param("customerId") Integer customerId, @Param("settleIdList") List<Integer> settleIdList);
 
     void deleteByCustomerId(@Param("customerId") Integer customerId);
+
+    List<Integer> getSettleIdListByCustomerId(@Param("customerId")Integer customerId);
 }

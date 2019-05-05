@@ -161,4 +161,16 @@ public class WmPoiDeliveryInfoServiceImpl implements WmPoiDeliveryInfoService {
         String log = "审核结果:审核驳回:" + wmPoiDeliveryInfoDB.getAuditResult();
         wmPoiOpLogService.addLog(wmPoiDeliveryInfoDB.getWmPoiId(), PoiConstant.PoiModuleName.POI_DELIVERY_INFO, log, opUserId);
     }
+
+    @Override
+    public void deleteByWmPoiIdList(List<Integer> wmPoiIdList) {
+        LOGGER.info("deleteByIdList wmPoiIdList = {}", JSON.toJSONString(wmPoiIdList));
+
+        if (CollectionUtils.isEmpty(wmPoiIdList)) {
+            return;
+        }
+
+        wmPoiDeliveryInfoDBMapper.deleteByWmPoiIdList(wmPoiIdList);
+        wmPoiDeliveryInfoAuditedService.deleteByWmPoiIdList(wmPoiIdList);
+    }
 }

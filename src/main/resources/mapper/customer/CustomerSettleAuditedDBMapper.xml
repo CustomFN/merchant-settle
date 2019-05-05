@@ -253,4 +253,15 @@
         and
           valid = 1
     </update>
+
+    <select id="getSettleIdListByCustomerId" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT
+          id
+        FROM
+            customer_settle_audited
+        WHERE
+          customerId = #{customerId}
+        and
+          valid = 1
+    </select>
 </mapper>

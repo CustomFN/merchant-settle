@@ -7,8 +7,11 @@ import com.z.merchantsettle.modules.poi.domain.bo.WmPoiDeliveryInfo;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiDeliveryInfoDB;
 import com.z.merchantsettle.modules.poi.service.WmPoiDeliveryInfoAuditedService;
 import com.z.merchantsettle.utils.transfer.poi.WmPoiTransferUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class WmPoiDeliveryInfoAuditedServiceImpl implements WmPoiDeliveryInfoAuditedService {
@@ -39,5 +42,14 @@ public class WmPoiDeliveryInfoAuditedServiceImpl implements WmPoiDeliveryInfoAud
         }
 
         return WmPoiTransferUtil.transWmPoiDeliveryInfoDB2Bo(wmPoiDeliveryInfoAuditedDBMapper.getByWmPoiId(wmPoiId));
+    }
+
+    @Override
+    public void deleteByWmPoiIdList(List<Integer> wmPoiIdList) {
+        if (CollectionUtils.isEmpty(wmPoiIdList)) {
+            return;
+        }
+
+        wmPoiDeliveryInfoAuditedDBMapper.deleteByWmPoiIdList(wmPoiIdList);
     }
 }

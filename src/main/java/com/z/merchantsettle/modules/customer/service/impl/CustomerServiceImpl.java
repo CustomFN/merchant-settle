@@ -155,7 +155,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-
+    @Transactional
     public Customer saveOrUpdate(Customer customer, String opUserId) throws CustomerException {
         LOGGER.info("saveOrUpdate customer = {}, opUserId = {}", JSON.toJSONString(customer), opUserId);
         if (customer == null || StringUtils.isBlank(opUserId)) {

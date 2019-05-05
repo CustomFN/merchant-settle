@@ -19,4 +19,8 @@ public interface CustomerSettlePoiService {
     void saveOrUpdateSettlePoiAudited(List<CustomerSettlePoi> customerSettlePoiList);
 
     List<CustomerSettlePoi> getByWmPoiIdList(List<Integer> wmPoiIdList);
+
+    void deleteBySettleIdList(List<Integer> settleIdList);
+
+    void deleteBySettleIdListAudited(List<Integer> settleIdList);
 }

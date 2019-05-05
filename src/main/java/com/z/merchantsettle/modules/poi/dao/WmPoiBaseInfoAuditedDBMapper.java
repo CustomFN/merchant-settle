@@ -15,4 +15,6 @@ public interface WmPoiBaseInfoAuditedDBMapper {
     void insertSelective(WmPoiBaseInfoDB wmPoiBaseInfoDB);
 
     WmPoiBaseInfoDB getById(Integer wmPoiId);
+
+    void deleteByIdList(@Param("wmPoiIdList") List<Integer> wmPoiIdList);
 }

@@ -16,4 +16,6 @@ public interface CustomerSettlePoiAuditedDBMapper {
     void deleteBySettleIdAndPoiIdList(int settleId, @Param("wmPoiIdList") List<Integer> wmPoiIdList);
 
     void save(@Param("list") List<CustomerSettlePoiDB> CustomerSettlePoiDBList);
+
+    void deleteBySettleIdList(@Param("settleIdList") List<Integer> settleIdList);
 }

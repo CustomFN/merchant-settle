@@ -18,4 +18,6 @@ public interface CustomerSettlePoiDBMapper {
     void save(@Param("list") List<CustomerSettlePoiDB> CustomerSettlePoiDBList);
 
     List<CustomerSettlePoiDB> getByWmPoiIdList(@Param("wmPoiIdList") List<Integer> wmPoiIdList);
+
+    void deleteBySettleIdList(@Param("settleIdList") List<Integer> settleIdList);
 }

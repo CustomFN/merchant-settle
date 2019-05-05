@@ -19,4 +19,6 @@ public interface WmPoiBaseInfoDBMapper {
     List<WmPoiBaseInfoDB> getByIdList(@Param("wmPoiIdList") List<Integer> wmPoiIdList);
 
     List<WmPoiBaseInfoDB> getList(@Param("wmPoiSearchParam") WmPoiSearchParam wmPoiSearchParam);
+
+    void deleteByIdList(@Param("wmPoiIdList") List<Integer> wmPoiIdList);
 }

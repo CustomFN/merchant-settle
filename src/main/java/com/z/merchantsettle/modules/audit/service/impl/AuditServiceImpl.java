@@ -74,14 +74,16 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
         LOGGER.info("getAuditTaskList auditSearchParam = {}", JSON.toJSONString(auditSearchParam));
         PageHelper.startPage(pageNum, pageSize);
         List<AuditTaskDB> auditTaskDBList;
+        // 这里会判断审核任务是否分配，通过判断transactor是否等于""
         if (StringUtils.isNotBlank(auditSearchParam.getTransactor())) {
+            // 用于个人任务子模块的列表展示
             auditTaskDBList = auditMapper.selectListByTransactor(auditSearchParam);
         } else {
+            // 用于所有任务子模块的列表展示
             auditTaskDBList = auditMapper.selectList(auditSearchParam);
         }
 
         PageInfo<AuditTaskDB> pageInfo = new PageInfo<>(auditTaskDBList);
-
         List<AuditTask> auditTaskList = AuditTransferUtil.transAuditTaskDBList2BoList(auditTaskDBList);
         for (AuditTask task : auditTaskList) {
             task.setAuditData("");
@@ -136,12 +138,13 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
             throw new AuditException(AuditConstant.AUDIT_OP_ERROR, "审核任务状态错误");
         }
 
+        // 更新审核任务
         auditTaskDB.setId(result.getAuditTaskId());
         auditTaskDB.setAuditStatus(result.getAuditStatus());
         auditTaskDB.setAuditResult(result.getResult());
         auditTaskDB.setCompleted(1);
         auditMapper.updateByTaskIdSelective(auditTaskDB);
-
+        // 记录审核操作日志
         AuditLogDB auditLogDB = new AuditLogDB();
         auditLogDB.setAuditTaskId(auditTaskDB.getId());
         auditLogDB.setAuditStatus(result.getAuditStatus());
@@ -154,6 +157,7 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
         auditLogService.saveAuditLog(auditLogDB);
 
         AuditTask auditTask = AuditTransferUtil.transAuditTaskDB2Bo(auditTaskDB);
+        // 根据审核类型获取不同模块的审核回调处理对象对审核结果进行处理
         auditCallbackService.getCallbackHandler(auditTask.getAuditType()).handleCallback(result, auditTask);
     }
 

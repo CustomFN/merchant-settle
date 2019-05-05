@@ -134,4 +134,22 @@ public class CustomerSettlePoiServiceImpl implements CustomerSettlePoiService {
         return CustomerTransferUtil.transCustomerSettlePoiDBList2BoList(customerSettlePoiDBList);
     }
 
+    @Override
+    public void deleteBySettleIdList(List<Integer> settleIdList) {
+        if (CollectionUtils.isEmpty(settleIdList)) {
+            return;
+        }
+
+        customerSettlePoiDBMapper.deleteBySettleIdList(settleIdList);
+    }
+
+    @Override
+    public void deleteBySettleIdListAudited(List<Integer> settleIdList) {
+        if (CollectionUtils.isEmpty(settleIdList)) {
+            return;
+        }
+
+        customerSettlePoiAuditedDBMapper.deleteBySettleIdList(settleIdList);
+    }
+
 }

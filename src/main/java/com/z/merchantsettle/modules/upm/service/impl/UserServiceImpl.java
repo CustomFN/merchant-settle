@@ -45,11 +45,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageData<User> getUserList(UserSearchParam param, Integer pageNum, Integer pageSize) {
+        // 分页
         PageHelper.startPage(pageNum, pageSize);
         List<UserDB> userDBList = userMapper.selectList(param);
         PageInfo<UserDB> pageInfo = new PageInfo<>(userDBList);
-
+        // 把持久层对象转换成业务层对象
         List<User> userList = UserTransferUtil.transUserList2BoList(userDBList);
+        // 提取查询到的用户的用户ID
         List<String> userIdList = Lists.transform(userList, new Function<User, String>() {
             @Override
             public String apply(User input) {
@@ -58,6 +60,7 @@ public class UserServiceImpl implements UserService {
         });
 
         if (CollectionUtils.isNotEmpty(userIdList)) {
+            // 通过用户ID查询用户拥有的角色ID
             Map<String, List<String>> userRoleMap = userRoleService.getByUserIdList(userIdList);
 
             if (!userRoleMap.isEmpty()) {
@@ -68,6 +71,7 @@ public class UserServiceImpl implements UserService {
                 }
 
                 if (CollectionUtils.isNotEmpty(roleIdList)) {
+                    //通过角色ID查询用户名称
                     List<Role> roleList = roleService.getRolesByIdList(roleIdList);
                     Map<String, Role> roleMap = Maps.uniqueIndex(roleList, new Function<Role, String>() {
                         @Override
@@ -91,7 +95,6 @@ public class UserServiceImpl implements UserService {
                     }
                 }
             }
-
         }
         return new PageData.Builder<User>()
                 .pageNum(pageNum)
@@ -118,12 +121,16 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void createUserByUserName(User user) {
+    private synchronized void createUserByUserName(User user) {
+        // 获取用户的拼音
         String userNameSpell = user.getUserNameSpell();
+        // 根据用户拼音查看是否有同名用户(此处会获取最后一名用户)
         UserDB lastUserDB = userMapper.selectLastByUserNameSpell(userNameSpell);
         if (lastUserDB == null) {
+            // 若不存在同名用户，则用户ID就是用户拼音
             user.setUserId(userNameSpell);
         } else {
+            // 若存在同名用户，则取用户名称后面的数字进行+1操作后作为新用户的用户ID
             String userId = lastUserDB.getUserId();
             String userNum = userId.substring(userNameSpell.length());
             if (StringUtils.isBlank(userNum)) {

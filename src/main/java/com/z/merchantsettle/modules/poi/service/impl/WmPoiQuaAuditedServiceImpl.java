@@ -8,8 +8,11 @@ import com.z.merchantsettle.modules.poi.domain.bo.WmPoiQua;
 import com.z.merchantsettle.modules.poi.domain.db.WmPoiQuaDB;
 import com.z.merchantsettle.modules.poi.service.WmPoiQuaAuditedService;
 import com.z.merchantsettle.utils.transfer.poi.WmPoiTransferUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class WmPoiQuaAuditedServiceImpl implements WmPoiQuaAuditedService {
@@ -39,5 +42,14 @@ public class WmPoiQuaAuditedServiceImpl implements WmPoiQuaAuditedService {
         }
 
         return WmPoiTransferUtil.transWmPoiQuaDB2Bo(wmPoiQuaAuditedDBMapper.getById(wmPoiId));
+    }
+
+    @Override
+    public void deleteByWmPoiIdList(List<Integer> wmPoiIdList) {
+        if (CollectionUtils.isEmpty(wmPoiIdList)) {
+            return;
+        }
+
+        wmPoiQuaAuditedDBMapper.deleteByWmPoiIdList(wmPoiIdList);
     }
 }

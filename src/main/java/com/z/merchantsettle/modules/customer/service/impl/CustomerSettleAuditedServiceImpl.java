@@ -94,6 +94,9 @@ public class CustomerSettleAuditedServiceImpl implements CustomerSettleAuditedSe
         if (customerId == null || customerId <= 0) {
             return;
         }
+
+        List<Integer> settleIdList = customerSettleAuditedDBMapper.getSettleIdListByCustomerId(customerId);
+        customerSettlePoiService.deleteBySettleIdList(settleIdList);
         customerSettleAuditedDBMapper.deleteByCustomerId(customerId);
     }
 }

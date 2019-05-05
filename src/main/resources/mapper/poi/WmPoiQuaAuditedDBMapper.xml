@@ -186,4 +186,18 @@
         and
           valid = 1
     </select>
+
+    <update id="deleteByWmPoiIdList" parameterType="java.util.List" >
+        update
+          wm_poi_qua_audited
+        SET
+          valid = 0,
+          utime = unix_timestamp()
+        where
+          wmPoiId
+        IN
+          <foreach collection="wmPoiIdList" item="item" separator="," open="(" close=")">
+              #{item}
+          </foreach>
+    </update>
 </mapper>

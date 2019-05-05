@@ -171,4 +171,15 @@ public class WmPoiQuaServiceImpl implements WmPoiQuaService {
         String log = "审核结果:审核驳回:" + wmPoiQuaDB.getAuditResult();
         wmPoiOpLogService.addLog(wmPoiQuaDB.getWmPoiId(), PoiConstant.PoiModuleName.POI_QUA, log, opUserId);
     }
+
+    @Override
+    public void deleteByWmPoiIdList(List<Integer> wmPoiIdList) {
+        LOGGER.info("deleteByIdList wmPoiIdList = {}", JSON.toJSONString(wmPoiIdList));
+
+        if (CollectionUtils.isEmpty(wmPoiIdList)) {
+            return;
+        }
+        wmPoiQuaDBMapper.deleteByWmPoiIdList(wmPoiIdList);
+        wmPoiQuaAuditedService.deleteByWmPoiIdList(wmPoiIdList);
+    }
 }

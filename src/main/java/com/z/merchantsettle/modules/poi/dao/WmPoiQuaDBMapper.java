@@ -16,4 +16,6 @@ public interface WmPoiQuaDBMapper {
     WmPoiQuaDB getByWmPoiId(Integer wmPoiId);
 
     List<WmPoiQuaDB> getByWmPoiIdList(@Param("wmPoiIdList") List<Integer> wmPoiIdList);
+
+    void deleteByWmPoiIdList(@Param("wmPoiIdList") List<Integer> wmPoiIdList);
 }

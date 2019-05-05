@@ -301,4 +301,18 @@
         id
         desc
     </select>
+
+    <update id="deleteByIdList" parameterType="java.util.List" >
+        update
+            wm_poi_base_info
+        SET
+            valid = 0,
+            utime = unix_timestamp()
+        where
+            id
+        IN
+          <foreach collection="wmPoiIdList" item="item" separator="," open="(" close=")">
+              #{item}
+          </foreach>
+    </update>
 </mapper>

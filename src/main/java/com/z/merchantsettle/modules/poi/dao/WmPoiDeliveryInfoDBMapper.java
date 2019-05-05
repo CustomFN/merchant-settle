@@ -16,4 +16,6 @@ public interface WmPoiDeliveryInfoDBMapper {
     WmPoiDeliveryInfoDB getByWmPoiId(Integer wmPoiId);
 
     List<WmPoiDeliveryInfoDB> getByWmPoiIdList(@Param("wmPoiIdList") List<Integer> wmPoiIdList);
+
+    void deleteByWmPoiIdList(@Param("wmPoiIdList") List<Integer> wmPoiIdList);
 }

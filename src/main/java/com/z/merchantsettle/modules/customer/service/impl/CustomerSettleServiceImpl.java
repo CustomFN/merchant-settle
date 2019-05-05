@@ -301,6 +301,9 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
             throw new CustomerException(CustomerConstant.CUSTOMER_PARAM_ERROR, "参数错误");
         }
 
+        List<Integer> settleIdList = customerSettleDBMapper.getSettleIdListByCustomerId(customerId);
+        customerSettlePoiService.deleteBySettleIdList(settleIdList);
+
         customerSettleDBMapper.deleteByCustomerId(customerId);
         customerSettleAuditedService.deleteByCustomerId(customerId);
 

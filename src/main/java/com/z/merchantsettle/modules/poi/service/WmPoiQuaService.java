@@ -18,4 +18,6 @@ public interface WmPoiQuaService {
     List<WmPoiQua> getByWmPoiIdList(List<Integer> wmPoiIdList);
 
     void updateByIdForAudit(WmPoiQua wmPoiQua, String opUserId);
+
+    void deleteByWmPoiIdList(List<Integer> wmPoiIdList);
 }

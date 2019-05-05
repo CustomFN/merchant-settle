@@ -15,4 +15,6 @@ public interface WmPoiDeliveryInfoService {
     List<WmPoiDeliveryInfo> getByWmPoiIdList(List<Integer> wmPoiIdList);
 
     void updateByIdForAudit(WmPoiDeliveryInfo wmPoiDeliveryInfo, String opUserId);
+
+    void deleteByWmPoiIdList(List<Integer> wmPoiIdList);
 }

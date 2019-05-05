@@ -39,10 +39,10 @@ public class UserRoleServiceImpl implements UserRoleService {
         String userId = userRole.getUserId();
         Set<String> roleIdSet = Sets.newHashSet(userRole.getRoleIdList());
         Set<String> roleIdSetInDB = Sets.newHashSet(userRoleMapper.getRoleIdByUserId(userId));
-
+        // 存在 roleIdSet 中而不在 roleIdSetInDB 中的角色ID 为新增的角色ID
         Set<String> addIdList = Sets.difference(roleIdSet, roleIdSetInDB);
+        // 存在 roleIdSetInDB 中而不在 roleIdSet 中的角色ID 为删除的角色ID
         Set<String> deleteIdList = Sets.difference(roleIdSetInDB, roleIdSet);
-
         if (CollectionUtils.isNotEmpty(deleteIdList)) {
             userRoleMapper.unbindUserRoleSet(userId, deleteIdList);
         }

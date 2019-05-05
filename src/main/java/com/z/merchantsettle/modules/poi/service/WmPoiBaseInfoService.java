@@ -21,4 +21,6 @@ public interface WmPoiBaseInfoService {
     PageData<WmPoiBaseInfo> getBaseInfoList(WmPoiSearchParam wmPoiSearchParam, Integer pageNum, Integer pageSize);
 
     void updateByIdForAudit(WmPoiBaseInfo wmPoiBaseInfo, String opUserId);
+
+    void deleteByIdList(List<Integer> wmPoiIdList);
 }

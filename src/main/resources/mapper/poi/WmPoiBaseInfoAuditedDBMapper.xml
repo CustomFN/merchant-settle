@@ -26,7 +26,8 @@
         <result column="valid" property="valid" />
 
         <result column="orderMealDate" property="orderMealDate"/>
-        <result column="orderMealTime" property="orderMealTime"/>
+        <result column="orderMealStartTime" property="orderMealStartTime"/>
+        <result column="orderMealEndTime" property="orderMealEndTime"/>
         <result column="orderMealTel" property="orderMealTel"/>
         <result column="businessInfoStatus" property="businessInfoStatus" />
 
@@ -38,7 +39,7 @@
         id, customerId, wmPoiName, wmPoiLinkMan, wmPoiPhone, wmPoiCategory, wmPoiCityId, wmPoiRegionId,
         wmPoiAddress, wmPoiLongitude, wmPoiLatitude, wmPoiLogo,wmPoiEnvironmentPic, wmPoiPrincipal,
         status,ctime,utime valid,
-        orderMealDate, orderMealTime, orderMealTel, businessInfoStatus,
+        orderMealDate, orderMealStartTime, orderMealEndTime, orderMealTel, businessInfoStatus,
         coopState
     </sql>
 
@@ -87,8 +88,11 @@
             <if test="orderMealDate != null" >
                 orderMealDate = #{orderMealDate},
             </if>
-            <if test="orderMealTime != null" >
-                orderMealTime = #{orderMealTime},
+            <if test="orderMealStartTime != null" >
+                orderMealStartTime = #{orderMealStartTime},
+            </if>
+            <if test="orderMealEndTime != null" >
+                orderMealEndTime = #{orderMealEndTime},
             </if>
             <if test="orderMealTel != null" >
                 orderMealTel = #{orderMealTel},
@@ -150,8 +154,11 @@
             <if test="orderMealDate != null" >
                 orderMealDate,
             </if>
-            <if test="orderMealTime != null" >
-                orderMealTime,
+            <if test="orderMealStartTime != null" >
+                orderMealStartTime,
+            </if>
+            <if test="orderMealEndTime != null" >
+                orderMealEndTime,
             </if>
             <if test="orderMealTel != null" >
                 orderMealTel,
@@ -210,8 +217,11 @@
             <if test="orderMealDate != null" >
                 #{orderMealDate},
             </if>
-            <if test="orderMealTime != null" >
-                #{orderMealTime},
+            <if test="orderMealStartTime != null" >
+                #{orderMealStartTime},
+            </if>
+            <if test="orderMealEndTime != null" >
+                #{orderMealEndTime},
             </if>
             <if test="orderMealTel != null" >
                 #{orderMealTel},
@@ -239,5 +249,18 @@
           valid = 1
     </select>
 
+    <update id="deleteByIdList" parameterType="java.util.List" >
+        update
+        wm_poi_base_info_audited
+        SET
+        valid = 0,
+        utime = unix_timestamp()
+        where
+        id
+        IN
+        <foreach collection="wmPoiIdList" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
 
 </mapper>

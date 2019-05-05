@@ -212,4 +212,16 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
         String log = "审核结果:审核驳回:" + wmPoiBaseInfoDB.getAuditResult();
         wmPoiOpLogService.addLog(wmPoiBaseInfoDB.getId(), PoiConstant.PoiModuleName.POI_BASE_INFO, log, opUserId);
     }
+
+    @Override
+    public void deleteByIdList(List<Integer> wmPoiIdList) {
+        LOGGER.info("deleteByIdList wmPoiIdList = {}", JSON.toJSONString(wmPoiIdList));
+
+        if (CollectionUtils.isEmpty(wmPoiIdList)) {
+            return;
+        }
+
+        wmPoiBaseInfoDBMapper.deleteByIdList(wmPoiIdList);
+        wmPoiBaseInfoAuditedService.deleteByIdList(wmPoiIdList);
+    }
 }

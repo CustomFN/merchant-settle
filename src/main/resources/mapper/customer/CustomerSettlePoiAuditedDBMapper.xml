@@ -65,4 +65,19 @@
             )
         </foreach>
     </insert>
+
+    <update id="deleteBySettleIdList" parameterType="java.util.List" >
+        UPDATE
+          settle_poi_audited
+        set
+          valid = 0, utime = unix_timestamp()
+        WHERE
+          settleId
+        in
+          <foreach collection="settleIdList" close=")" open="(" separator="," item="item">
+             #{item}
+          </foreach>
+        and
+          valid = 1
+    </update>
 </mapper>

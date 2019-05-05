@@ -22,15 +22,15 @@ public class CustomerListener {
     private static final String CUSTOMER_TOPIC = "customer_topic";
 
 //    @KafkaListener(topics = {CUSTOMER_TOPIC})
-//    public void listen(ConsumerRecord<String, String> record) {
-//        String recordData = record.value();
-//        LOGGER.info("CustomerListener listen recordData = {}", JSON.toJSONString(recordData));
-//        if (StringUtils.isNotBlank(recordData)) {
-//            CustomerMsg customerMsg = JSON.parseObject(recordData, CustomerMsg.class);
-//
-//            if (customerMsg.getCustomerId() != null && MsgOpType.DELETE == customerMsg.getType()) {
-//                customerMsgHandler.handleDelete(customerMsg.getCustomerId());
-//            }
-//        }
-//    }
+    public void listen(ConsumerRecord<String, String> record) {
+        String recordData = record.value();
+        LOGGER.info("CustomerListener listen recordData = {}", JSON.toJSONString(recordData));
+        if (StringUtils.isNotBlank(recordData)) {
+            CustomerMsg customerMsg = JSON.parseObject(recordData, CustomerMsg.class);
+
+            if (customerMsg.getCustomerId() != null && MsgOpType.DELETE == customerMsg.getType()) {
+                customerMsgHandler.handleDelete(customerMsg.getCustomerId());
+            }
+        }
+    }
 }
