@@ -7,6 +7,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.z.merchantsettle.common.PageData;
+import com.z.merchantsettle.modules.base.domain.bo.CategoryInfo;
+import com.z.merchantsettle.modules.base.service.CategoryService;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerSettle;
 import com.z.merchantsettle.modules.customer.domain.bo.CustomerSettlePoi;
 import com.z.merchantsettle.modules.customer.service.CustomerSettlePoiService;
@@ -50,6 +52,9 @@ public class WmPoiServiceImpl implements WmPoiService {
     @Autowired
     private CustomerSettleService customerSettleService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     private static final String POI_BASE_INFO = "baseInfo";
 
     private static final String POI_BUSINESS_INFO = "businessInfo";
@@ -70,7 +75,9 @@ public class WmPoiServiceImpl implements WmPoiService {
             wmPoiInfo.setWmPoiId(wmPoiId);
             wmPoiInfo.setWmPoiName(wmPoiBaseInfo.getWmPoiName());
             wmPoiInfo.setWmPoiAddress(wmPoiBaseInfo.getWmPoiAddress());
-            wmPoiInfo.setWmPoiCategory(wmPoiBaseInfo.getWmPoiCategory().toString());
+
+            CategoryInfo categoryInfo = categoryService.getById(wmPoiBaseInfo.getWmPoiCategory());
+            wmPoiInfo.setWmPoiCategory(categoryInfo.getCategoryName());
             wmPoiInfo.setWmPoiTel(wmPoiBaseInfo.getWmPoiPhone());
             wmPoiInfo.setWmPoiPrincipal(wmPoiBaseInfo.getWmPoiPrincipal());
             wmPoiInfo.setWmPoiCoopState(PoiConstant.PoiCoopState.getByCode(wmPoiBaseInfo.getCoopState()));

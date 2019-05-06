@@ -47,7 +47,7 @@ public class WmPoiQua {
     @NotBlank(message = "营业执照门店登记机关不能为空")
     private String wmPoiRegisterDepartment;
 
-    @NotBlank(message = "营业执照有效期不能为空")
+    @NotNull(message = "营业执照有效期不能为空")
     private Long wmPoiBusinessLicenceValidTime;
 
     private Integer status;

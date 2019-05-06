@@ -147,6 +147,7 @@ public class CustomerTransferUtil {
             String[] pics = StringUtils.split(customerKpDB.getKpCertificatesPic(), separator);
             customerKp.setKpCertificatesPicList(Lists.newArrayList(pics));
         }
+        customerKp.setCustomerId(customerKpDB.getCustomerId());
         customerKp.setStatusStr(CustomerConstant.CustomerStatus.getByCode(customerKpDB.getStatus()));
         return customerKp;
     }
@@ -194,6 +195,7 @@ public class CustomerTransferUtil {
             String[] pics = StringUtils.split(customerContractDB.getContractScan(), ",");
             customerContract.setContractScanList(Lists.newArrayList(pics));
         }
+        customerContract.setCustomerId(customerContractDB.getCustomerId());
         customerContract.setStatusStr(CustomerConstant.CustomerStatus.getByCode(customerContractDB.getStatus()));
         return customerContract;
     }
@@ -374,6 +376,7 @@ public class CustomerTransferUtil {
         CustomerSettle customerSettle = new CustomerSettle();
         TransferUtil.transferAll(customerSettleDB, customerSettle);
 
+        customerSettle.setCustomerId(customerSettleDB.getCustomerId());
         customerSettle.setStatusStr(CustomerConstant.CustomerStatus.getByCode(customerSettleDB.getStatus()));
         return customerSettle;
     }

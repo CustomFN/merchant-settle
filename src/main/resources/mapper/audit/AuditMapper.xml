@@ -69,6 +69,7 @@
             <if test="auditSearchParam.submitterId != null and auditSearchParam.submitterId != ''">
                 and submitterId = #{auditSearchParam.submitterId}
             </if>
+            and transactor = #{auditSearchParam.transactor}
             and completed = #{auditSearchParam.completed}
             and valid = 1
         </where>

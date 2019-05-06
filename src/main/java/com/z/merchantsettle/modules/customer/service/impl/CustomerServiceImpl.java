@@ -185,7 +185,7 @@ public class CustomerServiceImpl implements CustomerService {
             customerOpLogService.addLog(customerDB.getId(), "客户", diff, opUserId);
         }
 
-        commitAudit(customerDB, opUserId, isNew);
+        commitAudit(customer, opUserId, isNew);
         customerOpLogService.addLog(customerDB.getId(), "客户", "保存客户，提交审核", opUserId);
         return customer;
     }
@@ -203,21 +203,21 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    private void commitAudit(CustomerDB customerDB, String opUserId, boolean isNew) {
+    private void commitAudit(Customer customer, String opUserId, boolean isNew) {
         AuditTask auditTask = new AuditTask();
-        auditTask.setCustomerId(customerDB.getId());
+        auditTask.setCustomerId(customer.getId());
         auditTask.setAuditApplicationType(isNew ? AuditApplicationTypeEnum.AUDIT_NEW.getCode() : AuditApplicationTypeEnum.AUDIT_UPDATE.getCode());
         auditTask.setAuditStatus(AuditConstant.AuditStatus.AUDITING);
         auditTask.setAuditType(AuditTypeEnum.CUSTOMER.getCode());
         auditTask.setSubmitterId(opUserId);
 
         AuditCustomer auditCustomer = new AuditCustomer();
-        TransferUtil.transferAll(customerDB, auditCustomer);
+        TransferUtil.transferAll(customer, auditCustomer);
 
-        String customerCertificatesPic = customerDB.getCustomerCertificatesPic();
+        String customerCertificatesPic = customer.getCustomerCertificatesPic();
         String[] picArr = StringUtils.split(customerCertificatesPic, ",");
         auditCustomer.setCustomerCertificatesPicArr(picArr);
-        auditCustomer.setCustomerTypeStr(CustomerTypeEnum.getByCode(customerDB.getCustomerType()));
+        auditCustomer.setCustomerTypeStr(CustomerTypeEnum.getByCode(customer.getCustomerType()));
 
         auditTask.setAuditData(JSON.toJSONString(auditCustomer));
         apiAuditService.commitAudit(auditTask);

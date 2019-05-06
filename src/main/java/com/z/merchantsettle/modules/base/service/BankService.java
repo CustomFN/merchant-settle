@@ -12,5 +12,5 @@ public interface BankService {
 
     BankInfo getByBankId(Integer bankId);
 
-    BankInfo getByBankIdAndBranchId(Integer bankId, Integer branchId);
+    BankInfo getByBankIdAndBranchId(Integer bankId, String branchId);
 }

@@ -12,7 +12,7 @@ public class CustomerSettleDB {
     private Integer province;
     private Integer city;
     private Integer bankId;
-    private Integer branchId;
+    private String branchId;
     private String branchName;
     private String reservePhoneNum;
     private String financialOfficer;
@@ -28,6 +28,7 @@ public class CustomerSettleDB {
     private Integer valid;
     private Integer customerId;
     private String auditResult;
+    private String wmPoiIds;
 
 
 }

@@ -48,6 +48,7 @@ public class PhysicalPoiController {
 
     @RequestMapping("/claim/{physicalPoiId}")
     public Object claimPhysicalPoi(@PathVariable(name = "physicalPoiId") Integer physicalPoiId) {
+        LOGGER.info("claimPhysicalPoi physicalId = {}", physicalPoiId);
         if (physicalPoiId == null || physicalPoiId <= 0) {
             return ReturnResult.fail("参数错误");
         }

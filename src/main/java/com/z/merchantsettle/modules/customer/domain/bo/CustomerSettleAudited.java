@@ -12,7 +12,7 @@ public class CustomerSettleAudited {
     private Integer province;
     private Integer city;
     private Integer bankId;
-    private Integer branchId;
+    private String branchId;
     private String branchName;
     private String reservePhoneNum;
     private String financialOfficer;

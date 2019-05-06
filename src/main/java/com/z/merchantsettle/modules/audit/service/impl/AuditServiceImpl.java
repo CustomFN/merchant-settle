@@ -75,13 +75,13 @@ public class AuditServiceImpl implements AuditService, ApiAuditService {
         PageHelper.startPage(pageNum, pageSize);
         List<AuditTaskDB> auditTaskDBList;
         // 这里会判断审核任务是否分配，通过判断transactor是否等于""
-        if (StringUtils.isNotBlank(auditSearchParam.getTransactor())) {
-            // 用于个人任务子模块的列表展示
-            auditTaskDBList = auditMapper.selectListByTransactor(auditSearchParam);
-        } else {
-            // 用于所有任务子模块的列表展示
+//        if (StringUtils.isNotBlank(auditSearchParam.getTransactor())) {
+//            // 用于个人任务子模块的列表展示
+//            auditTaskDBList = auditMapper.selectListByTransactor(auditSearchParam);
+//        } else {
+//            // 用于所有任务子模块的列表展示
             auditTaskDBList = auditMapper.selectList(auditSearchParam);
-        }
+//        }
 
         PageInfo<AuditTaskDB> pageInfo = new PageInfo<>(auditTaskDBList);
         List<AuditTask> auditTaskList = AuditTransferUtil.transAuditTaskDBList2BoList(auditTaskDBList);

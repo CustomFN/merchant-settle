@@ -17,7 +17,6 @@ public class Customer {
 
     private String customerCertificatesPic;
 
-    @NotEmpty(message = "客户证件图片不能为空")
     private List<String> customerCertificatesPicList;
 
     @NotBlank(message = "客户证件号不能为空")

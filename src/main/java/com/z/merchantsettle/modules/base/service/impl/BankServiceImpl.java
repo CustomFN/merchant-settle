@@ -30,7 +30,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public BankInfo getByBankIdAndBranchId(Integer bankId, Integer branchId) {
+    public BankInfo getByBankIdAndBranchId(Integer bankId, String branchId) {
         return bankInfoDBMapper.getByBankIdAndBranchId(bankId, branchId);
     }
 }

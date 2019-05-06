@@ -46,6 +46,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -109,7 +110,9 @@ public class CustomerSettleServiceImpl implements CustomerSettleService {
             String diff = DiffUtil.diff(customerSettleDBInDB, customerSettle);
             customerOpLogService.addLog(customerSettle.getCustomerId(), "结算", diff, opUserId);
         }
-        List<Integer> wmPoiIdList = Lists.transform(Lists.newArrayList(StringUtils.split(customerSettle.getWmPoiIds(), ",")), new Function<String, Integer>() {
+        List<Integer> wmPoiIdList = Lists.transform(
+                Arrays.asList(customerSettle.getWmPoiIds().split(",")),
+                new Function<String, Integer>() {
             @Override
             public Integer apply(String input) {
                 return Integer.parseInt(input);

@@ -41,6 +41,8 @@ public class WmPoiTransferUtil {
         if (wmPoiBaseInfoDB.getBusinessInfoStatus() != null && wmPoiBaseInfoDB.getBusinessInfoStatus() > 0) {
             wmPoiBaseInfo.setBusinessInfoStatusStr(PoiConstant.PoiModuleStatus.getByCode(wmPoiBaseInfoDB.getBusinessInfoStatus()));
         }
+        wmPoiBaseInfo.setId(wmPoiBaseInfoDB.getId());
+        wmPoiBaseInfo.setCustomerId(wmPoiBaseInfoDB.getCustomerId());
         wmPoiBaseInfo.setStatusStr(PoiConstant.PoiModuleStatus.getByCode(wmPoiBaseInfoDB.getStatus()));
         return wmPoiBaseInfo;
     }
@@ -96,6 +98,7 @@ public class WmPoiTransferUtil {
             String pic = StringUtils.join(wmPoiQua.getWmPoiBusinessLicencePicList(), separator);
             wmPoiQuaDB.setWmPoiBusinessLicencePic(pic);
         }
+        wmPoiQua.setWmPoiId(wmPoiQuaDB.getWmPoiId());
         return wmPoiQuaDB;
     }
 
@@ -154,6 +157,7 @@ public class WmPoiTransferUtil {
         TransferUtil.transferAll(wmPoiDeliveryInfoDB, wmPoiDeliveryInfo);
         wmPoiDeliveryInfo.setWmPoiProjectList(JSON.parseArray(wmPoiDeliveryInfoDB.getWmPoiProjects(),  WmPoiProject.class));
 
+        wmPoiDeliveryInfo.setWmPoiId(wmPoiDeliveryInfoDB.getWmPoiId());
         wmPoiDeliveryInfo.setWmDeliveryTypeStr(WmDeliveryTypeEnum.getByCode(wmPoiDeliveryInfoDB.getWmDeliveryType()));
         wmPoiDeliveryInfo.setStatusStr(PoiConstant.PoiModuleStatus.getByCode(wmPoiDeliveryInfoDB.getStatus()));
         return wmPoiDeliveryInfo;

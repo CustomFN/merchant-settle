@@ -43,6 +43,8 @@
             provinceId = #{provinceId}
         and
             cityId = #{cityId}
+        limit
+            1
     </select>
 
 </mapper>

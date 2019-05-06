@@ -14,7 +14,7 @@
     </sql>
     <select id="getSettleIdByWmPoiId" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
         select
-          <include refid="Base_Column_List" />
+          settleId
         from
           settle_poi
         where

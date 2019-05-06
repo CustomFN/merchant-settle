@@ -37,8 +37,8 @@
             <if test="userId != null and userId != ''">
                 and physicalPoiPrincipal = #{userId}
             </if>
-            <if test="physicalPoiReqParam.physicalPoiId != null and physicalPoiReqParam.physicalPoiId > 0">
-                and id = #{physicalPoiReqParam.physicalPoiId}
+            <if test="physicalPoiReqParam.id != null and physicalPoiReqParam.id > 0">
+                and id = #{physicalPoiReqParam.id}
             </if>
             <if test="physicalPoiReqParam.physicalCityId != null and physicalPoiReqParam.physicalCityId > 0">
                 and physicalCityId = #{physicalPoiReqParam.physicalCityId}

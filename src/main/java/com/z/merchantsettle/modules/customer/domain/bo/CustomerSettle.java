@@ -20,7 +20,7 @@ public class CustomerSettle {
     private Integer province;
     private Integer city;
     private Integer bankId;
-    private Integer branchId;
+    private String branchId;
     private String branchName;
 
     @NotBlank(message = "银行预留手机号不能为空")
@@ -45,5 +45,6 @@ public class CustomerSettle {
     private Integer valid;
     private Integer customerId;
     private String auditResult;
+    @NotBlank(message = "关联门店ID不能为空")
     private String wmPoiIds;
 }
