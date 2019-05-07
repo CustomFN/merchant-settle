@@ -18,6 +18,7 @@ import com.z.merchantsettle.modules.base.domain.bo.CityInfo;
 import com.z.merchantsettle.modules.base.service.BankService;
 import com.z.merchantsettle.modules.base.service.CategoryService;
 import com.z.merchantsettle.modules.base.service.GeoService;
+import com.z.merchantsettle.modules.customer.service.CustomerPoiService;
 import com.z.merchantsettle.modules.poi.constants.PoiConstant;
 import com.z.merchantsettle.modules.poi.dao.WmPoiBaseInfoDBMapper;
 import com.z.merchantsettle.modules.poi.domain.WmPoiSearchParam;
@@ -61,6 +62,9 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private CustomerPoiService customerPoiService;
+
 
     @Override
     @Transactional
@@ -76,6 +80,8 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
             wmPoiBaseInfoDB.setStatus(PoiConstant.PoiModuleStatus.AUDING.getCode());
             wmPoiBaseInfoDB.setCoopState(PoiConstant.PoiCoopState.COOPERATING.getCode());
             wmPoiBaseInfoDBMapper.insertSelective(wmPoiBaseInfoDB);
+
+            customerPoiService.save(wmPoiBaseInfoDB.getCustomerId(), wmPoiBaseInfo.getId());
         } else {
             wmPoiBaseInfoDBMapper.updateSelective(wmPoiBaseInfoDB);
         }
@@ -146,6 +152,7 @@ public class WmPoiBaseInfoServiceImpl implements WmPoiBaseInfoService {
         WmPoiBaseInfo wmPoiBaseInfo = WmPoiTransferUtil.transWmPoiBaseInfoDB2Bo(wmPoiBaseInfoDB);
         wmPoiBaseInfoAuditedService.saveOrUpdate(wmPoiBaseInfo);
 
+        customerPoiService.saveAudited(wmPoiBaseInfoDB.getCustomerId(), wmPoiBaseInfoDB.getId());
         wmPoiOpLogService.addLog(wmPoiBaseInfoDB.getId(), PoiConstant.PoiModuleName.POI_BASE_INFO, "设置门店基本信息生效", "系统()");
     }
 
